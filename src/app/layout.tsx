@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import ClientLayout from "./client-layout";
 import { instrumentSerif, robotoMono } from "../../fonts";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({
     >
       <body className="m-0 flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-accent-navbar p-0 font-serif text-neutral-900">
         <ClientLayout>{children}</ClientLayout>
+        <Analytics />
       </body>
     </html>
   );
