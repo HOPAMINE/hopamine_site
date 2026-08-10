@@ -14,7 +14,7 @@ import { Providers } from "./providers";
 const convexConfigured = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 
 /** Routes that are exempt from the onboarding gate. */
-const ONBOARDING_EXEMPT = ["/onboard", "/sign-in", "/sign-up", "/sso-callback", "/profile-compare", "/hopathon"];
+const ONBOARDING_EXEMPT = ["/onboard", "/sign-in", "/sign-up", "/sso-callback", "/profile-compare", "/hopathon", "/sponsor-tee"];
 
 /** Syncs Convex `users` when Clerk session exists and gates incomplete onboarding. */
 function UserSyncInner() {
