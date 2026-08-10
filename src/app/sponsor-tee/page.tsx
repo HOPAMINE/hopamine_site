@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { robotoFlex } from "../../../fonts";
 import { NAV_ALIGN_PAD } from "@/lib/layoutConstants";
+import { SponsorTeeAnalytics } from "./SponsorTeeAnalytics";
 import { SponsorTeeEmbed } from "./SponsorTeeEmbed";
 
 /**
@@ -51,6 +52,7 @@ export default function SponsorTeePage() {
         >
           <SponsorTeeEmbed />
         </section>
+        <SponsorTeeAnalytics />
       </div>
     </main>
   );
