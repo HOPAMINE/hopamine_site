@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { robotoFlex, robotoMono } from "../../../fonts";
 import { NAV_ALIGN_PAD } from "@/lib/layoutConstants";
+import { useLoadTimeout } from "@/lib/useLoadTimeout";
 import {
   HACKATHON_FIELDS,
   type HackathonField,
@@ -39,6 +40,12 @@ export default function ProjectsPage() {
   const directoryProjects = useQuery(api.projects.listHackathonDirectory);
   const [field, setField] = useState<ProjectFilter>("All");
   const [selectedProject, setSelectedProject] = useState<HackathonProject | null>(null);
+
+  // `undefined` means "in flight" and also "the Convex client never connected".
+  // Without this the page renders "Loading projects…" forever with nothing in
+  // the UI saying the backend is unreachable.
+  const isLoading = directoryProjects === undefined;
+  const loadFailed = useLoadTimeout(isLoading);
 
   const filteredProjects = useMemo(() => {
     if (!directoryProjects) return [];
@@ -91,8 +98,10 @@ export default function ProjectsPage() {
         </div>
 
         <p className={`${robotoMono.className} mt-4 text-xs text-white/75 sm:text-sm`}>
-          {directoryProjects === undefined
-            ? "Loading projects…"
+          {isLoading
+            ? loadFailed
+              ? "Couldn’t load projects"
+              : "Loading projects…"
             : `${filteredProjects.length} project${filteredProjects.length === 1 ? "" : "s"}${
                 field !== "All" ? ` · ${HACKATHON_FIELDS[field]}` : ""
               }`}
@@ -102,8 +111,28 @@ export default function ProjectsPage() {
           <h2 id="projects-grid-heading" className="sr-only">
             All projects
           </h2>
-          {directoryProjects === undefined ? (
-            <p className={`${robotoFlex.className} py-8 text-sm text-white/75`}>Loading projects…</p>
+          {isLoading ? (
+            loadFailed ? (
+              <div
+                role="alert"
+                className={`${robotoFlex.className} max-w-xl rounded-2xl border border-white/30 bg-black/15 px-5 py-6 text-white`}
+              >
+                <p className="text-base font-semibold">Projects didn’t load</p>
+                <p className="mt-2 text-sm text-white/85">
+                  We couldn’t reach the projects database. This is a connection problem
+                  on our side, not something you did.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className={`${robotoMono.className} mt-4 inline-flex items-center rounded-full border border-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
+                >
+                  Try again
+                </button>
+              </div>
+            ) : (
+              <p className={`${robotoFlex.className} py-8 text-sm text-white/75`}>Loading projects…</p>
+            )
           ) : filteredProjects.length > 0 ? (
             <div className={projectsPageGridClassName}>
               {filteredProjects.map((project) => (

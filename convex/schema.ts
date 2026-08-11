@@ -148,4 +148,14 @@ export default defineSchema({
     isOnline: v.boolean(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  /**
+   * One row per UTC day, incremented on each /sponsor-tee/wall view. Kept as
+   * daily buckets rather than one row per view so the rolling count can be
+   * read with a single bounded range query instead of counting raw rows.
+   */
+  sponsorWallViewDailyCounts: defineTable({
+    dateKey: v.string(),
+    count: v.number(),
+  }).index("by_date_key", ["dateKey"]),
 });
