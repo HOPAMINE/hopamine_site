@@ -28,6 +28,7 @@ import type * as presence from "../presence.js";
 import type * as projects from "../projects.js";
 import type * as seedHackathonProjects from "../seedHackathonProjects.js";
 import type * as seedHackathonStaffProject from "../seedHackathonStaffProject.js";
+import type * as sponsorWall from "../sponsorWall.js";
 import type * as users from "../users.js";
 
 import type {
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   seedHackathonProjects: typeof seedHackathonProjects;
   seedHackathonStaffProject: typeof seedHackathonStaffProject;
+  sponsorWall: typeof sponsorWall;
   users: typeof users;
 }>;
 

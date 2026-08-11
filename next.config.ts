@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         source: "/sponsor-tee",
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
+      {
+        // Covers /sponsor-tee/wall and any future pages nested under it —
+        // same reasoning, unlisted links rather than browsed-to pages.
+        source: "/sponsor-tee/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
     ];
   },
   images: {
