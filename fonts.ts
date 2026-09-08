@@ -1,9 +1,22 @@
-import { Instrument_Serif, Roboto, Roboto_Flex, Roboto_Mono, Sorts_Mill_Goudy } from "next/font/google";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Roboto,
+  Roboto_Flex,
+  Roboto_Mono,
+  Sorts_Mill_Goudy,
+} from "next/font/google";
 
 export const instrumentSerif = Instrument_Serif({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-instrument-serif",
+  display: "swap",
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 

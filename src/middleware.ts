@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up(.*)",
   "/sso-callback(.*)",
   "/profile-compare(.*)",
+  "/zima(.*)",
   "/favicon.ico",
   "/icon.svg",
 ]);

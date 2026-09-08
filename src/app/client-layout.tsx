@@ -121,10 +121,11 @@ export default function ClientLayout({
 }>) {
   const pathname = usePathname();
   const isHopathon = pathname === "/hopathon" || pathname.startsWith("/hopathon/");
+  const isZima = pathname === "/zima" || pathname.startsWith("/zima/");
   const isClaim = pathname === "/claim" || pathname.startsWith("/claim/");
   const isLanding = pathname === "/";
 
-  if (isHopathon) {
+  if (isHopathon || isZima) {
     return <>{children}</>;
   }
 

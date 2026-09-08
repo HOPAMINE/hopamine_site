@@ -6,7 +6,11 @@ import { ConvexReactClient } from "convex/react";
 import { useMemo, type ReactNode } from "react";
 
 function ConvexGate({ children }: { children: ReactNode }) {
-  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? "";
+  // Trailing slash → wss://….cloud//api/... which fails the sync handshake.
+  const convexUrl = (process.env.NEXT_PUBLIC_CONVEX_URL ?? "").replace(
+    /\/+$/,
+    "",
+  );
   const client = useMemo(
     () =>
       convexUrl !== ""
