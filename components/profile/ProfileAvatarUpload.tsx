@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -24,6 +25,8 @@ type ProfileAvatarUploadProps = {
    * `none` — avatar itself is the only upload trigger.
    */
   controls?: "button" | "link" | "none";
+  shape?: "circle" | "square";
+  dithered?: boolean;
 };
 
 export function ProfileAvatarUpload({
@@ -33,6 +36,8 @@ export function ProfileAvatarUpload({
   size = 96,
   variant = "dark",
   controls = "button",
+  shape = "circle",
+  dithered = true,
 }: ProfileAvatarUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
@@ -110,7 +115,17 @@ export function ProfileAvatarUpload({
     ? `${robotoMono.className} mt-1 text-xs text-red-600`
     : `${robotoMono.className} mt-1 text-xs text-red-300`;
 
-  const borderClass = isLight ? "border-2 border-white" : "border-2 border-white/90";
+  const borderClass =
+    shape === "square"
+      ? "border border-neutral-300"
+      : isLight
+        ? "border-2 border-white"
+        : "border-2 border-white/90";
+  const shapeClass = shape === "square" ? "rounded-none" : "rounded-full";
+  const fallbackBgClass =
+    shape === "square" && isLight
+      ? "bg-neutral-200 text-neutral-600"
+      : "bg-[#0090d4] text-white";
 
   function openPicker() {
     if (!uploading) inputRef.current?.click();
@@ -129,18 +144,29 @@ export function ProfileAvatarUpload({
         onClick={openPicker}
         disabled={uploading}
         aria-label={displayUrl ? "Change profile photo" : "Upload profile photo"}
-        className={`relative shrink-0 overflow-hidden rounded-full bg-[#0090d4] ${borderClass} transition-opacity hover:opacity-90 disabled:opacity-60`}
+        className={`relative shrink-0 overflow-hidden ${shapeClass} ${fallbackBgClass} ${borderClass} transition-opacity hover:opacity-90 disabled:opacity-60`}
         style={{ width: size, height: size }}
       >
         {displayUrl ? (
-          <DitheredAvatarImage
-            src={displayUrl}
-            size={size}
-            className="h-full w-full object-cover"
-          />
+          dithered ? (
+            <DitheredAvatarImage
+              src={displayUrl}
+              size={size}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Image
+              src={displayUrl}
+              alt=""
+              width={size}
+              height={size}
+              className="h-full w-full object-cover"
+              unoptimized={displayUrl.startsWith("blob:")}
+            />
+          )
         ) : (
           <span
-            className={`${robotoMono.className} flex h-full w-full items-center justify-center text-2xl text-white`}
+            className={`${robotoMono.className} flex h-full w-full items-center justify-center text-2xl`}
             style={{ fontSize: Math.max(16, Math.round(size * 0.35)) }}
           >
             {initials}

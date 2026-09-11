@@ -1,4 +1,11 @@
-export const PORTAL_ROUTES = ["/home", "/projects", "/builders", "/directory", "/dashboard"];
+export const PORTAL_ROUTES = [
+  "/home",
+  "/projects",
+  "/builders",
+  "/directory",
+  "/dashboard",
+  "/social",
+];
 
 export const NAV_LINKS = [
   { href: "/projects", label: "Projects" },

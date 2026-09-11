@@ -1,6 +1,7 @@
 import {
   Instrument_Serif,
   JetBrains_Mono,
+  Newsreader,
   Roboto,
   Roboto_Flex,
   Roboto_Mono,
@@ -43,5 +44,12 @@ export const sortsMillGoudy = Sorts_Mill_Goudy({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-sorts-mill-goudy",
+  display: "swap",
+});
+
+export const newsreader = Newsreader({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-newsreader",
   display: "swap",
 });
