@@ -39,6 +39,10 @@ const SPIN_PHASE = 0.55;
 /** Map events that mean the user wants control back. */
 const INPUT_EVENTS = ["mousedown", "touchstart", "wheel"] as const;
 
+/** Pointer going down on and coming off the map. */
+const HOLD_START_EVENTS = ["mousedown", "touchstart"] as const;
+const HOLD_END_EVENTS = ["mouseup", "touchend", "touchcancel"] as const;
+
 /** Keeps longitude in [-180, 180) so tile cache keys stay at wrap 0. */
 export const wrapLng = (lng: number) =>
   ((((lng + 180) % 360) + 360) % 360) - 180;
@@ -177,6 +181,50 @@ export function spinTo(
   INPUT_EVENTS.forEach((e) => map.on(e, cancel));
   frame = requestAnimationFrame(tick);
   return cancel;
+}
+
+/**
+ * Reports whether the user has hold of the map: `true` on the first touch or
+ * mouse-down, `false` once the pointer lifts and any fling inertia has
+ * settled. Programmatic flights never count. Chrome that should get out of
+ * the way while the map is being moved listens to this. Returns a cleanup
+ * function.
+ */
+export function watchMapHold(
+  map: MapLibreMap,
+  onChange: (held: boolean) => void,
+): () => void {
+  let pointerDown = false;
+  let held = false;
+
+  const emit = (next: boolean) => {
+    if (held === next) return;
+    held = next;
+    onChange(next);
+  };
+  // After the pointer lifts, wait out inertia; a new press before it ends
+  // keeps the hold (the stale moveend then finds pointerDown true and stops).
+  const settle = () => {
+    if (pointerDown) return;
+    if (map.isMoving()) map.once("moveend", settle);
+    else emit(false);
+  };
+  const down = () => {
+    pointerDown = true;
+    emit(true);
+  };
+  const up = () => {
+    pointerDown = false;
+    settle();
+  };
+
+  HOLD_START_EVENTS.forEach((e) => map.on(e, down));
+  HOLD_END_EVENTS.forEach((e) => map.on(e, up));
+  return () => {
+    HOLD_START_EVENTS.forEach((e) => map.off(e, down));
+    HOLD_END_EVENTS.forEach((e) => map.off(e, up));
+    map.off("moveend", settle);
+  };
 }
 
 /**

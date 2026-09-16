@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion, type Transition } from "framer-motion";
+import Loading from "@/components/Loading";
 import { FRAME_INSETS } from "../frame";
 import { HOPAMINE_BLUE } from "../globePalettes";
+import { PLACEHOLDER_RESULTS } from "./placeholderResults";
 import PromptPanel from "./PromptPanel";
+import ResultCard from "./ResultCard";
 import type { ChatInput } from "./useChatInput";
 
 type Props = {
   input: ChatInput;
   placeholder: string;
+  /** Show the loading orb in place of the cards. */
+  loading: boolean;
 };
-
-/** Placeholder count until real results arrive. Enough rows to scroll. */
-const PLACEHOLDER_CARDS = 12;
 
 /**
  * The overlay is the map frame itself, padded. The panel hugs its right edge;
@@ -39,8 +42,6 @@ const GAP = "gap-[18px]";
  */
 const LIST_PADDING = "px-[40px] pt-[80px] pb-[172px]";
 
-/** Card shadow from the design. */
-const CARD_SHADOW = "0 4px 4px rgba(0, 0, 0, 0.25)";
 /**
  * Panel shadow: 2px spread pushed 2px down, so it reads as 4px below, 2px on
  * either side and nothing above, with a 2px blur to feather the edge.
@@ -52,77 +53,122 @@ const TOGGLE_SHADOW =
 
 /** Same footprint as the compact send button in the docked prompt. */
 const TOGGLE_CLASSES =
-  "pointer-events-auto flex size-[42px] shrink-0 items-center justify-center rounded-full bg-white transition-colors hover:bg-neutral-50";
+  "pointer-events-auto flex size-[42px] shrink-0 items-center justify-center bg-white transition-colors hover:bg-neutral-50";
+
+/** Radii live in `style` so Motion can tween them while morphing. */
+const PANEL_RADIUS = 31;
+const TOGGLE_RADIUS = 21;
+
+/**
+ * The open panel and the minimized button share this id, so Motion morphs
+ * one box into the other: the panel shrinks into the button on close and
+ * grows out of it on open.
+ */
+const SHELL_ID = "results-shell";
+
+const MORPH: Transition = {
+  layout: { duration: 0.4, ease: [0.32, 0.72, 0, 1] },
+};
+
+/** Panel contents drop out before the shrink so they never visibly squash. */
+const CONTENT_FADE = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.2, delay: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.12 } },
+};
 
 /**
  * Results side panel hovering over the map after a search. A round toggle in
- * its top-left corner collapses it; while collapsed, a globe button in the
- * map's top-right corner brings it back. Cards are placeholders for now.
+ * its top-left corner collapses it into a globe button in the map's top-right
+ * corner, which brings it back. Results are placeholders for now.
  */
-export default function ResultsPanel({ input, placeholder }: Props) {
+export default function ResultsPanel({ input, placeholder, loading }: Props) {
   const [minimized, setMinimized] = useState(false);
   const toggleStyle = { boxShadow: TOGGLE_SHADOW, color: HOPAMINE_BLUE };
 
-  if (minimized) {
-    return (
-      <div className={OVERLAY}>
-        <div className={SHELL_PADDING}>
-          <button
-            type="button"
-            onClick={() => setMinimized(false)}
-            aria-label="Show results"
-            aria-expanded={false}
-            className={TOGGLE_CLASSES}
-            style={toggleStyle}
-          >
-            <GlobeIcon />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={OVERLAY}>
-      <section
-        aria-label="Results"
-        className="pointer-events-auto grid h-full w-[min(785px,50%)] grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-[31px] bg-white"
-        style={{ boxShadow: PANEL_SHADOW }}
-      >
-        <div className="col-start-1 row-start-1 min-h-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className={`grid grid-cols-2 ${GAP} ${LIST_PADDING}`}>
-            {Array.from({ length: PLACEHOLDER_CARDS }, (_, i) => (
-              <div
-                key={i}
-                className="aspect-[345/223] rounded-[14px]"
-                style={{
-                  backgroundColor: HOPAMINE_BLUE,
-                  boxShadow: CARD_SHADOW,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <div
-          className={`pointer-events-none col-start-1 row-start-1 self-start justify-self-start ${SHELL_PADDING}`}
-        >
-          <button
-            type="button"
-            onClick={() => setMinimized(true)}
-            aria-label="Hide results"
-            aria-expanded
-            className={TOGGLE_CLASSES}
-            style={toggleStyle}
+      <AnimatePresence initial={false} mode="popLayout">
+        {minimized ? (
+          <motion.div key="minimized" className={SHELL_PADDING}>
+            <motion.button
+              layoutId={SHELL_ID}
+              transition={MORPH}
+              type="button"
+              onClick={() => setMinimized(false)}
+              aria-label="Show results"
+              aria-expanded={false}
+              className={TOGGLE_CLASSES}
+              style={{ ...toggleStyle, borderRadius: TOGGLE_RADIUS }}
+            >
+              <motion.span {...CONTENT_FADE} className="flex">
+                <GlobeIcon />
+              </motion.span>
+            </motion.button>
+          </motion.div>
+        ) : (
+          <motion.section
+            key="panel"
+            layoutId={SHELL_ID}
+            transition={MORPH}
+            aria-label="Results"
+            className="pointer-events-auto grid h-full w-[min(785px,50%)] grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden bg-white"
+            style={{ boxShadow: PANEL_SHADOW, borderRadius: PANEL_RADIUS }}
           >
-            <ChevronRightIcon />
-          </button>
-        </div>
-        <div
-          className={`pointer-events-none col-start-1 row-start-1 self-end ${SHELL_PADDING}`}
-        >
-          <PromptPanel input={input} placeholder={placeholder} size="compact" />
-        </div>
-      </section>
+            <motion.div
+              {...CONTENT_FADE}
+              className="col-start-1 row-start-1 min-h-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {loading ? (
+                <div className="flex h-full items-center justify-center">
+                  <Loading
+                    state="connecting"
+                    scale={2}
+                    color={HOPAMINE_BLUE}
+                    label="Searching"
+                  />
+                </div>
+              ) : (
+                <div className={`grid grid-cols-2 ${GAP} ${LIST_PADDING}`}>
+                  {PLACEHOLDER_RESULTS.map((result) => (
+                    <ResultCard
+                      key={result.name}
+                      result={result}
+                      fill="blue"
+                      className="aspect-[345/223]"
+                    />
+                  ))}
+                </div>
+              )}
+            </motion.div>
+            <motion.div
+              {...CONTENT_FADE}
+              className={`pointer-events-none col-start-1 row-start-1 self-start justify-self-start ${SHELL_PADDING}`}
+            >
+              <button
+                type="button"
+                onClick={() => setMinimized(true)}
+                aria-label="Hide results"
+                aria-expanded
+                className={`${TOGGLE_CLASSES} rounded-full`}
+                style={toggleStyle}
+              >
+                <ChevronRightIcon />
+              </button>
+            </motion.div>
+            <motion.div
+              {...CONTENT_FADE}
+              className={`pointer-events-none col-start-1 row-start-1 self-end ${SHELL_PADDING}`}
+            >
+              <PromptPanel
+                input={input}
+                placeholder={placeholder}
+                size="compact"
+              />
+            </motion.div>
+          </motion.section>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

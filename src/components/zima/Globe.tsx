@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type ReactNode,
+  type Ref,
+} from "react";
 import { Map as MapLibreMap, setWorkerUrl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { buildGlobeStyle } from "./globeStyle";
@@ -10,6 +19,7 @@ import {
   fitGlobeZoom,
   flyToView,
   startSpin,
+  watchMapHold,
   type GlobeView,
 } from "./camera";
 import { TileLog, exposeMapForDebug } from "./tileLog";
@@ -36,15 +46,32 @@ const LOG_FLIGHT_TILES = process.env.NODE_ENV !== "production";
 const PRELOAD_CACHE_ZOOM_LEVELS = 24;
 
 export type GlobeHandle = {
-  /** Spin the globe a full extra turn while easing into `view`. */
+  /**
+   * Spin the globe a full extra turn while easing into `view`. `onDone` fires
+   * once the flight is over: `true` on landing, `false` if the user cut it
+   * short. It does not fire if a newer `flyTo` supersedes this one first.
+   */
   flyTo: (
     view: GlobeView,
-    opts?: { durationMs?: number; extraTurns?: number },
+    opts?: {
+      durationMs?: number;
+      extraTurns?: number;
+      onDone?: (landed: boolean) => void;
+    },
   ) => void;
 };
 
+const MapContext = createContext<MapLibreMap | null>(null);
+
+/** The live map, for children of `<Globe>` such as marker layers. Null until mounted. */
+export function useMap(): MapLibreMap | null {
+  return useContext(MapContext);
+}
+
 type GlobeProps = {
   className?: string;
+  /** Rendered once the map exists, with `useMap()` available. */
+  children?: ReactNode;
   ref?: Ref<GlobeHandle>;
   // TODO: Delete — experiment.
   /**
@@ -53,12 +80,24 @@ type GlobeProps = {
    * background, so a send only has to warm the last few zooms.
    */
   warmCenter?: [number, number];
+  /**
+   * Fires `true` when the user takes hold of the map and `false` once they
+   * let go and it has stopped moving. Flights started by `flyTo` do not count.
+   */
+  onHoldChange?: (held: boolean) => void;
 };
 
 /** MapLibre globe that fills its wrapper. Camera behaviour lives in camera.ts. */
-export default function Globe({ className, ref, warmCenter }: GlobeProps) {
+export default function Globe({
+  className,
+  ref,
+  warmCenter,
+  onHoldChange,
+  children,
+}: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const [liveMap, setLiveMap] = useState<MapLibreMap | null>(null);
   const cancelFlightRef = useRef<(() => void) | null>(null);
   const tileLogRef = useRef<TileLog | null>(null);
   // TODO: Delete — experiment. The startup preload of the shared cone, and the
@@ -69,9 +108,11 @@ export default function Globe({ className, ref, warmCenter }: GlobeProps) {
   const flightSeqRef = useRef(0);
   // Read inside the mount effect without re-running it when the prop changes.
   const warmCenterRef = useRef(warmCenter);
+  const onHoldChangeRef = useRef(onHoldChange);
   useEffect(() => {
     warmCenterRef.current = warmCenter;
-  }, [warmCenter]);
+    onHoldChangeRef.current = onHoldChange;
+  }, [warmCenter, onHoldChange]);
 
   useImperativeHandle(ref, () => ({
     flyTo(view, opts) {
@@ -92,6 +133,7 @@ export default function Globe({ className, ref, warmCenter }: GlobeProps) {
               cancelFlightRef.current = null;
             // Landed. The report closes once every tile for the final view is in.
             if (landed && log) map.once("idle", () => log.end());
+            opts?.onDone?.(landed);
           },
         });
         cancelFlightRef.current = cancel;
@@ -134,6 +176,7 @@ export default function Globe({ className, ref, warmCenter }: GlobeProps) {
       maxTileCacheZoomLevels: PRELOAD_CACHE_ZOOM_LEVELS,
     });
     mapRef.current = map;
+    setLiveMap(map);
     if (LOG_FLIGHT_TILES) exposeMapForDebug(map);
 
     // TODO: Delete — experiment. Once the tile constructors are in hand, warm
@@ -159,17 +202,22 @@ export default function Globe({ className, ref, warmCenter }: GlobeProps) {
 
     if (log) map.on("sourcedata", log.onSourceData);
     const stopSpin = startSpin(map, () => cancelFlightRef.current !== null);
+    const stopHoldWatch = watchMapHold(map, (held) =>
+      onHoldChangeRef.current?.(held),
+    );
 
     return () => {
       observer.disconnect();
       if (log) map.off("sourcedata", log.onSourceData);
       tileLogRef.current = null;
       stopSpin();
+      stopHoldWatch();
       cancelFlightRef.current?.();
       cancelPreloadRef.current?.();
       sharedPreloadRef.current?.cancel();
       map.remove();
       mapRef.current = null;
+      setLiveMap(null);
     };
   }, []);
 
@@ -179,6 +227,9 @@ export default function Globe({ className, ref, warmCenter }: GlobeProps) {
   return (
     <div className={className}>
       <div ref={containerRef} className="h-full w-full" />
+      <MapContext.Provider value={liveMap}>
+        {liveMap && children}
+      </MapContext.Provider>
     </div>
   );
 }

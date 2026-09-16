@@ -5,6 +5,9 @@ import Globe, { type GlobeHandle } from "./Globe";
 import type { GlobeView } from "./camera";
 import ZimaChrome from "./chrome/ZimaChrome";
 import { FRAME_INSETS, FRAME_RADIUS } from "./frame";
+import ResultMarkers from "./ResultMarkers";
+import { RESULTS } from "./results";
+import { SearchProvider, useSearch } from "./search";
 
 /**
  * Where a sent message takes the camera for now: The Spiral at Hudson Yards,
@@ -49,12 +52,22 @@ function FrameCornerMask() {
 
 /** Framed globe with the prompt chrome layered over it. */
 export default function ZimaScene() {
-  const globeRef = useRef<GlobeHandle>(null);
-  const [hasSearched, setHasSearched] = useState(false);
+  return (
+    <SearchProvider>
+      <Scene />
+    </SearchProvider>
+  );
+}
 
-  const handleSend = () => {
-    setHasSearched(true);
-    globeRef.current?.flyTo(THE_SPIRAL);
+/** Wires the globe to the shared search state; every surface reads the rest. */
+function Scene() {
+  const globeRef = useRef<GlobeHandle>(null);
+  const [mapHeld, setMapHeld] = useState(false);
+  const search = useSearch();
+
+  const handleSend = (text: string) => {
+    search.send(text);
+    globeRef.current?.flyTo(THE_SPIRAL, { onDone: search.arrive });
   };
 
   return (
@@ -63,9 +76,12 @@ export default function ZimaScene() {
         ref={globeRef}
         className={`${FRAME_INSETS} ${FRAME_RADIUS} overflow-hidden`}
         warmCenter={NYC_CENTER}
-      />
+        onHoldChange={setMapHeld}
+      >
+        {search.hasSearched && <ResultMarkers results={RESULTS} />}
+      </Globe>
       <FrameCornerMask />
-      <ZimaChrome onSend={handleSend} showResults={hasSearched} />
+      <ZimaChrome onSend={handleSend} mapHeld={mapHeld} />
     </>
   );
 }
