@@ -55,7 +55,7 @@ type GlobeProps = {
   warmCenter?: [number, number];
 };
 
-/** Full-bleed MapLibre globe. Camera behaviour lives in camera.ts. */
+/** MapLibre globe that fills its wrapper. Camera behaviour lives in camera.ts. */
 export default function Globe({ className, ref, warmCenter }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);

@@ -8,23 +8,50 @@ import type { ChatInput } from "./useChatInput";
 type Props = {
   input: ChatInput;
   placeholder: string;
+  /**
+   * `hero` is the wide translucent panel floating over the globe before a
+   * search. `compact` is the smaller opaque box docked inside the results
+   * panel. Same draft and send behaviour, different footprint.
+   */
+  size?: "hero" | "compact";
 };
 
 /** Hard offset shadow under the panel. */
 const PAPER_SHADOW = `0 5px 0 ${withAlpha(BLUE[800], 0.28)}`;
 
-/** Desktop prompt: a wide translucent rounded panel with a multiline textarea. */
-export default function PromptPanel({ input, placeholder }: Props) {
+const SIZES = {
+  hero: {
+    outer: "w-[min(975px,90vw)]",
+    box: "h-[205px] rounded-3xl pt-[30px] pr-8 pb-[18px] pl-[36px]",
+    background: withAlpha(BLUE[100], 0.72),
+    textarea: "text-[18px] leading-7",
+    button: "size-[60px]",
+    icon: 26,
+  },
+  compact: {
+    outer: "w-full",
+    box: "h-[114px] rounded-[14px] pt-[18px] pr-[14px] pb-[14px] pl-[18px] backdrop-blur-sm",
+    background: withAlpha(BLUE[50], 0.8),
+    textarea: "text-[14px] leading-6",
+    button: "size-[42px]",
+    icon: 20,
+  },
+} as const;
+
+/** Desktop prompt: a rounded box with a multiline textarea above a send button. */
+export default function PromptPanel({
+  input,
+  placeholder,
+  size = "hero",
+}: Props) {
+  const s = SIZES[size];
   return (
     <div
-      className={`${jetbrainsMono.className} pointer-events-auto w-[min(975px,90vw)]`}
+      className={`${jetbrainsMono.className} pointer-events-auto ${s.outer}`}
     >
       <div
-        className="relative h-[205px] rounded-3xl"
-        style={{
-          backgroundColor: withAlpha(BLUE[100], 0.72),
-          boxShadow: PAPER_SHADOW,
-        }}
+        className={`flex flex-col ${s.box}`}
+        style={{ backgroundColor: s.background, boxShadow: PAPER_SHADOW }}
       >
         <textarea
           value={input.text}
@@ -32,12 +59,13 @@ export default function PromptPanel({ input, placeholder }: Props) {
           onKeyDown={input.onKeyDown}
           placeholder={placeholder}
           aria-label="Ask Zima"
-          className="absolute inset-0 h-full w-full resize-none bg-transparent pb-[64px] pl-[36px] pr-[120px] pt-[30px] text-[18px] leading-7 text-neutral-800 placeholder:text-neutral-700 focus:outline-none"
+          className={`min-h-0 w-full flex-1 resize-none bg-transparent text-neutral-800 placeholder:text-neutral-700 focus:outline-none ${s.textarea}`}
         />
         <SendButton
           onClick={input.send}
           disabled={!input.canSend}
-          className="absolute bottom-[18px] right-8 size-[60px]"
+          className={`shrink-0 self-end ${s.button}`}
+          iconSize={s.icon}
         />
       </div>
     </div>
