@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Next 16 blocks dev-only assets (HMR, hydration chunks) for any origin
+  // other than localhost. Allow LAN addresses so the dev server can be opened
+  // from a phone on the same network.
+  allowedDevOrigins: ["10.*.*.*", "192.168.*.*", "172.16.*.*", "*.local"],
   async headers() {
     return [
       {

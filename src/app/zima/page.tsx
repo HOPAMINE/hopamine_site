@@ -1,7 +1,6 @@
 import { jetbrainsMono } from "../../../fonts";
-import Globe from "@/components/zima/Globe";
-
-const HOPAMINE_BLUE = "#00a6f3";
+import ZimaScene from "@/components/zima/ZimaScene";
+import { HOPAMINE_BLUE } from "@/components/zima/globePalettes";
 
 export default function ZimaPage() {
   return (
@@ -12,7 +11,7 @@ export default function ZimaPage() {
       >
         zima
       </span>
-      <Globe className="fixed inset-0" />
+      <ZimaScene />
     </div>
   );
 }

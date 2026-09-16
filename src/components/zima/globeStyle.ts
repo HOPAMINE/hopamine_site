@@ -25,13 +25,9 @@ const LABEL_TEXT: ExpressionSpecification = [
   ["get", "name"],
 ];
 
-const LINE: ExpressionSpecification = [
-  "match",
-  ["geometry-type"],
-  ["LineString", "MultiLineString"],
-  true,
-  false,
-];
+// `geometry-type` on vector tiles is only ever Point, LineString or Polygon.
+const LINE: ExpressionSpecification = ["==", ["geometry-type"], "LineString"];
+const POLYGON: ExpressionSpecification = ["==", ["geometry-type"], "Polygon"];
 
 /**
  * Globe style on top of OpenFreeMap's OpenMapTiles vector source, in the
@@ -63,13 +59,7 @@ export function buildGlobeStyle(p: GlobePalette): StyleSpecification {
         type: "fill",
         source: "openmaptiles",
         "source-layer": "park",
-        filter: [
-          "match",
-          ["geometry-type"],
-          ["MultiPolygon", "Polygon"],
-          true,
-          false,
-        ],
+        filter: POLYGON,
         paint: { "fill-color": p.park },
       },
       {
@@ -200,11 +190,12 @@ export function buildGlobeStyle(p: GlobePalette): StyleSpecification {
         type: "fill",
         source: "openmaptiles",
         "source-layer": "building",
-        minzoom: 12,
+        // The tiles carry buildings from zoom 13, so nothing below that can draw.
+        minzoom: 13,
         maxzoom: 14,
         paint: {
           "fill-color": p.building,
-          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 12, 0, 13.5, 1],
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 13.5, 1],
         },
       },
       {

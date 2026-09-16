@@ -27,19 +27,33 @@ export type GlobePalette = {
   halo: string;
 };
 
-/** Tints of Hopamine blue #4FAFF8, darkest to lightest. */
-const B = {
-  900: "#0B3D6B",
-  800: "#1B5E9E",
-  700: "#2A7FD0",
-  600: "#3E9AEC",
-  500: "#4FAFF8",
-  400: "#7CC3FA",
-  300: "#A6D6FB",
-  200: "#CDE7FC",
-  100: "#E6F3FE",
-  50: "#F3F9FF",
+/** Hopamine blue. The one brand colour; everything else here derives from it. */
+export const HOPAMINE_BLUE = "#00A6F3";
+
+/**
+ * Tints and shades of Hopamine blue, darkest to lightest. Lighter steps mix
+ * toward white and darker steps toward black, so every step keeps the brand
+ * hue. Shared by the globe style, the chat panel, and the page chrome.
+ */
+export const BLUE = {
+  900: "#00354E",
+  800: "#005075",
+  600: "#0088C7",
+  500: HOPAMINE_BLUE,
+  400: "#61C8F8",
+  300: "#99DBFA",
+  200: "#C2EAFC",
+  100: "#E0F4FE",
+  50: "#F0FAFE",
 } as const;
+
+/** `#RRGGBB` plus an alpha in [0, 1] as a CSS `rgba()` string. */
+export function withAlpha(hex: string, alpha: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
+
+const B = BLUE;
 
 /** Near-white land, brand blue water, mid-tint buildings, tinted roads. */
 export const GLOBE_PALETTE: GlobePalette = {
