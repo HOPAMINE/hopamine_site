@@ -9,12 +9,20 @@ const HOPAMINE_BLUE = "#00a6f3";
 
 type Chat = ReturnType<typeof useZimaChat>;
 
+export type ZimaFiltersDisplay = "inline" | "hidden" | "collapsible";
+
 type Props = {
   chat: Chat;
   onEnterChatMode: () => void;
   /** `header` = one-line message + send in the top bar. */
   variant: "landing" | "compact" | "header";
   idSuffix?: string;
+  /** Mobile post-search: hide filters until expanded. Desktop uses `inline`. */
+  filtersDisplay?: ZimaFiltersDisplay;
+  filtersExpanded?: boolean;
+  onFiltersExpandedChange?: (expanded: boolean) => void;
+  /** Mobile top bar: omit the three blue tabs above the field. */
+  hideDecorativeBars?: boolean;
 };
 
 export function ZimaComposerFields({
@@ -22,6 +30,10 @@ export function ZimaComposerFields({
   onEnterChatMode,
   variant,
   idSuffix = "",
+  filtersDisplay = "inline",
+  filtersExpanded = false,
+  onFiltersExpandedChange,
+  hideDecorativeBars = false,
 }: Props) {
   const {
     message,
@@ -45,22 +57,28 @@ export function ZimaComposerFields({
     handleKeyDown(event, onEnterChatMode);
   };
 
+  const showFilterStrip =
+    filtersDisplay === "inline" ||
+    (filtersDisplay === "collapsible" && filtersExpanded);
+
   return (
     <div className="w-full">
-      <div className="ml-3 flex gap-[5px]" aria-hidden="true">
-        {[0, 1, 2].map((index) => (
-          <span
-            key={index}
-            className={
-              isCompact
-                ? "h-4 w-14 bg-[#00a6f3]"
-                : isHeader
-                  ? "h-3 w-16 bg-[#00a6f3]"
-                  : "h-[18px] w-20 bg-[#00a6f3]"
-            }
-          />
-        ))}
-      </div>
+      {hideDecorativeBars ? null : (
+        <div className="ml-3 flex gap-[5px]" aria-hidden="true">
+          {[0, 1, 2].map((index) => (
+            <span
+              key={index}
+              className={
+                isCompact
+                  ? "h-4 w-14 bg-[#00a6f3]"
+                  : isHeader
+                    ? "h-3 w-16 bg-[#00a6f3]"
+                    : "h-[18px] w-20 bg-[#00a6f3]"
+              }
+            />
+          ))}
+        </div>
+      )}
       <div>
         <form
           onSubmit={onSubmit}
@@ -142,22 +160,33 @@ export function ZimaComposerFields({
             </div>
           )}
         </form>
-        <div
-          className={`mx-3 bg-[#bbbbbb] ${
-            isHeader ? "px-2 py-2" : isCompact ? "px-2 py-2" : "px-2.5 py-2.5"
-          }`}
-        >
-          <ZimaSearchFilters
-            variant="composer"
-            idSuffix={idSuffix}
-            onPromptChange={(prompt) => {
-              setMessage(prompt);
-              requestAnimationFrame(() => {
-                resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
-              });
-            }}
-          />
-        </div>
+        {filtersDisplay !== "hidden" && showFilterStrip ? (
+          <div
+            className={`mx-3 bg-[#bbbbbb] ${
+              isHeader ? "px-2 py-2" : isCompact ? "px-2 py-2" : "px-2.5 py-2.5"
+            }`}
+          >
+            <ZimaSearchFilters
+              variant="composer"
+              idSuffix={idSuffix}
+              onPromptChange={(prompt) => {
+                setMessage(prompt);
+                requestAnimationFrame(() => {
+                  resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
+                });
+              }}
+            />
+            {filtersDisplay === "collapsible" && onFiltersExpandedChange ? (
+              <button
+                type="button"
+                onClick={() => onFiltersExpandedChange(false)}
+                className={`${jetbrainsMono.className} mt-2 w-full py-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-700 hover:text-neutral-900`}
+              >
+                Done
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

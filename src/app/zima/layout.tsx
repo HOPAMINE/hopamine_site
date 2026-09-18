@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getZimaCanonicalUrl } from "@/lib/zima/domain";
 import { UserGate } from "@/components/UserGate";
 import { Providers } from "../providers";
-import { ZimaAuthButtons } from "./ZimaAuthButtons";
+import { ZimaAppChrome } from "./ZimaAppChrome";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getZimaCanonicalUrl()),
@@ -30,8 +30,7 @@ export default function ZimaLayout({
   return (
     <Providers>
       <UserGate />
-      <ZimaAuthButtons />
-      {children}
+      <ZimaAppChrome>{children}</ZimaAppChrome>
     </Providers>
   );
 }

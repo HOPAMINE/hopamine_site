@@ -15,6 +15,7 @@ import {
 import { jetbrainsMono } from "../../../fonts";
 import { toZimaProfileData } from "./ZimaProfileCard";
 import { ZimaProfileEditModal } from "./ZimaProfileEditModal";
+import { useZimaSearchChrome } from "./ZimaSearchChromeContext";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
@@ -57,7 +58,7 @@ function ZimaChatNavLink() {
     <Link
       href={href}
       aria-label="Messages"
-      className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]"
+      className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-none bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3] md:inline-flex"
       style={{ color: HOPAMINE_BLUE }}
     >
       <ChatNavIcon />
@@ -185,6 +186,7 @@ function ZimaSignedInUser() {
 
 export function ZimaAuthButtons() {
   const { isLoaded, isSignedIn } = useUser();
+  const { hideMobileTopProfile } = useZimaSearchChrome();
 
   if (!isLoaded) {
     return null;
@@ -192,7 +194,10 @@ export function ZimaAuthButtons() {
 
   if (isSignedIn) {
     return (
-      <nav aria-label="Account" className={navClass}>
+      <nav
+        aria-label="Account"
+        className={`${navClass} ${hideMobileTopProfile ? "max-md:hidden" : ""}`}
+      >
         <ZimaChatNavLink />
         <ZimaSignedInUser />
       </nav>
@@ -206,7 +211,10 @@ export function ZimaAuthButtons() {
   const signInHref = getZimaAuthHref("sign-in", zimaRedirect, hostname);
 
   return (
-    <nav aria-label="Account" className={navClass}>
+    <nav
+      aria-label="Account"
+      className={`${navClass} ${hideMobileTopProfile ? "max-md:hidden" : ""}`}
+    >
       <OpeningInNycBadge />
       <Link href={signInHref} className={`${linkBase} text-neutral-900`}>
         Login

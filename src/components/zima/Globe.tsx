@@ -195,80 +195,96 @@ export default function Globe({
     tileLogRef.current = log;
 
     const el = containerRef.current;
-    const map = new MapLibreMap({
-      container: el,
-      style: buildGlobeStyle(palette, styleOptions),
-      center: initialView?.center ?? INITIAL_CENTER,
-      zoom: initialView?.zoom ?? fitGlobeZoom(el, globeFillRef.current),
-      pitch: initialView?.pitch ?? 0,
-      bearing: initialView?.bearing ?? 0,
-      minZoom,
-      maxZoom,
-      maxBounds,
-      attributionControl: false,
-      transformRequest: log?.transformRequest,
-      // TODO: Delete — experiment.
-      maxTileCacheZoomLevels: PRELOAD_CACHE_ZOOM_LEVELS,
-    });
-    mapRef.current = map;
-    setLiveMap(map);
-    if (LOG_FLIGHT_TILES) exposeMapForDebug(map);
+    let cancelled = false;
+    let map: MapLibreMap | null = null;
+    let visibilityObserver: IntersectionObserver | null = null;
+    let stopSpin: () => void = () => {};
+    let stopHoldWatch: () => void = () => {};
 
-    // TODO: Delete — experiment. Once the tile constructors are in hand, warm
-    // the shared cone around warmCenter in the background. Nothing waits on it
-    // except a send that arrives before it finishes.
-    void captureTileConstructors(map).then(() => {
-      const center = warmCenterRef.current;
-      if (mapRef.current !== map || !center) return;
-      const el = map.getContainer();
-      const plan = planSharedTiles(center, el.clientWidth, el.clientHeight);
-      const shared = preloadTiles(map, plan);
-      sharedPreloadRef.current = shared;
-      void shared.done.then((stats) => {
-        if (LOG_FLIGHT_TILES) console.log("[preload shared]", stats);
-      });
-    });
-
-    // The container can be measured at zero on first paint on some mobile
-    // browsers; MapLibre only re-measures on window resize, so watch it directly.
-    const container = containerRef.current;
-    const observer = new ResizeObserver(() => map.resize());
-    observer.observe(container);
-
-    const bumpResize = () => {
-      requestAnimationFrame(() => {
-        map.resize();
-        requestAnimationFrame(() => map.resize());
-      });
+    const resizeIfVisible = () => {
+      if (!map || el.clientWidth < 2 || el.clientHeight < 2) return;
+      map.resize();
     };
-    map.once("load", bumpResize);
-    const visibilityObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) bumpResize();
-      },
-      { threshold: 0.01 },
-    );
-    visibilityObserver.observe(container);
 
-    if (log) map.on("sourcedata", log.onSourceData);
-    const stopSpin = spin
-      ? startSpin(map, () => cancelFlightRef.current !== null)
-      : () => {};
-    const stopHoldWatch = watchMapHold(map, (held) =>
-      onHoldChangeRef.current?.(held),
-    );
+    const mountMap = () => {
+      if (cancelled || map || el.clientWidth < 2 || el.clientHeight < 2) return;
+
+      map = new MapLibreMap({
+        container: el,
+        style: buildGlobeStyle(palette, styleOptions),
+        center: initialView?.center ?? INITIAL_CENTER,
+        zoom: initialView?.zoom ?? fitGlobeZoom(el, globeFillRef.current),
+        pitch: initialView?.pitch ?? 0,
+        bearing: initialView?.bearing ?? 0,
+        minZoom,
+        maxZoom,
+        maxBounds,
+        attributionControl: false,
+        transformRequest: log?.transformRequest,
+        // TODO: Delete — experiment.
+        maxTileCacheZoomLevels: PRELOAD_CACHE_ZOOM_LEVELS,
+      });
+      mapRef.current = map;
+      setLiveMap(map);
+      if (LOG_FLIGHT_TILES) exposeMapForDebug(map);
+
+      const live = map;
+
+      void captureTileConstructors(live).then(() => {
+        const center = warmCenterRef.current;
+        if (mapRef.current !== live || !center) return;
+        const box = live.getContainer();
+        const plan = planSharedTiles(center, box.clientWidth, box.clientHeight);
+        const shared = preloadTiles(live, plan);
+        sharedPreloadRef.current = shared;
+        void shared.done.then((stats) => {
+          if (LOG_FLIGHT_TILES) console.log("[preload shared]", stats);
+        });
+      });
+
+      const bumpResize = () => {
+        requestAnimationFrame(() => {
+          resizeIfVisible();
+          requestAnimationFrame(resizeIfVisible);
+        });
+      };
+      live.once("load", bumpResize);
+      visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) bumpResize();
+        },
+        { threshold: 0.01 },
+      );
+      visibilityObserver.observe(el);
+
+      if (log) live.on("sourcedata", log.onSourceData);
+      stopSpin = spin
+        ? startSpin(live, () => cancelFlightRef.current !== null)
+        : () => {};
+      stopHoldWatch = watchMapHold(live, (held) =>
+        onHoldChangeRef.current?.(held),
+      );
+    };
+
+    const observer = new ResizeObserver(() => {
+      if (!map) mountMap();
+      else resizeIfVisible();
+    });
+    observer.observe(el);
+    mountMap();
 
     return () => {
+      cancelled = true;
       observer.disconnect();
-      visibilityObserver.disconnect();
-      if (log) map.off("sourcedata", log.onSourceData);
+      visibilityObserver?.disconnect();
+      if (log && map) map.off("sourcedata", log.onSourceData);
       tileLogRef.current = null;
       stopSpin();
       stopHoldWatch();
       cancelFlightRef.current?.();
       cancelPreloadRef.current?.();
       sharedPreloadRef.current?.cancel();
-      map.remove();
+      map?.remove();
       mapRef.current = null;
       setLiveMap(null);
     };
@@ -276,10 +292,15 @@ export default function Globe({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
-    requestAnimationFrame(() => {
+    const container = containerRef.current;
+    if (!map || !container) return;
+    const resizeIfVisible = () => {
+      if (container.clientWidth < 2 || container.clientHeight < 2) return;
       map.resize();
-      requestAnimationFrame(() => map.resize());
+    };
+    requestAnimationFrame(() => {
+      resizeIfVisible();
+      requestAnimationFrame(resizeIfVisible);
     });
   }, [layoutKey, liveMap]);
 

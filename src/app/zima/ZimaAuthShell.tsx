@@ -9,6 +9,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { ZimaLogo } from "./ZimaLogo";
+import { ZIMA_FIXED_LOGO_POSITION } from "./zimaLogoPlacement";
 
 type ZimaAuthAlertContextValue = {
   setAlert: (alert: ReactNode | null) => void;
@@ -51,7 +52,7 @@ export function ZimaAuthShell({
       >
         <ZimaLogo
           priority
-          className="fixed left-[max(20px,env(safe-area-inset-left))] top-[max(20px,env(safe-area-inset-top))] z-10"
+          className={`${ZIMA_FIXED_LOGO_POSITION} z-10`}
         />
         {artImageSrc ? (
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3">
