@@ -3,7 +3,7 @@ import {
   joinArchetypeList,
   type ArchetypeId,
 } from "@/lib/archetypes";
-import { getUniversityById } from "@/lib/zima/nycUniversities";
+// import { getUniversityById } from "@/lib/zima/nycUniversities";
 
 export type ZimaSearchToggleId = "organizations" | "builders";
 
@@ -55,12 +55,12 @@ export function buildSearchPromptFromFilters(
     segments.push(`aged ${filters.ageRange.min}–${filters.ageRange.max}`);
   }
 
-  if (filters.universityId) {
-    const school = getUniversityById(filters.universityId);
-    if (school) {
-      segments.push(`at ${school.name}`);
-    }
-  }
+  // if (filters.universityId) {
+  //   const school = getUniversityById(filters.universityId);
+  //   if (school) {
+  //     segments.push(`at ${school.name}`);
+  //   }
+  // }
 
   if (filters.proximity) {
     segments.push(`within ${filters.proximity}`);

@@ -7,10 +7,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  NYC_UNIVERSITIES,
-  getUniversityById,
-} from "@/lib/zima/nycUniversities";
+// University filter — hidden for now
+// import {
+//   NYC_UNIVERSITIES,
+//   getUniversityById,
+// } from "@/lib/zima/nycUniversities";
 import { ARCHETYPE_BADGES, type ArchetypeId } from "@/lib/archetypes";
 import { buildSearchPromptFromFilters } from "@/lib/zima/searchPrompt";
 import { jetbrainsMono } from "../../../fonts";
@@ -102,18 +103,18 @@ export function ZimaSearchFilters({
   const [ageDraftMin, setAgeDraftMin] = useState(MIN_AGE_FLOOR);
   const [ageDraftMax, setAgeDraftMax] = useState(MAX_AGE_CEILING);
   const [cityNyc, setCityNyc] = useState(true);
-  const [universityId, setUniversityId] = useState<string | null>(null);
-  const [universityQuery, setUniversityQuery] = useState("");
+  // const [universityId, setUniversityId] = useState<string | null>(null);
+  // const [universityQuery, setUniversityQuery] = useState("");
   const [interestsOpen, setInterestsOpen] = useState(false);
   const [archetypesOpen, setArchetypesOpen] = useState(false);
   const [ageOpen, setAgeOpen] = useState(false);
-  const [universityOpen, setUniversityOpen] = useState(false);
+  // const [universityOpen, setUniversityOpen] = useState(false);
 
   const interestsPanelId = useId();
   const archetypesPanelId = useId();
   const agePanelId = useId();
-  const universityPanelId = useId();
-  const universitySearchId = useId();
+  // const universityPanelId = useId();
+  // const universitySearchId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const inComposer = variant === "composer";
 
@@ -124,19 +125,19 @@ export function ZimaSearchFilters({
       setInterestsOpen(false);
       setArchetypesOpen(false);
       setAgeOpen(false);
-      setUniversityOpen(false);
+      // setUniversityOpen(false);
     }
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
   function closeOtherPopovers(
-    except?: "age" | "interests" | "archetypes" | "university",
+    except?: "age" | "interests" | "archetypes",
   ) {
     if (except !== "age") setAgeOpen(false);
     if (except !== "interests") setInterestsOpen(false);
     if (except !== "archetypes") setArchetypesOpen(false);
-    if (except !== "university") setUniversityOpen(false);
+    // if (except !== "university") setUniversityOpen(false);
   }
 
   useEffect(() => {
@@ -149,7 +150,7 @@ export function ZimaSearchFilters({
         activeOnly,
         proximity: null,
         ageRange,
-        universityId,
+        universityId: null,
         cityNyc,
       }),
     );
@@ -160,7 +161,6 @@ export function ZimaSearchFilters({
     interests,
     activeOnly,
     ageRange,
-    universityId,
     cityNyc,
   ]);
 
@@ -234,17 +234,17 @@ export function ZimaSearchFilters({
         : "Archetypes";
   const ageOn = ageRange !== null;
   const ageLabel = ageRange ? `${ageRange.min}–${ageRange.max}` : "Age";
-  const selectedUniversity = universityId
-    ? getUniversityById(universityId)
-    : undefined;
-  const universityOn = universityId !== null;
-  const universityButtonLabel = selectedUniversity?.name ?? "University";
-
-  const universityMatches = NYC_UNIVERSITIES.filter((school) => {
-    const q = universityQuery.trim().toLowerCase();
-    if (!q) return true;
-    return school.name.toLowerCase().includes(q);
-  });
+  // const selectedUniversity = universityId
+  //   ? getUniversityById(universityId)
+  //   : undefined;
+  // const universityOn = universityId !== null;
+  // const universityButtonLabel = selectedUniversity?.name ?? "University";
+  //
+  // const universityMatches = NYC_UNIVERSITIES.filter((school) => {
+  //   const q = universityQuery.trim().toLowerCase();
+  //   if (!q) return true;
+  //   return school.name.toLowerCase().includes(q);
+  // });
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>
@@ -374,101 +374,7 @@ export function ZimaSearchFilters({
           ) : null}
         </div>
 
-        <div className="relative">
-          <FilterButton
-            label={universityButtonLabel}
-            isOn={universityOn}
-            ariaExpanded={universityOpen}
-            ariaControls={universityPanelId}
-            onClick={() => {
-              closeOtherPopovers("university");
-              setUniversityOpen((open) => {
-                if (!open) setUniversityQuery("");
-                return !open;
-              });
-            }}
-          />
-          {universityOpen ? (
-            <div
-              id={universityPanelId}
-              role="dialog"
-              aria-label="Choose university"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(32rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
-              onMouseDown={(event) => event.stopPropagation()}
-            >
-              <label
-                htmlFor={`${universitySearchId}${idSuffix}`}
-                className={`${jetbrainsMono.className} mb-2 block text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
-              >
-                University
-              </label>
-              <input
-                id={`${universitySearchId}${idSuffix}`}
-                type="search"
-                value={universityQuery}
-                onChange={(event) => setUniversityQuery(event.target.value)}
-                placeholder="Search schools…"
-                className={`${jetbrainsMono.className} mb-2 w-full bg-neutral-200 px-2 py-1.5 text-[11px] text-neutral-900 outline-none placeholder:text-neutral-500 focus:ring-1 focus:ring-[#00a6f3]`}
-              />
-              <ul
-                className="max-h-48 overflow-y-auto border border-neutral-200"
-                role="listbox"
-                aria-label="Universities in NYC"
-              >
-                {universityMatches.length === 0 ? (
-                  <li
-                    className={`${jetbrainsMono.className} px-3 py-2 text-[10px] text-neutral-500`}
-                  >
-                    No matches
-                  </li>
-                ) : (
-                  universityMatches.map((school) => {
-                    const selected = universityId === school.id;
-                    return (
-                      <li key={school.id}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={selected}
-                          onClick={() => {
-                            setUniversityId(school.id);
-                            setUniversityOpen(false);
-                            setUniversityQuery("");
-                          }}
-                          className={`${jetbrainsMono.className} block w-full px-3 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide transition-colors ${
-                            selected
-                              ? "text-white"
-                              : "text-neutral-800 hover:bg-neutral-100"
-                          }`}
-                          style={
-                            selected
-                              ? { backgroundColor: HOPAMINE_BLUE }
-                              : undefined
-                          }
-                        >
-                          {school.name}
-                        </button>
-                      </li>
-                    );
-                  })
-                )}
-              </ul>
-              {universityOn ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUniversityId(null);
-                    setUniversityOpen(false);
-                    setUniversityQuery("");
-                  }}
-                  className={`${jetbrainsMono.className} mt-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-600 hover:text-neutral-900`}
-                >
-                  Clear
-                </button>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+        {/* University filter — hidden for now (state, import, and popover commented above). */}
 
         <div className="relative">
           <FilterButton

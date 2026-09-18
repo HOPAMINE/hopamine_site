@@ -27,7 +27,7 @@ export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
 
       <div className="flex min-h-0 flex-1 gap-6 px-6 pb-6 pt-4">
         <aside
-          className="flex w-[min(100%,640px)] shrink-0 flex-col gap-5 overflow-y-auto pr-1 xl:w-[min(100%,720px)]"
+          className="flex min-w-0 max-w-[50%] basis-1/2 flex-col gap-5 overflow-y-auto pr-1"
           aria-label="Search results"
         >
           {selectedProfile ? (
@@ -46,7 +46,7 @@ export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
 
         <section
           aria-label="Map"
-          className="relative min-h-0 min-w-0 flex-1 overflow-hidden rounded-3xl border border-neutral-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+          className="relative min-h-0 min-w-[50%] flex-1 basis-1/2 overflow-hidden rounded-3xl border border-neutral-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
         >
           <ZimaSearchMap
             showPins
