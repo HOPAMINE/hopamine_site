@@ -84,3 +84,18 @@ export const NATURAL_MAP_PALETTE: GlobePalette = {
   text: "#4a4a4a",
   halo: "#ffffff",
 };
+
+/** Lighter natural palette for the full-page spinning globe (landing). */
+export const NATURAL_GLOBE_PALETTE: GlobePalette = {
+  land: "#ffffff",
+  water: "#c8dff2",
+  ice: "#ffffff",
+  park: "#d4ecd0",
+  building: "#eceae4",
+  roadMinor: "#ffffff",
+  roadMajor: "#fffce8",
+  motorway: "#fae8a8",
+  border: "#e3e0d8",
+  text: "#7a7a7a",
+  halo: "#ffffff",
+};

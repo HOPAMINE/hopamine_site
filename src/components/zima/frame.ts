@@ -17,5 +17,15 @@ export const BELOW_MOBILE_HEADER = "top-[calc(56px+env(safe-area-inset-top))]";
  */
 export const FRAME_INSETS = `fixed inset-x-0 ${BELOW_MOBILE_HEADER} bottom-0 md:inset-x-6 md:top-[86px] md:bottom-8`;
 
+/** Landing globe: smaller page margin so the sphere reads larger on desktop. */
+export const GLOBE_BACKDROP_INSETS = `fixed inset-x-0 ${BELOW_MOBILE_HEADER} bottom-0 md:inset-x-2 md:top-[60px] md:bottom-3`;
+
+/** /search landing: globe fills under the logo and auth row (transparent top chrome). */
+export const GLOBE_SEARCH_LANDING_INSETS =
+  "fixed inset-x-0 top-0 bottom-0 md:inset-x-2 md:top-0 md:bottom-3";
+
 /** Square on mobile, where the map fills the screen; rounded inside the desktop border. */
 export const FRAME_RADIUS = "md:rounded-3xl";
+
+/** /search landing: flush to top; round only the bottom so the sphere isn't clipped up top. */
+export const GLOBE_SEARCH_LANDING_RADIUS = "md:rounded-b-3xl md:rounded-t-none";

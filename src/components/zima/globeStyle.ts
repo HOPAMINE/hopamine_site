@@ -43,6 +43,8 @@ export type GlobeStyleOptions = {
   projection?: "globe" | "mercator";
   /** Greener landcover fills and full-opacity labels at low zoom. */
   natural?: boolean;
+  /** Viewport light intensity for 3D extrusions. @default 0.25 */
+  lightIntensity?: number;
 };
 
 export function buildGlobeStyle(
@@ -50,11 +52,12 @@ export function buildGlobeStyle(
   options: GlobeStyleOptions = {},
 ): StyleSpecification {
   const useGlobe = (options.projection ?? "globe") === "globe";
+  const lightIntensity = options.lightIntensity ?? 0.25;
 
   return {
     version: 8,
     // Soft light so extruded building walls stay tinted instead of going grey.
-    light: { anchor: "viewport", color: "#FFFFFF", intensity: 0.25 },
+    light: { anchor: "viewport", color: "#FFFFFF", intensity: lightIntensity },
     ...(useGlobe ? { projection: { type: "globe" } } : {}),
     glyphs: `${OPENFREEMAP_TILES}/fonts/{fontstack}/{range}.pbf`,
     sources: {

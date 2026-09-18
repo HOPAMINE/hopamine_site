@@ -1,28 +1,22 @@
 import {
-  ARCHETYPE_BADGES,
+  archetypeLabelById,
   joinArchetypeList,
   type ArchetypeId,
 } from "@/lib/archetypes";
 // import { getUniversityById } from "@/lib/zima/nycUniversities";
 
-export type ZimaSearchToggleId = "organizations" | "builders";
+export type ZimaSearchToggleId = "builders";
 
 export type ZimaSearchFilterSnapshot = {
   toggles: Set<ZimaSearchToggleId>;
   archetypes: Set<ArchetypeId>;
   interests: Set<string>;
+  organizationTypes: Set<string>;
   activeOnly: boolean;
   proximity: string | null;
-  ageRange: { min: number; max: number } | null;
   universityId: string | null;
   cityNyc: boolean;
 };
-
-function archetypeLabel(id: ArchetypeId): string {
-  const badge = ARCHETYPE_BADGES.find((entry) => entry.id === id);
-  if (!badge) return id;
-  return badge.title.replace(/^THE\s+/i, "").toLowerCase();
-}
 
 /** Natural-language search text derived from the current filter chips. */
 export function buildSearchPromptFromFilters(
@@ -33,7 +27,12 @@ export function buildSearchPromptFromFilters(
 
   const kinds: string[] = [];
   if (filters.toggles.has("builders")) kinds.push("builders");
-  if (filters.toggles.has("organizations")) kinds.push("organizations");
+  if (filters.organizationTypes.size > 0) {
+    const items = [...filters.organizationTypes].map((item) =>
+      item.toLowerCase(),
+    );
+    kinds.push(`${joinArchetypeList(items)} organizations`);
+  }
 
   if (kinds.length === 1) {
     segments.push(kinds[0]!);
@@ -42,17 +41,15 @@ export function buildSearchPromptFromFilters(
   }
 
   if (filters.archetypes.size > 0) {
-    const names = [...filters.archetypes].map(archetypeLabel);
+    const names = [...filters.archetypes].map((id) =>
+      archetypeLabelById(id).toLowerCase(),
+    );
     segments.push(`${joinArchetypeList(names)} archetypes`);
   }
 
   if (filters.interests.size > 0) {
     const items = [...filters.interests].map((item) => item.toLowerCase());
     segments.push(`into ${joinArchetypeList(items)}`);
-  }
-
-  if (filters.ageRange) {
-    segments.push(`aged ${filters.ageRange.min}–${filters.ageRange.max}`);
   }
 
   // if (filters.universityId) {
@@ -67,7 +64,7 @@ export function buildSearchPromptFromFilters(
   }
 
   if (filters.activeOnly) {
-    segments.push("active now");
+    segments.push("active recently");
   }
 
   if (segments.length === 0) {

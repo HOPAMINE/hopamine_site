@@ -32,7 +32,7 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
   }
 
   return (
-    <div className="relative z-10 flex min-h-dvh flex-col bg-white">
+    <div className="relative z-10 flex min-h-dvh flex-col">
       <div
         className="flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-8 pt-[max(80px,env(safe-area-inset-top))]"
       >

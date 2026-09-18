@@ -98,6 +98,11 @@ type GlobeProps = {
   onHoldChange?: (held: boolean) => void;
   /** When this changes, the map runs `resize()` after layout settles. */
   layoutKey?: string | number | boolean;
+  /**
+   * How much of the frame the sphere should fill on load (see `fitGlobeZoom`).
+   * @default 0.9
+   */
+  globeFill?: number;
 };
 
 /** MapLibre globe that fills its wrapper. Camera behaviour lives in camera.ts. */
@@ -114,10 +119,13 @@ export default function Globe({
   warmCenter,
   onHoldChange,
   layoutKey,
+  globeFill = 0.9,
   children,
 }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const globeFillRef = useRef(globeFill);
+  globeFillRef.current = globeFill;
   const [liveMap, setLiveMap] = useState<MapLibreMap | null>(null);
   const cancelFlightRef = useRef<(() => void) | null>(null);
   const tileLogRef = useRef<TileLog | null>(null);
@@ -148,7 +156,7 @@ export default function Globe({
         log?.begin(`flyTo ${label}`);
         const cancel = flyToView(map, view, {
           ...opts,
-          spinZoom: fitGlobeZoom(map.getContainer()),
+          spinZoom: fitGlobeZoom(map.getContainer(), globeFillRef.current),
           onDone: (landed) => {
             if (cancelFlightRef.current === cancel)
               cancelFlightRef.current = null;
@@ -191,7 +199,7 @@ export default function Globe({
       container: el,
       style: buildGlobeStyle(palette, styleOptions),
       center: initialView?.center ?? INITIAL_CENTER,
-      zoom: initialView?.zoom ?? fitGlobeZoom(el),
+      zoom: initialView?.zoom ?? fitGlobeZoom(el, globeFillRef.current),
       pitch: initialView?.pitch ?? 0,
       bearing: initialView?.bearing ?? 0,
       minZoom,
@@ -280,7 +288,7 @@ export default function Globe({
   // the wrapper and let MapLibre own the inner element.
   return (
     <div className={className}>
-      <div ref={containerRef} className="h-full w-full" />
+      <div ref={containerRef} className="h-full w-full bg-white" />
       <MapContext.Provider value={liveMap}>
         {liveMap && children}
       </MapContext.Provider>
