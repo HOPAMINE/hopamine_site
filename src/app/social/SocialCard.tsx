@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { jetbrainsMono, newsreader, robotoMono, sortsMillGoudy } from "../../../fonts";
 import type { SocialProfile } from "@/lib/social/nycProfiles";
 
@@ -57,6 +58,12 @@ function TagPills({
 type SocialCardProps = {
   profile: SocialProfile;
   theme?: SocialCardTheme;
+  /** Narrow list row for search results (avatar beside copy, not a full square). */
+  compact?: boolean;
+  /** Rendered inside the card (e.g. Message on Zima search). */
+  footer?: ReactNode;
+  /** Makes the main card body a button (footer stays separate for links). */
+  onPress?: () => void;
 };
 
 function getFonts(theme: SocialCardTheme) {
@@ -65,8 +72,99 @@ function getFonts(theme: SocialCardTheme) {
     : { display: sortsMillGoudy, mono: robotoMono };
 }
 
-export function SocialCard({ profile, theme = "portal" }: SocialCardProps) {
+function CardFooter({ footer }: { footer: ReactNode }) {
+  return (
+    <div className="border-t border-neutral-300/70 bg-neutral-200 px-3 py-2.5">
+      {footer}
+    </div>
+  );
+}
+
+function CardBody({
+  onPress,
+  className,
+  children,
+}: {
+  onPress?: () => void;
+  className: string;
+  children: ReactNode;
+}) {
+  if (onPress) {
+    return (
+      <button
+        type="button"
+        onClick={onPress}
+        className={`${className} block w-full min-w-0 border-0 bg-transparent p-0 text-left`}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  return <div className={className}>{children}</div>;
+}
+
+export function SocialCard({
+  profile,
+  theme = "portal",
+  compact = false,
+  footer,
+  onPress,
+}: SocialCardProps) {
   const fonts = getFonts(theme);
+
+  if (compact) {
+    return (
+      <article className="flex min-w-0 flex-col overflow-hidden bg-neutral-200">
+        <CardBody
+          onPress={onPress}
+          className="flex min-w-0 overflow-hidden"
+        >
+          <div className="relative size-[88px] shrink-0 bg-neutral-100 sm:size-[104px]">
+            <Image
+              src={profile.avatarUrl}
+              alt=""
+              fill
+              sizes="104px"
+              className="object-cover"
+              style={{ imageRendering: "pixelated" }}
+            />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-2 px-3 py-3">
+            <div>
+              <h3
+                className={`${fonts.display.className} wrap-break-word text-[1.15rem] leading-snug tracking-[-0.03em] text-neutral-900`}
+              >
+                {profile.name}
+              </h3>
+              <p
+                className={`${fonts.mono.className} mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-700`}
+              >
+                {profile.taglines.join(", ")}
+              </p>
+              <p
+                className={`${fonts.mono.className} mt-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-600`}
+              >
+                {profile.location}
+              </p>
+            </div>
+            <p
+              className={`${fonts.mono.className} line-clamp-3 text-[11px] leading-relaxed text-neutral-700`}
+            >
+              {profile.bio}
+            </p>
+            <TagPills
+              label="Interests"
+              items={profile.interests.slice(0, 3)}
+              monoClassName={fonts.mono.className}
+              colorOffset={0}
+            />
+          </div>
+        </CardBody>
+        {footer ? <CardFooter footer={footer} /> : null}
+      </article>
+    );
+  }
 
   return (
     <article className="flex min-w-0 flex-col overflow-hidden rounded-none border-0 bg-neutral-100">
@@ -81,7 +179,10 @@ export function SocialCard({ profile, theme = "portal" }: SocialCardProps) {
         />
       </div>
 
-      <div className="flex flex-grow flex-col gap-4 bg-neutral-200 px-4 py-4">
+      <CardBody
+        onPress={onPress}
+        className="flex flex-grow flex-col gap-4 bg-neutral-200 px-4 py-4"
+      >
         <div>
           <h3
             className={`${fonts.display.className} wrap-break-word text-[1.35rem] leading-snug tracking-[-0.03em] text-neutral-900`}
@@ -116,7 +217,8 @@ export function SocialCard({ profile, theme = "portal" }: SocialCardProps) {
           monoClassName={fonts.mono.className}
           colorOffset={3}
         />
-      </div>
+      </CardBody>
+      {footer ? <CardFooter footer={footer} /> : null}
     </article>
   );
 }

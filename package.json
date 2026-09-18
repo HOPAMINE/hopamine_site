@@ -8,7 +8,8 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:convex\"",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "node scripts/copy-maplibre-worker.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.4",
@@ -18,11 +19,13 @@
     "framer-motion": "^12.40.0",
     "html-to-image": "^1.11.13",
     "lottie-react": "^2.4.1",
+    "maplibre-gl": "^6.9.0",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-chrono": "^3.3.3",
     "react-dom": "19.2.4",
     "react-qr-code": "^2.2.0",
+    "thinking-orbs": "^0.3.1",
     "unicornstudio-react": "^2.1.9",
     "use-places-autocomplete": "^4.0.1"
   },

@@ -10,6 +10,8 @@ function isZimaSitePath(pathname: string): boolean {
     pathname.startsWith("/profile") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/social") ||
+    pathname.startsWith("/chats") ||
+    pathname.startsWith("/search") ||
     pathname.startsWith("/api/zima") ||
     pathname.startsWith("/sso-callback") ||
     pathname.startsWith("/zima/") ||
@@ -72,6 +74,18 @@ function handleZimaRouting(req: NextRequest): NextResponse | null {
       return NextResponse.rewrite(url);
     }
 
+    if (pathname === "/search" || pathname.startsWith("/search/")) {
+      const url = req.nextUrl.clone();
+      url.pathname = pathname.replace(/^\/search/, "/zima/search");
+      return NextResponse.rewrite(url);
+    }
+
+    if (pathname === "/chats" || pathname.startsWith("/chats/")) {
+      const url = req.nextUrl.clone();
+      url.pathname = pathname.replace(/^\/chats/, "/zima/chats");
+      return NextResponse.rewrite(url);
+    }
+
     return null;
   }
 
@@ -102,6 +116,7 @@ const isPublicRoute = createRouteMatcher([
   "/sso-callback(.*)",
   "/profile-compare(.*)",
   "/zima",
+  "/zima/search(.*)",
   "/zima/sign-in(.*)",
   "/zima/sign-up(.*)",
   "/api/zima(.*)",
@@ -151,7 +166,8 @@ export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req) && !userId) {
     if (
       req.nextUrl.pathname.startsWith("/zima/profile") ||
-      req.nextUrl.pathname.startsWith("/zima/settings")
+      req.nextUrl.pathname.startsWith("/zima/settings") ||
+      req.nextUrl.pathname.startsWith("/zima/chats")
     ) {
       return NextResponse.redirect(getZimaSignInRedirect(req));
     }

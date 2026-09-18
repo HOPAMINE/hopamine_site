@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Next 16 blocks dev-only assets for non-localhost origins; allow LAN testing.
+  allowedDevOrigins: ["10.*.*.*", "192.168.*.*", "172.16.*.*", "*.local"],
   async headers() {
     return [
       {

@@ -11,7 +11,7 @@ export function ZimaPageClient() {
     <div className="relative min-h-dvh bg-white">
       <ZimaLogo
         priority
-        className="fixed left-[max(20px,env(safe-area-inset-left))] top-[max(20px,env(safe-area-inset-top))] z-10"
+        className="fixed left-[max(20px,env(safe-area-inset-left))] top-[max(20px,env(safe-area-inset-top))] z-30"
         linked={!isChatMode}
         onClick={isChatMode ? () => setIsChatMode(false) : undefined}
       />

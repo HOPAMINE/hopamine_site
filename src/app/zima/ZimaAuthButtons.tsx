@@ -9,6 +9,7 @@ import { api } from "../../../convex/_generated/api";
 import {
   getZimaAuthHref,
   getZimaAuthPath,
+  getZimaPath,
   getZimaPostAuthRedirect,
 } from "@/lib/zima/routes";
 import { jetbrainsMono } from "../../../fonts";
@@ -18,7 +19,7 @@ import { ZimaProfileEditModal } from "./ZimaProfileEditModal";
 const HOPAMINE_BLUE = "#00a6f3";
 
 const navClass =
-  "fixed right-[max(20px,env(safe-area-inset-right))] top-[max(20px,env(safe-area-inset-top))] z-10 flex items-center gap-2";
+  "fixed right-[max(20px,env(safe-area-inset-right))] top-[max(20px,env(safe-area-inset-top))] z-30 flex items-center gap-2";
 
 const linkBase = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-none px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`;
 
@@ -28,6 +29,40 @@ const openingBadgeClass = `${jetbrainsMono.className} inline-flex items-center j
 
 function OpeningInNycBadge() {
   return <p className={openingBadgeClass}>Opening in NYC</p>;
+}
+
+function ChatNavIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+    >
+      <path d="M4 5h16v11H7l-3 3V5z" />
+    </svg>
+  );
+}
+
+function ZimaChatNavLink() {
+  const hostname =
+    typeof window === "undefined" ? "" : window.location.hostname;
+  const href = getZimaPath("chats", hostname);
+
+  return (
+    <Link
+      href={href}
+      aria-label="Messages"
+      className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]"
+      style={{ color: HOPAMINE_BLUE }}
+    >
+      <ChatNavIcon />
+    </Link>
+  );
 }
 
 function ZimaSignedInUser() {
@@ -158,7 +193,7 @@ export function ZimaAuthButtons() {
   if (isSignedIn) {
     return (
       <nav aria-label="Account" className={navClass}>
-        <OpeningInNycBadge />
+        <ZimaChatNavLink />
         <ZimaSignedInUser />
       </nav>
     );

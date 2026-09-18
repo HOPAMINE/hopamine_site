@@ -6,15 +6,21 @@ export type ZimaAuthSegment =
   | "profile"
   | "settings";
 
-export function getZimaAuthPath(
-  segment: ZimaAuthSegment,
-  hostname = "",
-): string {
+export type ZimaAppSegment = ZimaAuthSegment | "chats" | "search" | "social";
+
+export function getZimaPath(segment: ZimaAppSegment, hostname = ""): string {
   if (hostname && isZimaHost(hostname)) {
     return `/${segment}`;
   }
 
   return `/zima/${segment}`;
+}
+
+export function getZimaAuthPath(
+  segment: ZimaAuthSegment,
+  hostname = "",
+): string {
+  return getZimaPath(segment, hostname);
 }
 
 export function getZimaAuthHref(
