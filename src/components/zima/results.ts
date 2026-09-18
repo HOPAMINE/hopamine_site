@@ -14,7 +14,7 @@ export const RESULTS: MapResult[] = [
     id: "jonathan",
     kind: "person",
     name: "Jonathan",
-    description: "Building Zima and Hopamine from Hudson Yards.",
+    description: "Hopamine founder connecting climate builders in NYC.",
     lng: -73.9993,
     lat: 40.7555,
     avatarUrl:
@@ -24,7 +24,7 @@ export const RESULTS: MapResult[] = [
     id: "vishav",
     kind: "person",
     name: "Vishav",
-    description: "Solar co-op organiser in Chelsea.",
+    description: "Building Saga and Zima for Hopamine from Chelsea.",
     lng: -74.0031,
     lat: 40.7464,
     avatarUrl:

@@ -2,6 +2,8 @@ export type SocialProfile = {
   id: string;
   name: string;
   bio: string;
+  /** Present-tense activity shown on cards, e.g. "Working on Saga." */
+  rightNow?: string;
   location: string;
   taglines: [string, string, string];
   interests: string[];

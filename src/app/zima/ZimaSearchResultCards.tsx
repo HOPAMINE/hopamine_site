@@ -8,14 +8,25 @@ import { ZimaSearchMessageButton } from "./ZimaSearchMessageButton";
 type Props = {
   selectedResultId?: string | null;
   onSelectResult?: (id: string) => void;
+  /** Desktop left bar: two builders/orgs per row. */
+  columns?: 1 | 2;
 };
 
 export function ZimaSearchResultCards({
   selectedResultId,
   onSelectResult,
+  columns = 1,
 }: Props) {
+  const twoColumn = columns === 2;
+
   return (
-    <ul className="flex flex-col gap-4">
+    <ul
+      className={
+        twoColumn
+          ? "grid grid-cols-2 gap-3"
+          : "flex flex-col gap-4"
+      }
+    >
       {RESULTS.map((result) => {
         const profile = getProfileForMapResult(result);
         const isSelected = selectedResultId === result.id;
@@ -31,6 +42,7 @@ export function ZimaSearchResultCards({
                 profile={profile}
                 theme="zima"
                 compact
+                compactGrid={twoColumn}
                 onPress={
                   onSelectResult
                     ? () => onSelectResult(result.id)

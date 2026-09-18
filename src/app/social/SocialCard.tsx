@@ -60,6 +60,8 @@ type SocialCardProps = {
   theme?: SocialCardTheme;
   /** Narrow list row for search results (avatar beside copy, not a full square). */
   compact?: boolean;
+  /** Stacked tile for multi-column search grids (use with `compact`). */
+  compactGrid?: boolean;
   /** Rendered inside the card (e.g. Message on Zima search). */
   footer?: ReactNode;
   /** Makes the main card body a button (footer stays separate for links). */
@@ -77,6 +79,25 @@ function CardFooter({ footer }: { footer: ReactNode }) {
     <div className="border-t border-neutral-300/70 bg-neutral-200 px-3 py-2.5">
       {footer}
     </div>
+  );
+}
+
+function ProfileRightNow({
+  text,
+  monoClassName,
+  className = "",
+}: {
+  text: string;
+  monoClassName: string;
+  className?: string;
+}) {
+  return (
+    <p
+      className={`${monoClassName} text-[10px] leading-relaxed text-neutral-800 ${className}`}
+    >
+      <span className="font-semibold text-neutral-600">Right now: </span>
+      {text}
+    </p>
   );
 }
 
@@ -108,10 +129,59 @@ export function SocialCard({
   profile,
   theme = "portal",
   compact = false,
+  compactGrid = false,
   footer,
   onPress,
 }: SocialCardProps) {
   const fonts = getFonts(theme);
+
+  if (compact && compactGrid) {
+    return (
+      <article className="flex h-full min-w-0 flex-col overflow-hidden bg-neutral-200">
+        <CardBody
+          onPress={onPress}
+          className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 px-2.5 py-2.5"
+        >
+          <div className="flex min-w-0 items-start gap-2">
+            <div className="relative size-11 shrink-0 bg-neutral-100">
+              <Image
+                src={profile.avatarUrl}
+                alt=""
+                fill
+                sizes="44px"
+                className="object-cover"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3
+                className={`${fonts.display.className} text-[1.2rem] leading-snug tracking-[-0.03em] text-neutral-900 sm:text-[1.35rem]`}
+              >
+                {profile.name}
+              </h3>
+              <p
+                className={`${fonts.mono.className} mt-0.5 line-clamp-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-700`}
+              >
+                {profile.taglines.join(", ")}
+              </p>
+            </div>
+          </div>
+          <p
+            className={`${fonts.mono.className} line-clamp-6 text-[10px] leading-relaxed text-neutral-700`}
+          >
+            {profile.bio}
+          </p>
+          {profile.rightNow ? (
+            <ProfileRightNow
+              text={profile.rightNow}
+              monoClassName={fonts.mono.className}
+            />
+          ) : null}
+        </CardBody>
+        {footer ? <CardFooter footer={footer} /> : null}
+      </article>
+    );
+  }
 
   if (compact) {
     return (
@@ -149,10 +219,16 @@ export function SocialCard({
               </p>
             </div>
             <p
-              className={`${fonts.mono.className} line-clamp-3 text-[11px] leading-relaxed text-neutral-700`}
+              className={`${fonts.mono.className} line-clamp-4 text-[11px] leading-relaxed text-neutral-700`}
             >
               {profile.bio}
             </p>
+            {profile.rightNow ? (
+              <ProfileRightNow
+                text={profile.rightNow}
+                monoClassName={fonts.mono.className}
+              />
+            ) : null}
             <TagPills
               label="Interests"
               items={profile.interests.slice(0, 3)}
@@ -204,6 +280,14 @@ export function SocialCard({
         <p className={`${fonts.mono.className} text-[12px] leading-relaxed text-neutral-700`}>
           {profile.bio}
         </p>
+
+        {profile.rightNow ? (
+          <ProfileRightNow
+            text={profile.rightNow}
+            monoClassName={fonts.mono.className}
+            className="text-[11px]"
+          />
+        ) : null}
 
         <TagPills
           label="Interests"

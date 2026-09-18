@@ -3,7 +3,6 @@
 import { useState } from "react";
 import ZimaSearchMap from "@/components/zima/ZimaSearchMap";
 import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
-import { newsreader } from "../../../fonts";
 import { ZimaSearchHeader } from "./ZimaSearchHeader";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaSearchResultCards } from "./ZimaSearchResultCards";
@@ -28,17 +27,9 @@ export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
 
       <div className="flex min-h-0 flex-1 gap-6 px-6 pb-6 pt-4">
         <aside
-          className="flex w-[min(100%,360px)] shrink-0 flex-col gap-5 overflow-y-auto pr-1"
+          className="flex w-[min(100%,640px)] shrink-0 flex-col gap-5 overflow-y-auto pr-1 xl:w-[min(100%,720px)]"
           aria-label="Search results"
         >
-          {chat.searchHeadline ? (
-            <h1
-              className={`${newsreader.className} text-[32px] font-normal leading-[1.12] tracking-[-0.02em] text-[#00a6f3]`}
-            >
-              {chat.searchHeadline}
-            </h1>
-          ) : null}
-
           {selectedProfile ? (
             <ZimaSearchProfilePanel
               profile={selectedProfile}
@@ -46,6 +37,7 @@ export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
             />
           ) : (
             <ZimaSearchResultCards
+              columns={2}
               selectedResultId={selectedResultId}
               onSelectResult={setSelectedResultId}
             />

@@ -1,7 +1,6 @@
 "use client";
 
 import { ZimaComposerFields } from "./ZimaComposerFields";
-import { ZimaSearchFilters } from "./ZimaSearchFilters";
 import type { useZimaChat } from "./useZimaChat";
 
 type Chat = ReturnType<typeof useZimaChat>;
@@ -26,7 +25,6 @@ export function ZimaSearchHeader({ chat, onFirstSend }: Props) {
             variant="header"
             idSuffix="-header"
           />
-          {chat.searchHeadline ? <ZimaSearchFilters /> : null}
         </div>
       </div>
     </header>

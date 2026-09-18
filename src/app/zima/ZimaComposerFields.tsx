@@ -2,6 +2,7 @@
 
 import { type FormEvent, type KeyboardEvent } from "react";
 import { jetbrainsMono } from "../../../fonts";
+import { ZimaSearchFilters } from "./ZimaSearchFilters";
 import type { useZimaChat } from "./useZimaChat";
 
 const HOPAMINE_BLUE = "#00a6f3";
@@ -25,8 +26,6 @@ export function ZimaComposerFields({
   const {
     message,
     setMessage,
-    location,
-    setLocation,
     textareaRef,
     canSend,
     isLoading,
@@ -37,7 +36,6 @@ export function ZimaComposerFields({
 
   const isCompact = variant === "compact";
   const isHeader = variant === "header";
-  const locationId = `zima-location${idSuffix}`;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     void submit(event, onEnterChatMode);
@@ -145,28 +143,19 @@ export function ZimaComposerFields({
           )}
         </form>
         <div
-          className={`mx-3 flex items-center gap-2 bg-[#bbbbbb] ${
-            isHeader ? "px-2.5 py-1.5" : isCompact ? "px-2.5 py-1.5" : "px-3 py-2"
+          className={`mx-3 bg-[#bbbbbb] ${
+            isHeader ? "px-2 py-2" : isCompact ? "px-2 py-2" : "px-2.5 py-2.5"
           }`}
         >
-          <label
-            htmlFor={locationId}
-            className={`${jetbrainsMono.className} shrink-0 font-semibold uppercase tracking-wide text-neutral-700 ${
-              isHeader || isCompact ? "text-[11px]" : "text-[12px]"
-            }`}
-          >
-            Location:
-          </label>
-          <input
-            id={locationId}
-            type="text"
-            value={location}
-            onChange={(event) => setLocation(event.target.value)}
-            placeholder="City, country"
-            disabled={isLoading}
-            className={`${jetbrainsMono.className} min-w-0 flex-1 bg-transparent uppercase text-neutral-800 outline-none placeholder:normal-case placeholder:text-neutral-500 disabled:opacity-60 ${
-              isHeader || isCompact ? "text-[13px]" : "text-[14px]"
-            }`}
+          <ZimaSearchFilters
+            variant="composer"
+            idSuffix={idSuffix}
+            onPromptChange={(prompt) => {
+              setMessage(prompt);
+              requestAnimationFrame(() => {
+                resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
+              });
+            }}
           />
         </div>
       </div>

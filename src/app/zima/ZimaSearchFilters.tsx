@@ -11,13 +11,15 @@ import {
   NYC_UNIVERSITIES,
   getUniversityById,
 } from "@/lib/zima/nycUniversities";
+import { ARCHETYPE_BADGES, type ArchetypeId } from "@/lib/archetypes";
+import { buildSearchPromptFromFilters } from "@/lib/zima/searchPrompt";
 import { jetbrainsMono } from "../../../fonts";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
 const TOGGLE_FILTERS = [
   { id: "organizations", label: "Organizations" },
-  { id: "people", label: "People" },
+  { id: "builders", label: "Builders" },
 ] as const;
 
 type ToggleFilterId = (typeof TOGGLE_FILTERS)[number]["id"];
@@ -38,10 +40,13 @@ const INTEREST_OPTIONS = [
   "Education",
 ] as const;
 
-const PROXIMITY_OPTIONS = ["1 km", "5 km", "10 km", "25 km", "50 km+"] as const;
-
 type Props = {
   className?: string;
+  /** Under the search field in the grey composer strip. */
+  variant?: "default" | "composer";
+  idSuffix?: string;
+  /** Keeps the search textarea in sync with the active filters. */
+  onPromptChange?: (prompt: string) => void;
 };
 
 function FilterButton({
@@ -81,11 +86,16 @@ function FilterButton({
   );
 }
 
-export function ZimaSearchFilters({ className = "" }: Props) {
+export function ZimaSearchFilters({
+  className = "",
+  variant = "default",
+  idSuffix = "",
+  onPromptChange,
+}: Props) {
   const [toggles, setToggles] = useState<Set<ToggleFilterId>>(() => new Set());
+  const [archetypes, setArchetypes] = useState<Set<ArchetypeId>>(() => new Set());
   const [activeOnly, setActiveOnly] = useState(false);
   const [interests, setInterests] = useState<Set<string>>(() => new Set());
-  const [proximity, setProximity] = useState<string | null>(null);
   const [ageRange, setAgeRange] = useState<{ min: number; max: number } | null>(
     null,
   );
@@ -95,23 +105,24 @@ export function ZimaSearchFilters({ className = "" }: Props) {
   const [universityId, setUniversityId] = useState<string | null>(null);
   const [universityQuery, setUniversityQuery] = useState("");
   const [interestsOpen, setInterestsOpen] = useState(false);
-  const [proximityOpen, setProximityOpen] = useState(false);
+  const [archetypesOpen, setArchetypesOpen] = useState(false);
   const [ageOpen, setAgeOpen] = useState(false);
   const [universityOpen, setUniversityOpen] = useState(false);
 
   const interestsPanelId = useId();
-  const proximityPanelId = useId();
+  const archetypesPanelId = useId();
   const agePanelId = useId();
   const universityPanelId = useId();
   const universitySearchId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
+  const inComposer = variant === "composer";
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
       const root = rootRef.current;
       if (!root || root.contains(event.target as Node)) return;
       setInterestsOpen(false);
-      setProximityOpen(false);
+      setArchetypesOpen(false);
       setAgeOpen(false);
       setUniversityOpen(false);
     }
@@ -120,13 +131,38 @@ export function ZimaSearchFilters({ className = "" }: Props) {
   }, []);
 
   function closeOtherPopovers(
-    except?: "age" | "interests" | "proximity" | "university",
+    except?: "age" | "interests" | "archetypes" | "university",
   ) {
     if (except !== "age") setAgeOpen(false);
     if (except !== "interests") setInterestsOpen(false);
-    if (except !== "proximity") setProximityOpen(false);
+    if (except !== "archetypes") setArchetypesOpen(false);
     if (except !== "university") setUniversityOpen(false);
   }
+
+  useEffect(() => {
+    if (!onPromptChange) return;
+    onPromptChange(
+      buildSearchPromptFromFilters({
+        toggles,
+        archetypes,
+        interests,
+        activeOnly,
+        proximity: null,
+        ageRange,
+        universityId,
+        cityNyc,
+      }),
+    );
+  }, [
+    onPromptChange,
+    toggles,
+    archetypes,
+    interests,
+    activeOnly,
+    ageRange,
+    universityId,
+    cityNyc,
+  ]);
 
   function clampAge(value: number): number {
     return Math.min(MAX_AGE_CEILING, Math.max(MIN_AGE_FLOOR, value));
@@ -178,8 +214,24 @@ export function ZimaSearchFilters({ className = "" }: Props) {
     });
   }
 
+  function toggleArchetype(id: ArchetypeId) {
+    setArchetypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   const interestsOn = interests.size > 0;
-  const proximityOn = proximity !== null;
+  const archetypesOn = archetypes.size > 0;
+  const archetypeButtonLabel =
+    archetypes.size === 1
+      ? (ARCHETYPE_BADGES.find((badge) => badge.id === [...archetypes][0])
+          ?.title.replace(/^THE\s+/i, "") ?? "Archetypes")
+      : archetypes.size > 1
+        ? `Archetypes (${archetypes.size})`
+        : "Archetypes";
   const ageOn = ageRange !== null;
   const ageLabel = ageRange ? `${ageRange.min}–${ageRange.max}` : "Age";
   const selectedUniversity = universityId
@@ -197,10 +249,18 @@ export function ZimaSearchFilters({ className = "" }: Props) {
   return (
     <div ref={rootRef} className={`relative ${className}`}>
       <div
-        className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-start"
+        className={`flex flex-wrap items-center gap-1.5 ${
+          inComposer ? "justify-start" : "justify-center sm:justify-start"
+        }`}
         role="group"
         aria-label="Search filters"
       >
+        <FilterButton
+          label="NYC"
+          isOn={cityNyc}
+          onClick={() => setCityNyc((on) => !on)}
+        />
+
         {TOGGLE_FILTERS.map((filter) => (
           <FilterButton
             key={filter.id}
@@ -229,7 +289,7 @@ export function ZimaSearchFilters({ className = "" }: Props) {
               id={agePanelId}
               role="dialog"
               aria-label="Age range"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(22rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              className="absolute left-0 top-full z-50 mt-1 w-[min(26rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
               onMouseDown={(event) => event.stopPropagation()}
             >
               <p
@@ -337,13 +397,13 @@ export function ZimaSearchFilters({ className = "" }: Props) {
               onMouseDown={(event) => event.stopPropagation()}
             >
               <label
-                htmlFor={universitySearchId}
+                htmlFor={`${universitySearchId}${idSuffix}`}
                 className={`${jetbrainsMono.className} mb-2 block text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
               >
                 University
               </label>
               <input
-                id={universitySearchId}
+                id={`${universitySearchId}${idSuffix}`}
                 type="search"
                 value={universityQuery}
                 onChange={(event) => setUniversityQuery(event.target.value)}
@@ -412,6 +472,60 @@ export function ZimaSearchFilters({ className = "" }: Props) {
 
         <div className="relative">
           <FilterButton
+            label={archetypeButtonLabel}
+            isOn={archetypesOn}
+            ariaExpanded={archetypesOpen}
+            ariaControls={archetypesPanelId}
+            onClick={() => {
+              closeOtherPopovers("archetypes");
+              setArchetypesOpen((open) => !open);
+            }}
+          />
+          {archetypesOpen ? (
+            <div
+              id={archetypesPanelId}
+              role="dialog"
+              aria-label="Choose archetypes"
+              className="absolute left-0 top-full z-50 mt-1 w-[min(22rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <p
+                className={`${jetbrainsMono.className} mb-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
+              >
+                Archetypes
+              </p>
+              <div className="flex max-h-52 flex-col gap-1 overflow-y-auto">
+                {ARCHETYPE_BADGES.map((badge) => {
+                  const selected = archetypes.has(badge.id);
+                  return (
+                    <button
+                      key={badge.id}
+                      type="button"
+                      onClick={() => toggleArchetype(badge.id)}
+                      aria-pressed={selected}
+                      className={`${jetbrainsMono.className} flex w-full items-start gap-2 px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide transition-colors ${
+                        selected
+                          ? "text-white"
+                          : "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
+                      }`}
+                      style={
+                        selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
+                      }
+                    >
+                      <span aria-hidden>{badge.emoji}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{badge.title}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="relative">
+          <FilterButton
             label="Interests"
             isOn={interestsOn}
             ariaExpanded={interestsOpen}
@@ -472,59 +586,6 @@ export function ZimaSearchFilters({ className = "" }: Props) {
             aria-hidden
           />
         </FilterButton>
-
-        <div className="relative">
-          <FilterButton
-            label={proximity ?? "Proximity"}
-            isOn={proximityOn}
-            ariaExpanded={proximityOpen}
-            ariaControls={proximityPanelId}
-            onClick={() => {
-              closeOtherPopovers("proximity");
-              setProximityOpen((open) => !open);
-            }}
-          />
-          {proximityOpen ? (
-            <div
-              id={proximityPanelId}
-              role="listbox"
-              aria-label="Distance"
-              className="absolute right-0 top-full z-50 mt-1 min-w-[7.5rem] border border-neutral-300 bg-white py-1 shadow-[0_4px_16px_rgba(0,0,0,0.12)] sm:left-auto"
-            >
-              {PROXIMITY_OPTIONS.map((option) => {
-                const selected = proximity === option;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    onClick={() => {
-                      setProximity(option);
-                      setProximityOpen(false);
-                    }}
-                    className={`${jetbrainsMono.className} block w-full px-3 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide transition-colors ${
-                      selected
-                        ? "text-white"
-                        : "text-neutral-800 hover:bg-neutral-100"
-                    }`}
-                    style={
-                      selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
-                    }
-                  >
-                    {option}
-                  </button>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-
-        <FilterButton
-          label="NYC"
-          isOn={cityNyc}
-          onClick={() => setCityNyc((on) => !on)}
-        />
       </div>
     </div>
   );

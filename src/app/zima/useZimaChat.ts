@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import type { ZimaChatMessage } from "@/lib/zima/types";
-import { formatSearchTitle } from "./formatSearchTitle";
 
 type Options = {
-  /** Results view: set a headline and skip the AI reply stream. */
+  /** Results view: skip the AI reply stream after the first send. */
   resultsOnly?: boolean;
 };
 
@@ -16,7 +15,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
   const [messages, setMessages] = useState<ZimaChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searchHeadline, setSearchHeadline] = useState<string | null>(null);
+  const [hasSearchResults, setHasSearchResults] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const canSend = message.trim().length > 0 && !isLoading;
 
@@ -26,7 +25,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
       setMessage("");
       setError(null);
       setIsLoading(false);
-      setSearchHeadline(null);
+      setHasSearchResults(false);
     }
   }, [isActive]);
 
@@ -55,7 +54,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     ];
 
     setMessages(nextMessages);
-    setSearchHeadline(formatSearchTitle(trimmedMessage, location));
+    setHasSearchResults(true);
     setMessage("");
     setError(null);
 
@@ -133,7 +132,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     location,
     setLocation,
     messages,
-    searchHeadline,
+    hasSearchResults,
     isLoading,
     error,
     textareaRef,
