@@ -112,6 +112,32 @@ export function ZimaComposerFields({
                   }`
             }`}
           />
+          {isHeader && filtersDisplay === "collapsible" && onFiltersExpandedChange ? (
+            <button
+              type="button"
+              onClick={() => onFiltersExpandedChange(!filtersExpanded)}
+              aria-label="Filters"
+              aria-expanded={filtersExpanded}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-transparent transition-colors ${
+                filtersExpanded ? "text-neutral-900" : "text-[#00a6f3]"
+              }`}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 16 16"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+              >
+                <path d="M2 4h12M4 8h8M6 12h4" />
+                <circle cx="5" cy="4" r="1.25" fill="currentColor" stroke="none" />
+                <circle cx="11" cy="8" r="1.25" fill="currentColor" stroke="none" />
+                <circle cx="7" cy="12" r="1.25" fill="currentColor" stroke="none" />
+              </svg>
+            </button>
+          ) : null}
           {isHeader ? (
             <button
               type="submit"
@@ -162,8 +188,8 @@ export function ZimaComposerFields({
         </form>
         {filtersDisplay !== "hidden" && showFilterStrip ? (
           <div
-            className={`mx-3 bg-[#bbbbbb] ${
-              isHeader ? "px-2 py-2" : isCompact ? "px-2 py-2" : "px-2.5 py-2.5"
+            className={`bg-[#bbbbbb] ${
+              isHeader ? "mx-0 px-2 py-2" : isCompact ? "mx-3 px-2 py-2" : "mx-3 px-2.5 py-2.5"
             }`}
           >
             <ZimaSearchFilters

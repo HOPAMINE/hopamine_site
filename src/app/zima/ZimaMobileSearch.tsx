@@ -3,9 +3,7 @@
 import { useState } from "react";
 import ZimaSearchMap from "@/components/zima/ZimaSearchMap";
 import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
-import { jetbrainsMono } from "../../../fonts";
 import { ZimaComposerFields } from "./ZimaComposerFields";
-import { ZimaSearchFilters } from "./ZimaSearchFilters";
 import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaMobileResultsDrawer } from "./ZimaMobileResultsDrawer";
@@ -31,40 +29,19 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
     <div className="relative z-10 flex h-dvh flex-col overflow-hidden bg-white">
       <header className="shrink-0 border-b border-neutral-200 bg-white">
         <div
-          className="flex items-center gap-2 px-[max(16px,env(safe-area-inset-left))] py-2 pr-[max(16px,env(safe-area-inset-right))] pt-[max(12px,env(safe-area-inset-top))]"
+          className="px-[max(16px,env(safe-area-inset-left))] py-2 pr-[max(16px,env(safe-area-inset-right))] pt-[max(12px,env(safe-area-inset-top))]"
         >
-          <div className="min-w-0 flex-1">
-            <ZimaComposerFields
-              chat={chat}
-              onEnterChatMode={onFirstSend}
-              variant="header"
-              idSuffix="-mobile-header"
-              hideDecorativeBars
-              filtersDisplay="hidden"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => setFiltersExpanded((open) => !open)}
-            aria-expanded={filtersExpanded}
-            className={`${jetbrainsMono.className} shrink-0 px-2 py-2 text-[10px] font-semibold uppercase tracking-wide ${
-              filtersExpanded ? "text-neutral-900" : "text-[#00a6f3]"
-            }`}
-          >
-            Filters
-          </button>
+          <ZimaComposerFields
+            chat={chat}
+            onEnterChatMode={onFirstSend}
+            variant="header"
+            idSuffix="-mobile-header"
+            hideDecorativeBars
+            filtersDisplay="collapsible"
+            filtersExpanded={filtersExpanded}
+            onFiltersExpandedChange={setFiltersExpanded}
+          />
         </div>
-        {filtersExpanded ? (
-          <div className="border-t border-neutral-200 bg-[#bbbbbb] px-4 py-2">
-            <ZimaSearchFilters
-              variant="composer"
-              idSuffix="-mobile-filters"
-              onPromptChange={(prompt) => {
-                chat.setMessage(prompt);
-              }}
-            />
-          </div>
-        ) : null}
       </header>
 
       <main className="relative min-h-0 flex-1 overflow-hidden">
