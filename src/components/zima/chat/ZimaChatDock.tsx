@@ -2,10 +2,12 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { jetbrainsMono } from "../../../../fonts";
+import { isZimaOnboardPath } from "@/lib/zima/routes";
 import type { ZimaConversation, ZimaThreadMessage } from "@/lib/zima/zimaChats";
 import { ZimaChatDockInbox } from "./ZimaChatDockInbox";
 import { ZimaChatDockNewMessage } from "./ZimaChatDockNewMessage";
@@ -214,7 +216,13 @@ function ZimaChatDockPanel({
 export function ZimaChatDock() {
   const { isLoaded, isSignedIn } = useUser();
   const dock = useZimaChatDock();
-  if (!isLoaded || !isSignedIn || !dock.chatAvailable) {
+  const pathname = usePathname();
+  if (
+    !isLoaded ||
+    !isSignedIn ||
+    !dock.chatAvailable ||
+    isZimaOnboardPath(pathname)
+  ) {
     return null;
   }
   return <ZimaChatDockSignedIn />;

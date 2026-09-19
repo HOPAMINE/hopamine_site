@@ -34,6 +34,7 @@ export default defineSchema({
     nowPlaying: v.optional(v.string()),
     lastSeenAt: v.optional(v.number()),
     onboardingCompletedAt: v.optional(v.number()),
+    zimaOnboardingCompletedAt: v.optional(v.number()),
     /** When true, claimed hackathon project card is hidden on the user's dashboard. */
     hiddenClaimedHackathonProjectOnDashboard: v.optional(v.boolean()),
     socialLinks: v.optional(v.record(v.string(), v.string())),

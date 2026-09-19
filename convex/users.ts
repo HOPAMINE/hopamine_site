@@ -346,6 +346,81 @@ export const completeOnboarding = mutation({
   },
 });
 
+/** Zima profile onboarding — separate from Hopamine network onboarding. */
+export const completeZimaOnboarding = mutation({
+  args: {
+    name: v.string(),
+    username: v.optional(v.string()),
+    location: v.string(),
+    bio: v.optional(v.string()),
+    skills: v.array(v.string()),
+    interests: v.array(v.string()),
+    discord: v.optional(v.string()),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    alreadyCompleted: v.boolean(),
+    username: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) throw new Error("User not found");
+
+    const username = await resolveUsernameForUser(ctx, user, args.username);
+
+    if (user.zimaOnboardingCompletedAt) {
+      if (!user.username?.trim()) {
+        await ctx.db.patch(user._id, {
+          username,
+          updatedAt: Date.now(),
+        });
+      }
+      return {
+        success: true,
+        alreadyCompleted: true,
+        username: user.username?.trim() ? user.username : username,
+      };
+    }
+
+    const discord = (args.discord?.trim() ?? "").replace(/^@/, "");
+    if (discord && !/^[a-zA-Z0-9_.]{2,32}(#\d{4})?$/.test(discord)) {
+      throw new Error("Invalid Discord username");
+    }
+    const socialLinks = discord
+      ? { ...(user.socialLinks ?? {}), discord }
+      : user.socialLinks;
+
+    const now = Date.now();
+    const patch: Record<string, unknown> = {
+      name: args.name.trim(),
+      username,
+      location: args.location.trim(),
+      bio: trimText(args.bio) || undefined,
+      skills: normalizeSkills(args.skills),
+      interests: normalizeSkills(args.interests),
+      zimaOnboardingCompletedAt: now,
+      updatedAt: now,
+    };
+    if (socialLinks !== undefined) {
+      patch.socialLinks = socialLinks;
+    }
+    if (!user.onboardingCompletedAt) {
+      patch.onboardingCompletedAt = now;
+    }
+
+    await ctx.db.patch(user._id, patch);
+
+    return { success: true, alreadyCompleted: false, username };
+  },
+});
+
 /** Assigns a unique Hopamine username when the user does not have one yet. */
 export const ensureUsername = mutation({
   args: {},

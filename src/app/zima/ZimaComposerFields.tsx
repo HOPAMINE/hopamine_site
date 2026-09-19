@@ -82,43 +82,68 @@ export function ZimaComposerFields({
       <div>
         <form
           onSubmit={onSubmit}
-          className={`relative m-0 w-full rounded-none bg-neutral-200 shadow-none ${
+          className={`relative m-0 w-full bg-neutral-200 shadow-none ${
             isHeader
-              ? "flex items-stretch gap-2 px-2 py-2"
+              ? `flex items-stretch gap-2 px-2 py-2 md:rounded-none ${
+                  filtersExpanded ? "rounded-t-[24px]" : "rounded-full"
+                }`
               : isCompact
-                ? "px-3 pb-2 pt-2"
-                : "px-4 pb-3 pt-4"
+                ? "rounded-none px-3 pb-2 pt-2"
+                : "rounded-none px-4 pb-3 pt-4"
           }`}
         >
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(event) => {
-              setMessage(event.target.value);
-              resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
-            }}
-            onKeyDown={onKeyDown}
-            rows={1}
-            placeholder="Find future builders near you..."
-            aria-label="Find future builders near you"
-            disabled={isLoading}
-            className={`${jetbrainsMono.className} resize-none bg-transparent text-[15px] leading-relaxed text-neutral-800 outline-none placeholder:text-[15px] placeholder:text-neutral-400 disabled:opacity-60 ${
+          <div
+            className={
               isHeader
-                ? "min-h-[40px] max-h-[40px] min-w-0 flex-1 py-1 pl-2 pr-0"
-                : `w-full px-1 ${
-                    isCompact
-                      ? "max-h-[100px] min-h-[44px]"
-                      : "max-h-[140px] min-h-[48px]"
-                  }`
-            }`}
-          />
+                ? "flex min-w-0 flex-1 items-center gap-2 pl-3"
+                : "flex w-full items-start gap-2"
+            }
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 16 16"
+              className={`shrink-0 text-neutral-500 ${
+                isHeader ? "h-6 w-6" : isCompact ? "mt-2 h-5 w-5" : "mt-2.5 h-6 w-6"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="7" cy="7" r="4.25" />
+              <path d="M10.5 10.5 14 14" />
+            </svg>
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(event) => {
+                setMessage(event.target.value);
+                resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
+              }}
+              onKeyDown={onKeyDown}
+              rows={1}
+              placeholder="Find future builders near you..."
+              aria-label="Find future builders near you"
+              disabled={isLoading}
+              className={`${jetbrainsMono.className} resize-none bg-transparent text-[15px] leading-relaxed text-neutral-800 outline-none placeholder:text-[15px] placeholder:text-neutral-400 disabled:opacity-60 ${
+                isHeader
+                  ? "min-h-[40px] max-h-[40px] min-w-0 flex-1 py-1 pl-0 pr-0"
+                  : `min-w-0 flex-1 px-1 ${
+                      isCompact
+                        ? "max-h-[100px] min-h-[44px]"
+                        : "max-h-[140px] min-h-[48px]"
+                    }`
+              }`}
+            />
+          </div>
           {isHeader && filtersDisplay === "collapsible" && onFiltersExpandedChange ? (
             <button
               type="button"
               onClick={() => onFiltersExpandedChange(!filtersExpanded)}
               aria-label="Filters"
               aria-expanded={filtersExpanded}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-transparent transition-colors ${
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-transparent transition-colors md:rounded-none ${
                 filtersExpanded ? "text-neutral-900" : "text-[#00a6f3]"
               }`}
             >
@@ -143,7 +168,7 @@ export function ZimaComposerFields({
               type="submit"
               disabled={!canSend}
               aria-label="Send"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-none text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 md:rounded-none"
               style={{ backgroundColor: HOPAMINE_BLUE }}
             >
               <svg
@@ -189,7 +214,11 @@ export function ZimaComposerFields({
         {filtersDisplay !== "hidden" && showFilterStrip ? (
           <div
             className={`bg-[#bbbbbb] ${
-              isHeader ? "mx-0 px-2 py-2" : isCompact ? "mx-3 px-2 py-2" : "mx-3 px-2.5 py-2.5"
+              isHeader
+                ? "mx-0 rounded-b-[24px] px-2 py-2 md:rounded-none"
+                : isCompact
+                  ? "mx-3 px-2 py-2"
+                  : "mx-3 px-2.5 py-2.5"
             }`}
           >
             <ZimaSearchFilters

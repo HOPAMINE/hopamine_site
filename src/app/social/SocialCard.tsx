@@ -137,7 +137,7 @@ export function SocialCard({
 
   if (compact && compactGrid) {
     return (
-      <article className="flex h-full min-w-0 flex-col overflow-hidden bg-neutral-200">
+      <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl bg-neutral-200">
         <CardBody
           onPress={onPress}
           className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 px-2.5 py-2.5"
@@ -185,7 +185,7 @@ export function SocialCard({
 
   if (compact) {
     return (
-      <article className="flex min-w-0 flex-col overflow-hidden bg-neutral-200">
+      <article className="flex min-w-0 flex-col overflow-hidden rounded-2xl bg-neutral-200">
         <CardBody
           onPress={onPress}
           className="flex min-w-0 overflow-hidden"

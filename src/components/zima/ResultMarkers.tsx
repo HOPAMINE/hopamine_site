@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { Marker } from "maplibre-gl";
 import { jetbrainsMono } from "../../../fonts";
 import { useMap } from "./Globe";
+import { HOPAMINE_BLUE } from "./globePalettes";
 import type { MapResult } from "./results";
 
 type Props = {
@@ -18,9 +19,14 @@ const MIN_ZOOM = 9.5;
 
 const MARKER_SHADOW = "0 4px 4px rgba(0, 0, 0, 0.25)";
 
+const ORG_PILL_STYLE = {
+  backgroundColor: "#FFFFFF",
+  color: HOPAMINE_BLUE,
+} as const;
+
 /**
- * Square map labels with avatar + name; a spike on the bottom tip sits on the
- * exact lng/lat (Marker anchor bottom).
+ * Builders: rounded avatar cards with a bottom spike on the lng/lat.
+ * Organizations (projects): white pill + sprout icon, centered on the point.
  */
 export default function ResultMarkers({
   results,
@@ -52,7 +58,11 @@ export default function ResultMarkers({
   useEffect(() => {
     if (!map) return;
     const markers = hosts.map(({ result, el }) =>
-      new Marker({ element: el, anchor: "bottom", opacityWhenCovered: 0 })
+      new Marker({
+        element: el,
+        anchor: result.kind === "project" ? "center" : "bottom",
+        opacityWhenCovered: 0,
+      })
         .setLngLat([result.lng, result.lat])
         .addTo(map),
     );
@@ -63,12 +73,21 @@ export default function ResultMarkers({
     <>
       {hosts.map(({ result, el }) =>
         createPortal(
-          <ResultMarker
-            result={result}
-            visible={zoomedIn}
-            selected={selectedResultId === result.id}
-            onSelect={onSelectResult}
-          />,
+          result.kind === "project" ? (
+            <OrganizationPill
+              result={result}
+              visible={zoomedIn}
+              selected={selectedResultId === result.id}
+              onSelect={onSelectResult}
+            />
+          ) : (
+            <PersonMarker
+              result={result}
+              visible={zoomedIn}
+              selected={selectedResultId === result.id}
+              onSelect={onSelectResult}
+            />
+          ),
           el,
           result.id,
         ),
@@ -77,7 +96,7 @@ export default function ResultMarkers({
   );
 }
 
-function ResultMarker({
+function PersonMarker({
   result,
   visible,
   selected,
@@ -102,7 +121,7 @@ function ResultMarker({
       } ${interactive ? "cursor-pointer" : ""}`}
     >
       <div
-        className={`flex w-[76px] flex-col overflow-hidden rounded-none border bg-white ${
+        className={`flex w-[76px] flex-col overflow-hidden rounded-2xl border bg-white ${
           selected
             ? "border-[#00a6f3] ring-2 ring-[#00a6f3] ring-offset-1"
             : "border-neutral-200/90"
@@ -128,6 +147,60 @@ function ResultMarker({
       </div>
       <MapPinSpike selected={selected} />
     </button>
+  );
+}
+
+/** White rounded pill with sprout icon — org / project pins on the map. */
+function OrganizationPill({
+  result,
+  visible,
+  selected,
+  onSelect,
+}: {
+  result: MapResult;
+  visible: boolean;
+  selected: boolean;
+  onSelect?: (id: string) => void;
+}) {
+  const interactive = visible && Boolean(onSelect);
+
+  return (
+    <button
+      type="button"
+      title={result.description}
+      onClick={() => onSelect?.(result.id)}
+      disabled={!interactive}
+      className={`${jetbrainsMono.className} flex h-7 max-w-[min(10rem,42vw)] items-center gap-1 rounded-full border-0 pl-3 pr-3.5 text-[11px] font-semibold uppercase leading-none tracking-wide transition-opacity duration-300 sm:h-[28px] sm:max-w-[10vw] sm:gap-1 sm:pl-3 sm:pr-4 sm:text-[13px] ${
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      } ${interactive ? "cursor-pointer" : ""} ${
+        selected ? "ring-2 ring-[#00a6f3] ring-offset-1" : ""
+      }`}
+      style={{ ...ORG_PILL_STYLE, boxShadow: MARKER_SHADOW }}
+    >
+      <SproutIcon />
+      <span className="truncate">{result.name}</span>
+    </button>
+  );
+}
+
+function SproutIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 sm:h-[18px] sm:w-[18px]"
+      aria-hidden
+    >
+      <path d="M12 21v-9" />
+      <path d="M12 12c0-4 3-7 7-7 0 4-3 7-7 7z" />
+      <path d="M12 15c0-3-2.5-5-5.5-5 0 3 2.5 5 5.5 5z" />
+    </svg>
   );
 }
 

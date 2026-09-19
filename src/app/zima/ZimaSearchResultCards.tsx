@@ -35,7 +35,9 @@ export function ZimaSearchResultCards({
           <li key={result.id} className="min-w-0">
             <div
               className={
-                isSelected ? "ring-2 ring-[#00a6f3] ring-offset-2" : undefined
+                isSelected
+                  ? "overflow-hidden rounded-2xl ring-2 ring-[#00a6f3] ring-offset-2"
+                  : undefined
               }
             >
               <SocialCard

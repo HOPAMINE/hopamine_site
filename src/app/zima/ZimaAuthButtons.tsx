@@ -4,6 +4,7 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import {
@@ -11,6 +12,7 @@ import {
   getZimaAuthPath,
   getZimaPath,
   getZimaPostAuthRedirect,
+  isZimaOnboardPath,
 } from "@/lib/zima/routes";
 import { jetbrainsMono } from "../../../fonts";
 import { toZimaProfileData } from "./ZimaProfileCard";
@@ -195,8 +197,9 @@ function ZimaSignedInUser() {
 export function ZimaAuthButtons() {
   const { isLoaded, isSignedIn } = useUser();
   const { hideMobileTopProfile } = useZimaSearchChrome();
+  const pathname = usePathname();
 
-  if (!isLoaded) {
+  if (!isLoaded || isZimaOnboardPath(pathname)) {
     return null;
   }
 

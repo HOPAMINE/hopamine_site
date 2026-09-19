@@ -5,7 +5,11 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useUser } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 import { getOnboardingPath } from "@/lib/claimRoutes";
-import { isZimaHost } from "@/lib/zima/domain";
+import {
+  getZimaOnboardingPath,
+  isZimaAppContext,
+  shouldGateToZimaOnboarding,
+} from "@/lib/zima/onboarding";
 import { api } from "../../convex/_generated/api";
 
 const convexConfigured = !!process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -22,6 +26,7 @@ const ONBOARDING_EXEMPT = [
   "/pixel",
   "/zima/sign-in",
   "/zima/sign-up",
+  "/zima/onboard",
 ];
 
 /** Syncs Convex `users` when Clerk session exists and gates incomplete onboarding. */
@@ -67,14 +72,21 @@ function UserSyncInner() {
 
   useEffect(() => {
     if (!existing) return;
-    if (existing.onboardingCompletedAt) return;
-    if (pathname.startsWith("/zima")) return;
+
+    const hostname =
+      typeof window !== "undefined" ? window.location.hostname : "";
+
     if (
-      typeof window !== "undefined" &&
-      isZimaHost(window.location.hostname)
+      shouldGateToZimaOnboarding(pathname, hostname, existing) &&
+      typeof window !== "undefined"
     ) {
+      router.replace(getZimaOnboardingPath(hostname));
       return;
     }
+
+    if (isZimaAppContext(pathname, hostname)) return;
+
+    if (existing.onboardingCompletedAt) return;
     if (ONBOARDING_EXEMPT.some((p) => pathname.startsWith(p))) return;
     router.replace(getOnboardingPath(pathname));
   }, [existing, pathname, router]);

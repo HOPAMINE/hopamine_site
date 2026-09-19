@@ -6,7 +6,12 @@ export type ZimaAuthSegment =
   | "profile"
   | "settings";
 
-export type ZimaAppSegment = ZimaAuthSegment | "chats" | "search" | "social";
+export type ZimaAppSegment =
+  | ZimaAuthSegment
+  | "chats"
+  | "search"
+  | "social"
+  | "onboard";
 
 export function getZimaPath(segment: ZimaAppSegment, hostname = ""): string {
   if (hostname && isZimaHost(hostname)) {
@@ -33,9 +38,17 @@ export function getZimaAuthHref(
 }
 
 export function getZimaSignUpDestination(hostname = ""): string {
-  return getZimaAuthPath("profile", hostname);
+  return getZimaPath("onboard", hostname);
 }
 
 export function getZimaPostAuthRedirect(hostname = ""): string {
   return getZimaRedirectTarget(hostname);
+}
+
+export function isZimaOnboardPath(pathname: string): boolean {
+  return (
+    pathname === "/onboard" ||
+    pathname.startsWith("/onboard/") ||
+    pathname.startsWith("/zima/onboard")
+  );
 }
