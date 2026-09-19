@@ -7,12 +7,20 @@ import { activateOAuthSession } from "@/lib/auth/ssoCallback";
 import { isZimaHost } from "@/lib/zima/domain";
 import { getZimaAuthHref } from "@/lib/zima/routes";
 
+// Clerk's isomorphic wrapper fires handleRedirectCallback without awaiting it,
+// so the only reliable "done" signal is Clerk calling our navigate callback.
+// If Clerk never calls it, this stops us waiting forever.
+const OAUTH_CALLBACK_TIMEOUT_MS = 15_000;
+
 function SSOCallbackContent() {
   const clerk = useClerk();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const clerkLoaded = clerk.loaded;
 
   useEffect(() => {
+    if (!clerkLoaded) return;
+
     let navigated = false;
     const go = (to: string) => {
       if (navigated) return;
@@ -34,10 +42,20 @@ function SSOCallbackContent() {
         ? getZimaAuthHref("sign-up", next, hostname).split("?")[0] ?? "/sign-up"
         : "/sign-up";
 
+      let markOAuthCallbackFinished = () => {};
+      const oauthCallbackFinished = new Promise<void>((resolve) => {
+        markOAuthCallbackFinished = resolve;
+      });
+      const oauthCallbackTimedOut = new Promise<void>((resolve) => {
+        setTimeout(resolve, OAUTH_CALLBACK_TIMEOUT_MS);
+      });
+
       try {
         // Shared Hopamine Clerk instance. `transferable: false` only blocks opaque
-        // sign-ups during sign-in — existing accounts still authenticate here.
-        // The no-op navigate callback lets us finish the session ourselves.
+        // sign-ups during sign-in — existing accounts still authenticate here
+        // (including accounts that started from the sign-up form's Google
+        // button, which Clerk transfers into a sign-in). The navigate callback
+        // suppresses Clerk's own routing so we decide where to go ourselves.
         await clerk.handleRedirectCallback(
           {
             transferable: false,
@@ -46,9 +64,12 @@ function SSOCallbackContent() {
             signInFallbackRedirectUrl: next,
             signUpFallbackRedirectUrl: next,
           },
-          async () => {},
+          async () => {
+            markOAuthCallbackFinished();
+          },
         );
       } catch (err) {
+        markOAuthCallbackFinished();
         if (process.env.NODE_ENV === "development") {
           console.debug(
             "[sso-callback] handleRedirectCallback threw:",
@@ -56,6 +77,8 @@ function SSOCallbackContent() {
           );
         }
       }
+
+      await Promise.race([oauthCallbackFinished, oauthCallbackTimedOut]);
 
       const hasSession = await activateOAuthSession(clerk);
 
@@ -88,7 +111,7 @@ function SSOCallbackContent() {
     }
 
     void finish();
-  }, [clerk, router, searchParams]);
+  }, [clerk, clerkLoaded, router, searchParams]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-accent-navbar text-white">

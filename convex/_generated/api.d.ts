@@ -13,7 +13,6 @@ import type * as badges from "../badges.js";
 import type * as conversations from "../conversations.js";
 import type * as hackathonClaims from "../hackathonClaims.js";
 import type * as hackathonParticipations from "../hackathonParticipations.js";
-import type * as http from "../http.js";
 import type * as lib_badgeKinds from "../lib/badgeKinds.js";
 import type * as lib_badgeRecords from "../lib/badgeRecords.js";
 import type * as lib_builderNumbers from "../lib/builderNumbers.js";
@@ -46,7 +45,6 @@ declare const fullApi: ApiFromModules<{
   conversations: typeof conversations;
   hackathonClaims: typeof hackathonClaims;
   hackathonParticipations: typeof hackathonParticipations;
-  http: typeof http;
   "lib/badgeKinds": typeof lib_badgeKinds;
   "lib/badgeRecords": typeof lib_badgeRecords;
   "lib/builderNumbers": typeof lib_builderNumbers;

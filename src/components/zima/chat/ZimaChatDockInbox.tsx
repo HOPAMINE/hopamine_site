@@ -47,13 +47,13 @@ export function ZimaChatDockInbox({
                 isSelected ? "bg-[#d6effc]" : "bg-neutral-100 hover:bg-neutral-200/80"
               }`}
             >
-              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+              <span className="relative h-12 w-12 shrink-0 rounded-full bg-neutral-200">
                 <Image
                   src={conversation.avatarUrl}
                   alt=""
                   fill
                   sizes="48px"
-                  className="object-cover"
+                  className="rounded-full object-cover"
                   style={{ imageRendering: "pixelated" }}
                 />
                 {conversation.isOnline ? (

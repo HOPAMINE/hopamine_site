@@ -148,8 +148,7 @@ export default defineSchema({
 
   presence: defineTable({
     userId: v.id("users"),
-    isOnline: v.boolean(),
-    updatedAt: v.number(),
+    lastSeenAt: v.number(),
   }).index("by_user", ["userId"]),
 
   conversations: defineTable({

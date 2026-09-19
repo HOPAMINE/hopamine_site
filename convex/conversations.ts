@@ -17,6 +17,7 @@ const inboxEntryValidator = v.object({
     name: v.string(),
     username: v.optional(v.string()),
     avatarUrl: v.string(),
+    lastSeenAt: v.optional(v.number()),
   }),
   lastMessagePreview: v.string(),
   lastMessageAt: v.number(),
@@ -85,6 +86,10 @@ export const listMine = query({
       if (!otherMembership) continue;
       const otherUser = await ctx.db.get("users", otherMembership.userId);
       if (!otherUser) continue;
+      const otherUserPresence = await ctx.db
+        .query("presence")
+        .withIndex("by_user", (q) => q.eq("userId", otherUser._id))
+        .unique();
       entries.push({
         conversationId: conversation._id,
         otherUser: {
@@ -92,6 +97,7 @@ export const listMine = query({
           name: otherUser.name,
           username: otherUser.username,
           avatarUrl: otherUser.avatarUrl,
+          lastSeenAt: otherUserPresence?.lastSeenAt,
         },
         lastMessagePreview: conversation.lastMessagePreview,
         lastMessageAt: conversation.lastMessageAt,

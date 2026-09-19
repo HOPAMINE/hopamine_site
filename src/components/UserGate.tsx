@@ -11,6 +11,7 @@ import {
   shouldGateToZimaOnboarding,
 } from "@/lib/zima/onboarding";
 import { api } from "../../convex/_generated/api";
+import { usePresenceHeartbeat } from "./usePresenceHeartbeat";
 
 const convexConfigured = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 
@@ -42,6 +43,8 @@ function UserSyncInner() {
   const pathname = usePathname();
   const router = useRouter();
   const creatingRef = useRef(false);
+
+  usePresenceHeartbeat(!!existing);
 
   useEffect(() => {
     if (!user || !isUserLoaded || !isAuthenticated) return;

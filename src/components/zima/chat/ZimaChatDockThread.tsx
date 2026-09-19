@@ -116,7 +116,7 @@ export function ZimaChatDockThread({
               {message.body}
             </p>
             <span
-              className={`${jetbrainsMono.className} mt-1 text-[8px] font-semibold uppercase tracking-wide text-neutral-400`}
+              className={`${jetbrainsMono.className} mt-1 text-[8px] font-semibold lowercase tracking-wide text-neutral-400`}
             >
               {message.sentAtLabel}
             </span>
