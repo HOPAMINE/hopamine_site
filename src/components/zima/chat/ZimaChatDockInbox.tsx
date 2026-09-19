@@ -71,13 +71,13 @@ export function ZimaChatDockInbox({
                     {conversation.participantName}
                   </span>
                   <span
-                    className={`${jetbrainsMono.className} shrink-0 text-[9px] font-semibold uppercase tracking-wide text-neutral-500`}
+                    className={`${jetbrainsMono.className} shrink-0 text-[9px] font-semibold lowercase tracking-wide text-neutral-500`}
                   >
                     {conversation.lastMessageAt}
                   </span>
                 </span>
                 <span
-                  className={`${jetbrainsMono.className} block truncate text-[9px] font-semibold uppercase tracking-wide text-neutral-500`}
+                  className={`${jetbrainsMono.className} block truncate text-[9px] font-semibold lowercase tracking-wide text-neutral-500`}
                 >
                   {conversation.participantTagline}
                 </span>
