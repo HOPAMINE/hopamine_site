@@ -22,7 +22,7 @@ export function ZimaChatDockInbox({
   return (
     <ul
       aria-label="Conversations"
-      className="flex h-full w-[240px] shrink-0 flex-col overflow-y-auto border-r border-neutral-300 bg-neutral-50"
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto"
     >
       {loadingConversations ? (
         <li className={`${jetbrainsMono.className} px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-neutral-400`}>
@@ -31,7 +31,7 @@ export function ZimaChatDockInbox({
       ) : null}
       {!loadingConversations && conversations.length === 0 ? (
         <li className={`${jetbrainsMono.className} px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-neutral-400`}>
-          No conversations yet. Hit + New to start one.
+          No conversations yet. Search a builder below to start one.
         </li>
       ) : null}
       {conversations.map((conversation) => {
@@ -47,7 +47,7 @@ export function ZimaChatDockInbox({
                 isSelected ? "bg-[#d6effc]" : "bg-neutral-100 hover:bg-neutral-200/80"
               }`}
             >
-              <span className="relative h-12 w-12 shrink-0 overflow-hidden bg-neutral-200">
+              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-200">
                 <Image
                   src={conversation.avatarUrl}
                   alt=""
@@ -59,7 +59,7 @@ export function ZimaChatDockInbox({
                 {conversation.isOnline ? (
                   <span
                     aria-label="Online"
-                    className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-emerald-500 ring-2 ring-white"
+                    className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white"
                   />
                 ) : null}
               </span>
@@ -89,7 +89,7 @@ export function ZimaChatDockInbox({
                   </span>
                   {unreadCount > 0 ? (
                     <span
-                      className={`${jetbrainsMono.className} flex h-5 min-w-5 shrink-0 items-center justify-center px-1 text-[10px] font-semibold text-white`}
+                      className={`${jetbrainsMono.className} flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold text-white`}
                       style={{ backgroundColor: HOPAMINE_BLUE }}
                       aria-label={`${unreadCount} unread`}
                     >

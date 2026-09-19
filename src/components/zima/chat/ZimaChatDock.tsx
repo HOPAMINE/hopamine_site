@@ -18,18 +18,8 @@ import { useZimaThread } from "./useZimaThread";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
-const INBOX_FILTERS = [
-  { id: "all", label: "Messages" },
-  { id: "unread", label: "Unread" },
-  { id: "active", label: "Active" },
-] as const;
-
-type InboxFilterId = (typeof INBOX_FILTERS)[number]["id"];
-
-const filterChipClass = `${jetbrainsMono.className} inline-flex h-7 shrink-0 items-center gap-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-wide transition-colors`;
-
 const headerIconButtonClass =
-  "inline-flex h-7 w-7 items-center justify-center text-neutral-800 transition-opacity hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]";
+  "inline-flex h-7 w-7 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-neutral-300/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]";
 
 function ChatTabIcon() {
   return (
@@ -57,11 +47,6 @@ function ZimaChatDockCollapsedTab({
 }) {
   return (
     <div className="flex flex-col items-start">
-      <div className="ml-2 flex gap-1.5" aria-hidden="true">
-        {[0, 1].map((index) => (
-          <span key={index} className="h-2 w-10 bg-[#00a6f3]" />
-        ))}
-      </div>
       <button
         type="button"
         onClick={onOpenDock}
@@ -70,7 +55,7 @@ function ZimaChatDockCollapsedTab({
             ? `Open messages, ${unreadTotal} unread`
             : "Open messages"
         }
-        className={`${jetbrainsMono.className} flex h-11 w-[200px] items-center gap-3 bg-neutral-200 px-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-900 shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-neutral-300/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`}
+        className={`${jetbrainsMono.className} flex h-11 w-[200px] items-center gap-3 rounded-t-xl bg-neutral-200 px-4 text-[12px] font-semibold uppercase tracking-[0.08em] text-neutral-900 shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-colors hover:bg-neutral-300/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`}
       >
         <span style={{ color: HOPAMINE_BLUE }}>
           <ChatTabIcon />
@@ -78,7 +63,7 @@ function ZimaChatDockCollapsedTab({
         <span className="flex-1 text-left">Messages</span>
         {unreadTotal > 0 ? (
           <span
-            className="flex h-6 min-w-6 items-center justify-center px-1.5 text-[12px] text-white"
+            className="flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-[12px] text-white"
             style={{ backgroundColor: HOPAMINE_BLUE }}
           >
             {unreadTotal}
@@ -99,10 +84,6 @@ function ZimaChatDockPanel({
   sendError,
   onDismissSendError,
   draftMessage,
-  inboxFilter,
-  showNewMessageSearch,
-  onInboxFilterChange,
-  onToggleNewMessageSearch,
   onPickNewMessageUser,
   onSelectConversation,
   onDraftMessageChange,
@@ -119,10 +100,6 @@ function ZimaChatDockPanel({
   sendError: string | null;
   onDismissSendError: () => void;
   draftMessage: string;
-  inboxFilter: InboxFilterId;
-  showNewMessageSearch: boolean;
-  onInboxFilterChange: (inboxFilter: InboxFilterId) => void;
-  onToggleNewMessageSearch: () => void;
   onPickNewMessageUser: (userId: Id<"users">) => void;
   onSelectConversation: (conversationId: string) => void;
   onDraftMessageChange: (draftMessage: string) => void;
@@ -133,44 +110,14 @@ function ZimaChatDockPanel({
   return (
     <section
       aria-label="Messages"
-      className="flex h-[420px] w-[610px] flex-col bg-white shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+      className="flex h-[420px] w-[610px] flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
     >
-      <header className="flex h-10 shrink-0 items-center gap-1.5 bg-[#bbbbbb] px-2">
-        {INBOX_FILTERS.map((filter) => {
-          const isOn = filter.id === inboxFilter && !showNewMessageSearch;
-          return (
-            <button
-              key={filter.id}
-              type="button"
-              onClick={() => onInboxFilterChange(filter.id)}
-              aria-pressed={isOn}
-              className={`${filterChipClass} ${
-                isOn
-                  ? "text-white"
-                  : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
-              }`}
-              style={isOn ? { backgroundColor: HOPAMINE_BLUE } : undefined}
-            >
-              {filter.id === "active" ? (
-                <span aria-hidden className="h-1.5 w-1.5 bg-emerald-500" />
-              ) : null}
-              {filter.label}
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          onClick={onToggleNewMessageSearch}
-          aria-pressed={showNewMessageSearch}
-          className={`${filterChipClass} ${
-            showNewMessageSearch
-              ? "text-white"
-              : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
-          }`}
-          style={showNewMessageSearch ? { backgroundColor: HOPAMINE_BLUE } : undefined}
+      <header className="flex h-10 shrink-0 items-center bg-[#bbbbbb] px-4">
+        <h2
+          className={`${jetbrainsMono.className} text-[11px] font-semibold uppercase tracking-wide text-neutral-900`}
         >
-          + New
-        </button>
+          Messages
+        </h2>
         <span className="flex-1" />
         <button
           type="button"
@@ -178,23 +125,22 @@ function ZimaChatDockPanel({
           aria-label="Minimize messages"
           className={headerIconButtonClass}
         >
-          <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4" stroke="currentColor" strokeWidth="2">
+          <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M3 3l10 10M13 3 3 13" />
           </svg>
         </button>
       </header>
 
       <div className="flex min-h-0 flex-1">
-        {showNewMessageSearch ? (
-          <ZimaChatDockNewMessage onPickUser={onPickNewMessageUser} />
-        ) : (
+        <div className="flex w-[240px] shrink-0 flex-col border-r border-neutral-300 bg-neutral-50">
           <ZimaChatDockInbox
             conversations={conversations}
             loadingConversations={loadingConversations}
             selectedConversationId={selectedConversation?.id ?? null}
             onSelectConversation={onSelectConversation}
           />
-        )}
+          <ZimaChatDockNewMessage onPickUser={onPickNewMessageUser} />
+        </div>
         <ZimaChatDockThread
           conversation={selectedConversation}
           messages={messages}
@@ -231,12 +177,10 @@ export function ZimaChatDock() {
 function ZimaChatDockSignedIn() {
   const {
     showDockPanel,
-    showNewMessageSearch,
     selectedConversationId,
     openDock,
     minimizeDock,
     selectConversation,
-    setShowNewMessageSearch,
     openConversationWith,
     dockNotice,
     dismissDockNotice,
@@ -245,17 +189,11 @@ function ZimaChatDockSignedIn() {
   const unreadTotal = useZimaUnreadTotal();
   const { conversations, loadingConversations } =
     useZimaConversations(showDockPanel);
-  const [inboxFilter, setInboxFilter] = useState<InboxFilterId>("all");
   const [draftMessage, setDraftMessage] = useState("");
 
   const selectedConversation =
     conversations.find((conversation) => conversation.id === selectedConversationId) ??
     null;
-  const visibleConversations = conversations.filter((conversation) => {
-    if (inboxFilter === "unread") return (conversation.unreadCount ?? 0) > 0;
-    if (inboxFilter === "active") return conversation.isOnline === true;
-    return true;
-  });
 
   const thread = useZimaThread({
     conversationId: selectedConversationId,
@@ -277,7 +215,7 @@ function ZimaChatDockSignedIn() {
     <div className="fixed bottom-0 right-[max(24px,env(safe-area-inset-right))] z-30 hidden md:flex md:flex-col md:items-end">
       {showDockPanel ? (
         <ZimaChatDockPanel
-          conversations={visibleConversations}
+          conversations={conversations}
           loadingConversations={loadingConversations}
           selectedConversation={selectedConversation}
           messages={thread.messages}
@@ -286,13 +224,6 @@ function ZimaChatDockSignedIn() {
           sendError={thread.sendError ?? dockNotice}
           onDismissSendError={thread.sendError ? thread.dismissSendError : dismissDockNotice}
           draftMessage={draftMessage}
-          inboxFilter={inboxFilter}
-          showNewMessageSearch={showNewMessageSearch}
-          onInboxFilterChange={(filter) => {
-            setInboxFilter(filter);
-            setShowNewMessageSearch(false);
-          }}
-          onToggleNewMessageSearch={() => setShowNewMessageSearch(!showNewMessageSearch)}
           onPickNewMessageUser={(userId) => void openConversationWith(userId)}
           onSelectConversation={(conversationId) => {
             setDraftMessage("");

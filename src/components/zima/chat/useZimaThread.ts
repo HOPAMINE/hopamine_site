@@ -1,7 +1,12 @@
 "use client";
 
 import type { OptimisticLocalStore } from "convex/browser";
-import { insertAtTop, useMutation, usePaginatedQuery } from "convex/react";
+import {
+  insertAtTop,
+  useConvexAuth,
+  useMutation,
+  usePaginatedQuery,
+} from "convex/react";
 import { ConvexError } from "convex/values";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
@@ -50,7 +55,9 @@ export function useZimaThread({
   showDockPanel,
   unreadCount,
 }: Options) {
-  const threadActive = showDockPanel && conversationId !== null;
+  // messages.list throws for anonymous callers; hold the subscription until Convex auth is settled.
+  const { isAuthenticated } = useConvexAuth();
+  const threadActive = isAuthenticated && showDockPanel && conversationId !== null;
   const {
     results: newestFirstMessages,
     status,
