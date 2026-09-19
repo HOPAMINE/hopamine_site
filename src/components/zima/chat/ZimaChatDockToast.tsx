@@ -14,7 +14,7 @@ export function ZimaChatDockToast({ message, onDismiss }: Props) {
   return (
     <div
       role="alert"
-      className={`${jetbrainsMono.className} absolute inset-x-0 bottom-0 flex items-start gap-3 bg-red-600 px-4 py-3 text-[11px] font-semibold leading-snug text-white`}
+      className={`${jetbrainsMono.className} absolute inset-x-3 bottom-2 flex items-start gap-3 rounded-xl bg-red-600 px-4 py-3 text-[11px] font-semibold leading-snug text-white`}
       style={{
         animation: `zima-chat-toast ${CHAT_TOAST_DURATION_MS}ms ease-in-out forwards`,
       }}

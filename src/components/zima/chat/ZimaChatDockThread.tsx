@@ -72,27 +72,12 @@ export function ZimaChatDockThread({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col bg-white">
-      <header className="bg-neutral-200 px-3 pb-2.5">
-        <div className="flex gap-1" aria-hidden="true">
-          {[0, 1, 2].map((index) => (
-            <span key={index} className="h-1.5 w-8 bg-[#00a6f3]" />
-          ))}
-        </div>
-        <div className="mt-2 flex items-baseline justify-between gap-3">
-          <h2
-            className={`${newsreader.className} truncate text-[17px] leading-tight text-neutral-900`}
-          >
-            {conversation.participantName}
-          </h2>
-          {conversation.isOnline ? (
-            <span
-              className={`${jetbrainsMono.className} flex shrink-0 items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wide text-emerald-600`}
-            >
-              <span aria-hidden className="h-1.5 w-1.5 bg-emerald-500" />
-              Active now
-            </span>
-          ) : null}
-        </div>
+      <header className="bg-neutral-200 px-3 py-2.5">
+        <h2
+          className={`${newsreader.className} truncate text-[17px] leading-tight text-neutral-900`}
+        >
+          {conversation.participantName}
+        </h2>
       </header>
 
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -125,10 +110,10 @@ export function ZimaChatDockThread({
             className={`flex flex-col ${message.sender === "me" ? "items-end" : "items-start"} ${message.isPending ? "opacity-60" : ""}`}
           >
             <p
-              className={`${jetbrainsMono.className} max-w-[85%] whitespace-pre-wrap break-words px-3 py-2 text-[12px] leading-relaxed ${
+              className={`${jetbrainsMono.className} max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[12px] leading-relaxed ${
                 message.sender === "me"
-                  ? "text-white"
-                  : "bg-neutral-200 text-neutral-900"
+                  ? "rounded-br-md text-white"
+                  : "rounded-bl-md bg-neutral-200 text-neutral-900"
               }`}
               style={
                 message.sender === "me"
@@ -153,7 +138,7 @@ export function ZimaChatDockThread({
       </div>
       <form
         onSubmit={submit}
-        className="flex items-stretch gap-2 bg-neutral-200 px-2 py-2"
+        className="flex items-center gap-2 bg-neutral-200 px-3 py-2"
       >
         <textarea
           value={draftMessage}
@@ -162,13 +147,13 @@ export function ZimaChatDockThread({
           rows={1}
           placeholder={`Message ${conversation.participantName.split(" ")[0]}`}
           aria-label={`Message ${conversation.participantName}`}
-          className={`${jetbrainsMono.className} max-h-[40px] min-h-[40px] min-w-0 flex-1 resize-none bg-transparent py-2 pl-2 text-[13px] leading-snug text-neutral-800 outline-none placeholder:text-neutral-400`}
+          className={`${jetbrainsMono.className} max-h-[40px] min-h-[40px] min-w-0 flex-1 resize-none rounded-full bg-white px-4 py-2.5 text-[13px] leading-snug text-neutral-800 outline-none placeholder:text-neutral-400`}
         />
         <button
           type="submit"
           disabled={!canSend}
           aria-label="Send"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-none text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
           style={{ backgroundColor: HOPAMINE_BLUE }}
         >
           <svg
@@ -178,8 +163,8 @@ export function ZimaChatDockThread({
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="square"
-            strokeLinejoin="miter"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
             <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" />
           </svg>

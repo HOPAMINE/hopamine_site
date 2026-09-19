@@ -20,12 +20,10 @@ const convexConfigured = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 type ZimaChatDockContextValue = {
   chatAvailable: boolean;
   showDockPanel: boolean;
-  showNewMessageSearch: boolean;
   selectedConversationId: Id<"conversations"> | null;
   openDock: () => void;
   minimizeDock: () => void;
   selectConversation: (conversationId: Id<"conversations">) => void;
-  setShowNewMessageSearch: (show: boolean) => void;
   openConversationWith: (otherUserId: Id<"users">) => Promise<void>;
   /** Result cards call this. Opens the dock and starts the thread, or shows a notice when the profile has no real user behind it. */
   openConversationWithProfile: (profile: {
@@ -39,12 +37,10 @@ type ZimaChatDockContextValue = {
 const disabledContextValue: ZimaChatDockContextValue = {
   chatAvailable: false,
   showDockPanel: false,
-  showNewMessageSearch: false,
   selectedConversationId: null,
   openDock: () => {},
   minimizeDock: () => {},
   selectConversation: () => {},
-  setShowNewMessageSearch: () => {},
   openConversationWith: async () => {},
   openConversationWithProfile: async () => {},
   dockNotice: null,
@@ -56,7 +52,6 @@ const ZimaChatDockContext =
 
 function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
   const [showDockPanel, setShowDockPanel] = useState(false);
-  const [showNewMessageSearch, setShowNewMessageSearch] = useState(false);
   const [selectedConversationId, setSelectedConversationId] =
     useState<Id<"conversations"> | null>(null);
   const [dockNotice, setDockNotice] = useState<string | null>(null);
@@ -84,7 +79,6 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
   const minimizeDock = useCallback(() => setShowDockPanel(false), []);
   const selectConversation = useCallback((conversationId: Id<"conversations">) => {
     setSelectedConversationId(conversationId);
-    setShowNewMessageSearch(false);
   }, []);
   const openConversationWith = useCallback(
     async (otherUserId: Id<"users">) => {
@@ -92,7 +86,6 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
       try {
         const conversationId = await getOrCreateDirectConversation({ otherUserId });
         setSelectedConversationId(conversationId);
-        setShowNewMessageSearch(false);
       } catch {
         showDockNotice("Couldn't open that conversation. Try again in a moment.");
       }
@@ -118,12 +111,10 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
     () => ({
       chatAvailable: true,
       showDockPanel,
-      showNewMessageSearch,
       selectedConversationId,
       openDock,
       minimizeDock,
       selectConversation,
-      setShowNewMessageSearch,
       openConversationWith,
       openConversationWithProfile,
       dockNotice,
@@ -131,7 +122,6 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
     }),
     [
       showDockPanel,
-      showNewMessageSearch,
       selectedConversationId,
       openDock,
       minimizeDock,
