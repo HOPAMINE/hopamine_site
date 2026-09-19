@@ -46,7 +46,7 @@ export function ZimaAuthShell({
       <div
         className={
           artImageSrc
-            ? "relative flex min-h-dvh items-center justify-center bg-white px-6 py-[max(24px,env(safe-area-inset-bottom))]"
+            ? "relative flex min-h-dvh items-center justify-center overflow-y-auto bg-white px-6 py-[max(24px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]"
             : "relative min-h-dvh bg-white px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(80px,env(safe-area-inset-top))]"
         }
       >
@@ -57,19 +57,25 @@ export function ZimaAuthShell({
         {artImageSrc ? (
           <div className="mx-auto flex w-full max-w-lg flex-col gap-3">
             {alert}
-            <div className="relative">
+            <div className="relative w-full overflow-hidden rounded-2xl">
               <Image
                 src={artImageSrc}
                 alt=""
-                width={512}
-                height={512}
+                fill
                 priority
-                className="aspect-square w-full h-auto"
+                sizes="(max-width: 512px) 100vw, 32rem"
+                className="object-cover object-center"
               />
-              <div className="absolute inset-x-0 top-6 flex justify-center">
-                <ZimaLogo priority linked={false} size="large" />
+              <div
+                className="relative z-10 flex min-h-[34rem] w-full flex-col sm:min-h-[36rem]"
+              >
+                <div className="flex justify-center px-5 pt-6 pb-2">
+                  <ZimaLogo priority linked={false} size="large" />
+                </div>
+                <div className="mt-auto flex flex-col px-5 pb-5 pt-2">
+                  {children}
+                </div>
               </div>
-              <div className="absolute inset-x-5 bottom-5">{children}</div>
             </div>
           </div>
         ) : (

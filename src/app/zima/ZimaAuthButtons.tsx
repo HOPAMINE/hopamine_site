@@ -25,11 +25,11 @@ const HOPAMINE_BLUE = "#00a6f3";
 const navClass =
   "fixed right-[max(20px,env(safe-area-inset-right))] top-[max(20px,env(safe-area-inset-top))] z-30 flex items-center gap-2";
 
-const linkBase = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-none px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`;
+const linkBase = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-xl px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`;
 
 const menuItemClass = `${jetbrainsMono.className} block w-full px-3 py-2 text-left text-[13px] font-semibold uppercase tracking-wide text-neutral-800 transition-colors hover:bg-neutral-50`;
 
-const openingBadgeClass = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-none bg-neutral-100 px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-700`;
+const openingBadgeClass = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-xl bg-neutral-100 px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-700`;
 
 function displayCityName(location: string | undefined): string {
   const trimmed = location?.trim();

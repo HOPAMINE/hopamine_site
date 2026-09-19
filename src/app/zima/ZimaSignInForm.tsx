@@ -130,6 +130,7 @@ export function ZimaSignInForm() {
         <ZimaAuthField
           id="zima-signin-email"
           label="Email"
+          variant="rounded"
           type="email"
           autoComplete="email"
           value={email}
@@ -148,6 +149,7 @@ export function ZimaSignInForm() {
           <ZimaAuthField
             id="zima-signin-password"
             label="Password"
+            variant="rounded"
             type="password"
             autoComplete="current-password"
             value={password}

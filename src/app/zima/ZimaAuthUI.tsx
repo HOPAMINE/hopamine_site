@@ -23,7 +23,7 @@ function fieldClassForVariant(variant: "square" | "rounded") {
 
 export function ZimaAuthCard({ children }: { children: ReactNode }) {
   return (
-    <div className="border border-neutral-200 bg-neutral-100 p-6 shadow-none">
+    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 p-6 shadow-none">
       {children}
     </div>
   );
@@ -124,7 +124,7 @@ export function ZimaAuthSubmitButton({
     <button
       type="submit"
       disabled={disabled}
-      className={`${jetbrainsMono.className} w-full rounded-none px-4 py-3 text-[13.5px] font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40`}
+      className={`${jetbrainsMono.className} flex h-12 w-full items-center justify-center rounded-xl px-6 text-[15px] font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40`}
       style={{ backgroundColor: HOPAMINE_BLUE }}
     >
       {label}
@@ -146,7 +146,7 @@ export function ZimaAuthGoogleButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${jetbrainsMono.className} flex w-full items-center justify-center gap-3 rounded-none border border-neutral-300 bg-white px-4 py-3 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-900 transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40`}
+      className={`${jetbrainsMono.className} flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-900 transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40`}
     >
       {loading ? (
         <>

@@ -200,6 +200,7 @@ export function ZimaSignUpForm() {
             <ZimaAuthField
               id="zima-signup-code"
               label="Verification code"
+              variant="rounded"
               inputMode="numeric"
               autoComplete="one-time-code"
               value={code}
@@ -241,6 +242,7 @@ export function ZimaSignUpForm() {
               <ZimaAuthField
                 id="zima-signup-email"
                 label="Email"
+                variant="rounded"
                 type="email"
                 autoComplete="email"
                 value={email}
@@ -251,6 +253,7 @@ export function ZimaSignUpForm() {
               <ZimaAuthField
                 id="zima-signup-password"
                 label="Password"
+                variant="rounded"
                 type="password"
                 autoComplete="new-password"
                 value={password}
@@ -258,7 +261,7 @@ export function ZimaSignUpForm() {
                 placeholder="Create a password"
                 required
               />
-              <div id="clerk-captcha" />
+              <div id="clerk-captcha" className="min-h-[78px] w-full" />
               <ZimaAuthSubmitButton
                 disabled={loading || !isLoaded}
                 label={loading ? "Creating account…" : "Continue"}
