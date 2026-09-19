@@ -49,7 +49,7 @@ export function ZimaSearchResultCards({
                     : undefined
                 }
                 footer={
-                  <ZimaSearchMessageButton profileId={profile.id} />
+                  <ZimaSearchMessageButton profileId={profile.id} displayName={profile.name} />
                 }
               />
             </div>

@@ -15,6 +15,7 @@ import {
 import { jetbrainsMono } from "../../../fonts";
 import { toZimaProfileData } from "./ZimaProfileCard";
 import { ZimaProfileEditModal } from "./ZimaProfileEditModal";
+import { useZimaChatDock } from "@/components/zima/chat/ZimaChatDockProvider";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
@@ -52,10 +53,17 @@ function ZimaChatNavLink() {
   const hostname =
     typeof window === "undefined" ? "" : window.location.hostname;
   const href = getZimaPath("chats", hostname);
+  const { chatAvailable, openDock } = useZimaChatDock();
 
   return (
     <Link
       href={href}
+      onClick={(event) => {
+        if (!chatAvailable) return;
+        if (!window.matchMedia("(min-width: 768px)").matches) return;
+        event.preventDefault();
+        openDock();
+      }}
       aria-label="Messages"
       className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]"
       style={{ color: HOPAMINE_BLUE }}

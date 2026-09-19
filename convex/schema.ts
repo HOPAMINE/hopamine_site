@@ -148,4 +148,33 @@ export default defineSchema({
     isOnline: v.boolean(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  conversations: defineTable({
+    kind: v.literal("direct"),
+    /** Sorted pair of participant user ids, so get-or-create is idempotent. */
+    directKey: v.string(),
+    lastMessageAt: v.number(),
+    lastMessagePreview: v.string(),
+    lastMessageSenderId: v.optional(v.id("users")),
+    createdAt: v.number(),
+  }).index("by_direct_key", ["directKey"]),
+
+  conversationMembers: defineTable({
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
+    /** Watermark: createdAt of the newest message this member has read. */
+    lastReadAt: v.number(),
+    unreadCount: v.number(),
+    /** Copy of conversations.lastMessageAt so the inbox sorts on one index. */
+    lastMessageAt: v.number(),
+  })
+    .index("by_user_and_last_message_at", ["userId", "lastMessageAt"])
+    .index("by_conversation_and_user", ["conversationId", "userId"]),
+
+  messages: defineTable({
+    conversationId: v.id("conversations"),
+    senderId: v.id("users"),
+    body: v.string(),
+    createdAt: v.number(),
+  }).index("by_conversation", ["conversationId"]),
 });

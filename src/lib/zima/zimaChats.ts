@@ -1,4 +1,4 @@
-/** Placeholder inbox until Zima DMs are backed by Convex. */
+/** Placeholder inbox, still rendered by the mobile /chats page. The desktop dock reads Convex. */
 export type ZimaConversation = {
   id: string;
   participantName: string;
@@ -7,6 +7,8 @@ export type ZimaConversation = {
   lastMessage: string;
   lastMessageAt: string;
   unreadCount?: number;
+  otherUserId?: string;
+  isOnline?: boolean;
 };
 
 export const ZIMA_CONVERSATIONS: ZimaConversation[] = [
@@ -58,3 +60,38 @@ export const ZIMA_CONVERSATIONS: ZimaConversation[] = [
     lastMessageAt: "Last week",
   },
 ];
+
+export type ZimaThreadMessageSender = "me" | "them";
+
+export type ZimaThreadMessage = {
+  id: string;
+  sender: ZimaThreadMessageSender;
+  body: string;
+  sentAtLabel: string;
+  isPending?: boolean;
+};
+
+/** Placeholder threads for the placeholder inbox above. Nothing live reads these. */
+export const ZIMA_THREAD_MESSAGES: Record<string, ZimaThreadMessage[]> = {
+  "marco-reyes": [
+    { id: "marco-1", sender: "them", body: "Yo, you still doing the bridge stairs this week?", sentAtLabel: "Today 8:40 AM" },
+    { id: "marco-2", sender: "me", body: "Thinking about it. What time?", sentAtLabel: "Today 8:52 AM" },
+    { id: "marco-3", sender: "them", body: "Sunrise stairs at the bridge tomorrow — you in?", sentAtLabel: "Today 9:12 AM" },
+    { id: "marco-4", sender: "them", body: "Bring the nurses from the night shift if they're up for it.", sentAtLabel: "Today 9:13 AM" },
+  ],
+  "zee-kwon": [
+    { id: "zee-1", sender: "me", body: "Did the warehouse confirm the date?", sentAtLabel: "Yesterday 6:10 PM" },
+    { id: "zee-2", sender: "them", body: "Sent you the warehouse lineup draft.", sentAtLabel: "Yesterday 7:02 PM" },
+  ],
+  "sasha-morrow": [
+    { id: "sasha-1", sender: "them", body: "Tenant meeting notes are in the shared doc.", sentAtLabel: "Mon 4:30 PM" },
+    { id: "sasha-2", sender: "me", body: "Perfect, reading now.", sentAtLabel: "Mon 4:41 PM" },
+  ],
+  "kenji-sato": [
+    { id: "kenji-1", sender: "me", body: "What if the zine cover is the rooftop garden?", sentAtLabel: "Sun 1:15 PM" },
+    { id: "kenji-2", sender: "them", body: "Love the rooftop garden idea for the zine.", sentAtLabel: "Sun 2:03 PM" },
+  ],
+  "riley-chen": [
+    { id: "riley-1", sender: "them", body: "Can you intro me to the community board lead?", sentAtLabel: "Last week" },
+  ],
+};
