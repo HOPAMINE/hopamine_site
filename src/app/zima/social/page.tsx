@@ -3,6 +3,7 @@ import { NYC_SOCIAL_PROFILES } from "@/lib/social/nycProfiles";
 import { jetbrainsMono, newsreader } from "../../../../fonts";
 import { SocialCard } from "../../social/SocialCard";
 import { ZimaLogo } from "../ZimaLogo";
+import { ZIMA_FIXED_LOGO_POSITION } from "../zimaLogoPlacement";
 
 export default function ZimaSocialPage() {
   return (
@@ -10,7 +11,7 @@ export default function ZimaSocialPage() {
       <SocialMouseTrail />
       <ZimaLogo
         priority
-        className="fixed left-[max(20px,env(safe-area-inset-left))] top-[max(20px,env(safe-area-inset-top))] z-10"
+        className={`${ZIMA_FIXED_LOGO_POSITION} z-10`}
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl">

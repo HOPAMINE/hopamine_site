@@ -30,7 +30,7 @@ export function ZimaComposer({
 
   if (!isChatMode) {
     return (
-      <div className={`flex flex-col ${ZIMA_LANDING_SEARCH_WIDTH}`}>
+      <div className={`mx-auto flex w-full flex-col ${ZIMA_LANDING_SEARCH_WIDTH}`}>
         <ZimaComposerFields
           chat={chat}
           onEnterChatMode={onEnterChatMode}

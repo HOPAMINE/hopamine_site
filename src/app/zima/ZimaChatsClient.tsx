@@ -7,21 +7,26 @@ import { jetbrainsMono, newsreader } from "../../../fonts";
 import { getZimaPath } from "@/lib/zima/routes";
 import { ZIMA_CONVERSATIONS } from "@/lib/zima/zimaChats";
 import { ZimaLogo } from "./ZimaLogo";
+import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
+import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
+import { ZIMA_FIXED_LOGO_POSITION } from "./zimaLogoPlacement";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
 export function ZimaChatsClient() {
   const [searchHref, setSearchHref] = useState("/zima/search");
+  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
 
   useEffect(() => {
     setSearchHref(getZimaPath("search", window.location.hostname));
   }, []);
 
   return (
-    <div className="relative min-h-dvh bg-white px-6 pb-24 pt-[max(80px,env(safe-area-inset-top))]">
+    <div className="relative flex min-h-dvh flex-col bg-white md:block">
+      <div className="flex-1 px-6 pb-4 pt-[max(80px,env(safe-area-inset-top))] md:pb-24">
       <ZimaLogo
         priority
-        className="fixed left-[max(20px,env(safe-area-inset-left))] top-[max(20px,env(safe-area-inset-top))] z-10"
+        className={`${ZIMA_FIXED_LOGO_POSITION} z-10`}
       />
 
       <div className="relative z-10 mx-auto w-full max-w-2xl">
@@ -105,6 +110,13 @@ export function ZimaChatsClient() {
           </ul>
         )}
       </div>
+      </div>
+      <ZimaMobileBottomNav
+        active="chats"
+        homeHref={homeHref}
+        chatsHref={chatsHref}
+        profileHref={profileHref}
+      />
     </div>
   );
 }

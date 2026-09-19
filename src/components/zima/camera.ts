@@ -54,10 +54,10 @@ const forwardLng = (from: number, to: number) =>
 const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-/** Zoom at which the sphere spans GLOBE_FILL of the container's shorter side. */
-export function fitGlobeZoom(el: HTMLElement): number {
+/** Zoom at which the sphere spans `fill` of the container's shorter side. */
+export function fitGlobeZoom(el: HTMLElement, fill = GLOBE_FILL): number {
   const side = Math.min(el.clientWidth, el.clientHeight);
-  const zoom = 2 + Math.log2((GLOBE_FILL * side) / GLOBE_DIAMETER_AT_ZOOM_2);
+  const zoom = 2 + Math.log2((fill * side) / GLOBE_DIAMETER_AT_ZOOM_2);
   return Number.isFinite(zoom) && zoom > 0 ? zoom : FALLBACK_ZOOM;
 }
 

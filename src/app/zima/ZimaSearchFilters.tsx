@@ -12,21 +12,13 @@ import {
 //   NYC_UNIVERSITIES,
 //   getUniversityById,
 // } from "@/lib/zima/nycUniversities";
-import { ARCHETYPE_BADGES, type ArchetypeId } from "@/lib/archetypes";
+import { ARCHETYPE_OPTIONS, type ArchetypeId } from "@/lib/archetypes";
 import { buildSearchPromptFromFilters } from "@/lib/zima/searchPrompt";
 import { jetbrainsMono } from "../../../fonts";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
-const TOGGLE_FILTERS = [
-  { id: "organizations", label: "Organizations" },
-  { id: "builders", label: "Builders" },
-] as const;
-
-type ToggleFilterId = (typeof TOGGLE_FILTERS)[number]["id"];
-
-const MIN_AGE_FLOOR = 18;
-const MAX_AGE_CEILING = 99;
+type ToggleFilterId = "builders";
 
 const INTEREST_OPTIONS = [
   "Climate",
@@ -41,6 +33,135 @@ const INTEREST_OPTIONS = [
   "Education",
 ] as const;
 
+const ORGANIZATION_OPTIONS = [
+  "Civic",
+  "Community",
+  "Startups",
+  "Accelerators",
+  "Climate",
+  "Open source",
+  "Education",
+  "Nonprofit",
+  "Research",
+  "Arts & culture",
+  "Government",
+  "Venture",
+] as const;
+
+const FILTER_CHECKBOX_PX = 20;
+const FILTER_CHECKMARK_PX = 14;
+const FILTER_CHECKBOX_OFF = "#D9D9D9";
+
+function FilterCheckboxBox({ isOn }: { isOn: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className="inline-flex flex-none items-center justify-center rounded-none"
+      style={{
+        width: FILTER_CHECKBOX_PX,
+        height: FILTER_CHECKBOX_PX,
+        minWidth: FILTER_CHECKBOX_PX,
+        minHeight: FILTER_CHECKBOX_PX,
+        backgroundColor: isOn ? HOPAMINE_BLUE : FILTER_CHECKBOX_OFF,
+        boxShadow: isOn
+          ? undefined
+          : "inset 0 0 0 1px rgba(0, 0, 0, 0.18)",
+      }}
+    >
+      {isOn ? (
+        <svg
+          viewBox="0 0 12 12"
+          width={FILTER_CHECKMARK_PX}
+          height={FILTER_CHECKMARK_PX}
+          className="block shrink-0"
+          fill="none"
+          stroke="white"
+          strokeWidth="1.75"
+          strokeLinecap="square"
+        >
+          <path d="M2.5 6l2.5 2.5L9.5 4" />
+        </svg>
+      ) : null}
+    </span>
+  );
+}
+
+function FilterCheckbox({
+  label,
+  isOn,
+  onClick,
+  children,
+  ariaExpanded,
+  ariaControls,
+  opensPopover = false,
+  className = "",
+}: {
+  label: string;
+  isOn: boolean;
+  onClick: () => void;
+  children?: ReactNode;
+  ariaExpanded?: boolean;
+  ariaControls?: string;
+  opensPopover?: boolean;
+  className?: string;
+}) {
+  const inputId = useId();
+  const rowClass = `${jetbrainsMono.className} inline-flex h-8 shrink-0 cursor-pointer items-center gap-2.5 bg-transparent px-1 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-800 sm:text-[12px] ${className}`;
+  const labelClass =
+    className.includes("w-full")
+      ? "min-w-0 flex-1 truncate"
+      : "max-w-[12rem] truncate sm:max-w-[15rem]";
+  if (opensPopover) {
+    return (
+      <span
+        role="button"
+        tabIndex={0}
+        aria-expanded={ariaExpanded}
+        aria-controls={ariaControls}
+        className={rowClass}
+        onClick={() => onClick()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onClick();
+          }
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isOn}
+          readOnly
+          tabIndex={-1}
+          aria-hidden
+          className="hidden"
+        />
+        <FilterCheckboxBox isOn={isOn} />
+        {children}
+        <span className={labelClass} title={label}>
+          {label}
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <label htmlFor={inputId} className={rowClass}>
+      <input
+        id={inputId}
+        type="checkbox"
+        checked={isOn}
+        onChange={() => onClick()}
+        className="hidden"
+      />
+      <FilterCheckboxBox isOn={isOn} />
+      {children}
+      <span className={labelClass} title={label}>
+        {label}
+      </span>
+    </label>
+  );
+}
+
 type Props = {
   className?: string;
   /** Under the search field in the grey composer strip. */
@@ -49,43 +170,6 @@ type Props = {
   /** Keeps the search textarea in sync with the active filters. */
   onPromptChange?: (prompt: string) => void;
 };
-
-function FilterButton({
-  label,
-  isOn,
-  onClick,
-  children,
-  ariaExpanded,
-  ariaControls,
-}: {
-  label: string;
-  isOn: boolean;
-  onClick: () => void;
-  children?: ReactNode;
-  ariaExpanded?: boolean;
-  ariaControls?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={isOn}
-      aria-expanded={ariaExpanded}
-      aria-controls={ariaControls}
-      className={`${jetbrainsMono.className} inline-flex h-7 shrink-0 items-center gap-1.5 px-2.5 text-[9px] font-semibold uppercase tracking-wide transition-colors sm:text-[10px] ${
-        isOn
-          ? "text-white"
-          : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
-      }`}
-      style={isOn ? { backgroundColor: HOPAMINE_BLUE } : undefined}
-    >
-      {children}
-      <span className="max-w-[9rem] truncate sm:max-w-[11rem]" title={label}>
-        {label}
-      </span>
-    </button>
-  );
-}
 
 export function ZimaSearchFilters({
   className = "",
@@ -97,22 +181,20 @@ export function ZimaSearchFilters({
   const [archetypes, setArchetypes] = useState<Set<ArchetypeId>>(() => new Set());
   const [activeOnly, setActiveOnly] = useState(false);
   const [interests, setInterests] = useState<Set<string>>(() => new Set());
-  const [ageRange, setAgeRange] = useState<{ min: number; max: number } | null>(
-    null,
+  const [organizationTypes, setOrganizationTypes] = useState<Set<string>>(
+    () => new Set(),
   );
-  const [ageDraftMin, setAgeDraftMin] = useState(MIN_AGE_FLOOR);
-  const [ageDraftMax, setAgeDraftMax] = useState(MAX_AGE_CEILING);
-  const [cityNyc, setCityNyc] = useState(true);
+  const cityNyc = true;
   // const [universityId, setUniversityId] = useState<string | null>(null);
   // const [universityQuery, setUniversityQuery] = useState("");
   const [interestsOpen, setInterestsOpen] = useState(false);
+  const [organizationsOpen, setOrganizationsOpen] = useState(false);
   const [archetypesOpen, setArchetypesOpen] = useState(false);
-  const [ageOpen, setAgeOpen] = useState(false);
   // const [universityOpen, setUniversityOpen] = useState(false);
 
   const interestsPanelId = useId();
+  const organizationsPanelId = useId();
   const archetypesPanelId = useId();
-  const agePanelId = useId();
   // const universityPanelId = useId();
   // const universitySearchId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -123,8 +205,8 @@ export function ZimaSearchFilters({
       const root = rootRef.current;
       if (!root || root.contains(event.target as Node)) return;
       setInterestsOpen(false);
+      setOrganizationsOpen(false);
       setArchetypesOpen(false);
-      setAgeOpen(false);
       // setUniversityOpen(false);
     }
     document.addEventListener("mousedown", onPointerDown);
@@ -132,10 +214,10 @@ export function ZimaSearchFilters({
   }, []);
 
   function closeOtherPopovers(
-    except?: "age" | "interests" | "archetypes",
+    except?: "interests" | "organizations" | "archetypes",
   ) {
-    if (except !== "age") setAgeOpen(false);
     if (except !== "interests") setInterestsOpen(false);
+    if (except !== "organizations") setOrganizationsOpen(false);
     if (except !== "archetypes") setArchetypesOpen(false);
     // if (except !== "university") setUniversityOpen(false);
   }
@@ -147,9 +229,9 @@ export function ZimaSearchFilters({
         toggles,
         archetypes,
         interests,
+        organizationTypes,
         activeOnly,
         proximity: null,
-        ageRange,
         universityId: null,
         cityNyc,
       }),
@@ -159,42 +241,10 @@ export function ZimaSearchFilters({
     toggles,
     archetypes,
     interests,
+    organizationTypes,
     activeOnly,
-    ageRange,
     cityNyc,
   ]);
-
-  function clampAge(value: number): number {
-    return Math.min(MAX_AGE_CEILING, Math.max(MIN_AGE_FLOOR, value));
-  }
-
-  function openAgeModal() {
-    closeOtherPopovers("age");
-    if (ageRange) {
-      setAgeDraftMin(ageRange.min);
-      setAgeDraftMax(ageRange.max);
-    } else {
-      setAgeDraftMin(MIN_AGE_FLOOR);
-      setAgeDraftMax(MAX_AGE_CEILING);
-    }
-    setAgeOpen(true);
-  }
-
-  function applyAgeRange() {
-    const min = clampAge(ageDraftMin);
-    const max = clampAge(Math.max(min, ageDraftMax));
-    setAgeRange({ min, max });
-    setAgeDraftMin(min);
-    setAgeDraftMax(max);
-    setAgeOpen(false);
-  }
-
-  function clearAgeRange() {
-    setAgeRange(null);
-    setAgeDraftMin(MIN_AGE_FLOOR);
-    setAgeDraftMax(MAX_AGE_CEILING);
-    setAgeOpen(false);
-  }
 
   function toggleFilter(id: ToggleFilterId) {
     setToggles((prev) => {
@@ -214,6 +264,15 @@ export function ZimaSearchFilters({
     });
   }
 
+  function toggleOrganizationType(option: string) {
+    setOrganizationTypes((prev) => {
+      const next = new Set(prev);
+      if (next.has(option)) next.delete(option);
+      else next.add(option);
+      return next;
+    });
+  }
+
   function toggleArchetype(id: ArchetypeId) {
     setArchetypes((prev) => {
       const next = new Set(prev);
@@ -224,16 +283,15 @@ export function ZimaSearchFilters({
   }
 
   const interestsOn = interests.size > 0;
+  const organizationsOn = organizationTypes.size > 0;
   const archetypesOn = archetypes.size > 0;
   const archetypeButtonLabel =
     archetypes.size === 1
-      ? (ARCHETYPE_BADGES.find((badge) => badge.id === [...archetypes][0])
-          ?.title.replace(/^THE\s+/i, "") ?? "Archetypes")
+      ? (ARCHETYPE_OPTIONS.find((option) => option.id === [...archetypes][0])
+          ?.label ?? "Archetypes")
       : archetypes.size > 1
         ? `Archetypes (${archetypes.size})`
         : "Archetypes";
-  const ageOn = ageRange !== null;
-  const ageLabel = ageRange ? `${ageRange.min}–${ageRange.max}` : "Age";
   // const selectedUniversity = universityId
   //   ? getUniversityById(universityId)
   //   : undefined;
@@ -255,131 +313,77 @@ export function ZimaSearchFilters({
         role="group"
         aria-label="Search filters"
       >
-        <FilterButton
-          label="NYC"
-          isOn={cityNyc}
-          onClick={() => setCityNyc((on) => !on)}
-        />
-
-        {TOGGLE_FILTERS.map((filter) => (
-          <FilterButton
-            key={filter.id}
-            label={filter.label}
-            isOn={toggles.has(filter.id)}
-            onClick={() => toggleFilter(filter.id)}
-          />
-        ))}
+        <span
+          className={`${jetbrainsMono.className} inline-flex h-8 shrink-0 items-center px-1 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-800 sm:text-[12px]`}
+        >
+          Location: NYC
+        </span>
 
         <div className="relative">
-          <FilterButton
-            label={ageLabel}
-            isOn={ageOn}
-            ariaExpanded={ageOpen}
-            ariaControls={agePanelId}
+          <FilterCheckbox
+            label="Organizations"
+            isOn={organizationsOn}
+            opensPopover
+            ariaExpanded={organizationsOpen}
+            ariaControls={organizationsPanelId}
             onClick={() => {
-              if (ageOpen) {
-                setAgeOpen(false);
-              } else {
-                openAgeModal();
-              }
+              closeOtherPopovers("organizations");
+              setOrganizationsOpen((open) => !open);
             }}
           />
-          {ageOpen ? (
+          {organizationsOpen ? (
             <div
-              id={agePanelId}
+              id={organizationsPanelId}
               role="dialog"
-              aria-label="Age range"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(26rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              aria-label="Choose organization types"
+              className="absolute left-0 top-full z-50 mt-1 w-[min(18rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
               onMouseDown={(event) => event.stopPropagation()}
             >
               <p
-                className={`${jetbrainsMono.className} mb-3 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
+                className={`${jetbrainsMono.className} mb-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
               >
-                Age range
+                Organizations
               </p>
-              <div className="flex items-center gap-3">
-                <label className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span
-                    className={`${jetbrainsMono.className} text-[9px] font-semibold uppercase tracking-wide text-neutral-500`}
-                  >
-                    Min
-                  </span>
-                  <input
-                    type="number"
-                    min={MIN_AGE_FLOOR}
-                    max={MAX_AGE_CEILING}
-                    value={ageDraftMin}
-                    onChange={(event) => {
-                      const next = clampAge(
-                        Number.parseInt(event.target.value, 10) ||
-                          MIN_AGE_FLOOR,
-                      );
-                      setAgeDraftMin(next);
-                      if (ageDraftMax < next) setAgeDraftMax(next);
-                    }}
-                    className={`${jetbrainsMono.className} w-full bg-neutral-200 px-2 py-1.5 text-[12px] text-neutral-900 outline-none focus:ring-1 focus:ring-[#00a6f3]`}
-                  />
-                </label>
-                <span
-                  className={`${jetbrainsMono.className} mt-4 text-[10px] text-neutral-400`}
-                  aria-hidden
-                >
-                  –
-                </span>
-                <label className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span
-                    className={`${jetbrainsMono.className} text-[9px] font-semibold uppercase tracking-wide text-neutral-500`}
-                  >
-                    Max
-                  </span>
-                  <input
-                    type="number"
-                    min={MIN_AGE_FLOOR}
-                    max={MAX_AGE_CEILING}
-                    value={ageDraftMax}
-                    onChange={(event) => {
-                      const next = clampAge(
-                        Number.parseInt(event.target.value, 10) ||
-                          MAX_AGE_CEILING,
-                      );
-                      setAgeDraftMax(next);
-                      if (ageDraftMin > next) setAgeDraftMin(next);
-                    }}
-                    className={`${jetbrainsMono.className} w-full bg-neutral-200 px-2 py-1.5 text-[12px] text-neutral-900 outline-none focus:ring-1 focus:ring-[#00a6f3]`}
-                  />
-                </label>
-              </div>
-              <p
-                className={`${jetbrainsMono.className} mt-2 text-[9px] text-neutral-500`}
-              >
-                Minimum age {MIN_AGE_FLOOR}+
-              </p>
-              <div className="mt-3 flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={applyAgeRange}
-                  className={`${jetbrainsMono.className} flex-1 bg-[#00a6f3] px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white`}
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  onClick={clearAgeRange}
-                  className={`${jetbrainsMono.className} px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-600 hover:text-neutral-900`}
-                >
-                  Clear
-                </button>
+              <div className="flex flex-wrap gap-1.5">
+                {ORGANIZATION_OPTIONS.map((option) => {
+                  const selected = organizationTypes.has(option);
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => toggleOrganizationType(option)}
+                      aria-pressed={selected}
+                      className={`${jetbrainsMono.className} px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:text-[12px] ${
+                        selected
+                          ? "text-white"
+                          : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
+                      }`}
+                      style={
+                        selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
+                      }
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ) : null}
         </div>
 
+        <FilterCheckbox
+          label="Builders"
+          isOn={toggles.has("builders")}
+          onClick={() => toggleFilter("builders")}
+        />
+
         {/* University filter — hidden for now (state, import, and popover commented above). */}
 
         <div className="relative">
-          <FilterButton
+          <FilterCheckbox
             label={archetypeButtonLabel}
             isOn={archetypesOn}
+            opensPopover
             ariaExpanded={archetypesOpen}
             ariaControls={archetypesPanelId}
             onClick={() => {
@@ -392,7 +396,7 @@ export function ZimaSearchFilters({
               id={archetypesPanelId}
               role="dialog"
               aria-label="Choose archetypes"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(22rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              className="absolute left-0 top-full z-50 mt-1 w-[min(28rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
               onMouseDown={(event) => event.stopPropagation()}
             >
               <p
@@ -400,40 +404,26 @@ export function ZimaSearchFilters({
               >
                 Archetypes
               </p>
-              <div className="flex max-h-52 flex-col gap-1 overflow-y-auto">
-                {ARCHETYPE_BADGES.map((badge) => {
-                  const selected = archetypes.has(badge.id);
-                  return (
-                    <button
-                      key={badge.id}
-                      type="button"
-                      onClick={() => toggleArchetype(badge.id)}
-                      aria-pressed={selected}
-                      className={`${jetbrainsMono.className} flex w-full items-start gap-2 px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide transition-colors ${
-                        selected
-                          ? "text-white"
-                          : "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
-                      }`}
-                      style={
-                        selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
-                      }
-                    >
-                      <span aria-hidden>{badge.emoji}</span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate">{badge.title}</span>
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="grid max-h-52 grid-cols-2 gap-x-3 gap-y-0.5 overflow-y-auto">
+                {ARCHETYPE_OPTIONS.map((option) => (
+                  <FilterCheckbox
+                    key={option.id}
+                    className="w-full"
+                    label={option.label}
+                    isOn={archetypes.has(option.id)}
+                    onClick={() => toggleArchetype(option.id)}
+                  />
+                ))}
               </div>
             </div>
           ) : null}
         </div>
 
         <div className="relative">
-          <FilterButton
+          <FilterCheckbox
             label="Interests"
             isOn={interestsOn}
+            opensPopover
             ariaExpanded={interestsOpen}
             ariaControls={interestsPanelId}
             onClick={() => {
@@ -462,7 +452,7 @@ export function ZimaSearchFilters({
                       type="button"
                       onClick={() => toggleInterest(interest)}
                       aria-pressed={selected}
-                      className={`${jetbrainsMono.className} px-2 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors ${
+                      className={`${jetbrainsMono.className} px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:text-[12px] ${
                         selected
                           ? "text-white"
                           : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
@@ -480,18 +470,11 @@ export function ZimaSearchFilters({
           ) : null}
         </div>
 
-        <FilterButton
+        <FilterCheckbox
           label="Active"
           isOn={activeOnly}
           onClick={() => setActiveOnly((on) => !on)}
-        >
-          <span
-            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              activeOnly ? "bg-emerald-400" : "bg-emerald-500"
-            }`}
-            aria-hidden
-          />
-        </FilterButton>
+        />
       </div>
     </div>
   );
