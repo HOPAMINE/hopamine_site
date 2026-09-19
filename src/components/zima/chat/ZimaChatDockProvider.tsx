@@ -24,6 +24,7 @@ type ZimaChatDockContextValue = {
   openDock: () => void;
   minimizeDock: () => void;
   selectConversation: (conversationId: Id<"conversations">) => void;
+  closeConversation: () => void;
   openConversationWith: (otherUserId: Id<"users">) => Promise<void>;
   /** Result cards call this. Opens the dock and starts the thread, or shows a notice when the profile has no real user behind it. */
   openConversationWithProfile: (profile: {
@@ -41,6 +42,7 @@ const disabledContextValue: ZimaChatDockContextValue = {
   openDock: () => {},
   minimizeDock: () => {},
   selectConversation: () => {},
+  closeConversation: () => {},
   openConversationWith: async () => {},
   openConversationWithProfile: async () => {},
   dockNotice: null,
@@ -80,6 +82,9 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
   const selectConversation = useCallback((conversationId: Id<"conversations">) => {
     setSelectedConversationId(conversationId);
   }, []);
+  const closeConversation = useCallback(() => {
+    setSelectedConversationId(null);
+  }, []);
   const openConversationWith = useCallback(
     async (otherUserId: Id<"users">) => {
       setShowDockPanel(true);
@@ -115,6 +120,7 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
       openDock,
       minimizeDock,
       selectConversation,
+      closeConversation,
       openConversationWith,
       openConversationWithProfile,
       dockNotice,
@@ -126,6 +132,7 @@ function ZimaChatDockProviderWithConvex({ children }: { children: ReactNode }) {
       openDock,
       minimizeDock,
       selectConversation,
+      closeConversation,
       openConversationWith,
       openConversationWithProfile,
       dockNotice,

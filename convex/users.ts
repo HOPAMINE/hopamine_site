@@ -355,7 +355,7 @@ export const completeZimaOnboarding = mutation({
     bio: v.optional(v.string()),
     skills: v.array(v.string()),
     interests: v.array(v.string()),
-    discord: v.optional(v.string()),
+    contactEmail: v.string(),
   },
   returns: v.object({
     success: v.boolean(),
@@ -389,13 +389,10 @@ export const completeZimaOnboarding = mutation({
       };
     }
 
-    const discord = (args.discord?.trim() ?? "").replace(/^@/, "");
-    if (discord && !/^[a-zA-Z0-9_.]{2,32}(#\d{4})?$/.test(discord)) {
-      throw new Error("Invalid Discord username");
+    const contactEmail = args.contactEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+      throw new Error("Enter a valid email address");
     }
-    const socialLinks = discord
-      ? { ...(user.socialLinks ?? {}), discord }
-      : user.socialLinks;
 
     const now = Date.now();
     const patch: Record<string, unknown> = {
@@ -405,12 +402,10 @@ export const completeZimaOnboarding = mutation({
       bio: trimText(args.bio) || undefined,
       skills: normalizeSkills(args.skills),
       interests: normalizeSkills(args.interests),
+      contactEmail,
       zimaOnboardingCompletedAt: now,
       updatedAt: now,
     };
-    if (socialLinks !== undefined) {
-      patch.socialLinks = socialLinks;
-    }
     if (!user.onboardingCompletedAt) {
       patch.onboardingCompletedAt = now;
     }

@@ -1,8 +1,7 @@
 "use client";
 
-import { type FormEvent, type KeyboardEvent } from "react";
+import { type FormEvent } from "react";
 import { jetbrainsMono } from "../../../fonts";
-import { ZimaSearchFilters } from "./ZimaSearchFilters";
 import type { useZimaChat } from "./useZimaChat";
 
 const HOPAMINE_BLUE = "#00a6f3";
@@ -14,235 +13,74 @@ export type ZimaFiltersDisplay = "inline" | "hidden" | "collapsible";
 type Props = {
   chat: Chat;
   onEnterChatMode: () => void;
-  /** `header` = one-line message + send in the top bar. */
   variant: "landing" | "compact" | "header";
   idSuffix?: string;
-  /** Mobile post-search: hide filters until expanded. Desktop uses `inline`. */
   filtersDisplay?: ZimaFiltersDisplay;
   filtersExpanded?: boolean;
   onFiltersExpandedChange?: (expanded: boolean) => void;
-  /** Mobile top bar: omit the three blue tabs above the field. */
   hideDecorativeBars?: boolean;
 };
 
 export function ZimaComposerFields({
   chat,
   onEnterChatMode,
-  variant,
-  idSuffix = "",
-  filtersDisplay = "inline",
-  filtersExpanded = false,
-  onFiltersExpandedChange,
-  hideDecorativeBars = false,
 }: Props) {
-  const {
-    message,
-    setMessage,
-    textareaRef,
-    canSend,
-    isLoading,
-    resizeTextarea,
-    submit,
-    handleKeyDown,
-  } = chat;
-
-  const isCompact = variant === "compact";
-  const isHeader = variant === "header";
+  const { message, setMessage, inputRef, canSend, isLoading, submit } = chat;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     void submit(event, onEnterChatMode);
   };
 
-  const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    handleKeyDown(event, onEnterChatMode);
-  };
-
-  const showFilterStrip =
-    filtersDisplay === "inline" ||
-    (filtersDisplay === "collapsible" && filtersExpanded);
-
   return (
     <div className="w-full">
-      {hideDecorativeBars ? null : (
-        <div className="ml-3 flex gap-[5px]" aria-hidden="true">
-          {[0, 1, 2].map((index) => (
-            <span
-              key={index}
-              className={
-                isCompact
-                  ? "h-4 w-14 bg-[#00a6f3]"
-                  : isHeader
-                    ? "h-3 w-16 bg-[#00a6f3]"
-                    : "h-[18px] w-20 bg-[#00a6f3]"
-              }
-            />
-          ))}
-        </div>
-      )}
-      <div>
-        <form
-          onSubmit={onSubmit}
-          className={`relative m-0 w-full bg-neutral-200 shadow-none ${
-            isHeader
-              ? `flex items-stretch gap-2 px-2 py-2 md:rounded-none ${
-                  filtersExpanded ? "rounded-t-[24px]" : "rounded-full"
-                }`
-              : isCompact
-                ? "rounded-none px-3 pb-2 pt-2"
-                : "rounded-none px-4 pb-3 pt-4"
-          }`}
+      <form
+        onSubmit={onSubmit}
+        className="relative m-0 flex h-14 w-full items-center gap-2 rounded-full bg-neutral-200 pl-4 pr-2 shadow-none"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          className="h-5 w-5 shrink-0 text-neutral-500"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <div
-            className={
-              isHeader
-                ? "flex min-w-0 flex-1 items-center gap-2 pl-3"
-                : "flex w-full items-start gap-2"
-            }
+          <circle cx="7" cy="7" r="4.25" />
+          <path d="M10.5 10.5 14 14" />
+        </svg>
+        <input
+          ref={inputRef}
+          type="text"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder="Find future builders near you..."
+          aria-label="Find future builders near you"
+          disabled={isLoading}
+          className={`${jetbrainsMono.className} h-10 min-w-0 flex-1 appearance-none border-0 bg-transparent px-0 py-0 text-[15px] text-neutral-800 shadow-none outline-none placeholder:text-[15px] placeholder:text-neutral-400 disabled:opacity-60`}
+        />
+        <button
+          type="submit"
+          disabled={!canSend}
+          aria-label="Send"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+          style={{ backgroundColor: HOPAMINE_BLUE }}
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
           >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 16 16"
-              className={`shrink-0 text-neutral-500 ${
-                isHeader ? "h-6 w-6" : isCompact ? "mt-2 h-5 w-5" : "mt-2.5 h-6 w-6"
-              }`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="7" cy="7" r="4.25" />
-              <path d="M10.5 10.5 14 14" />
-            </svg>
-            <textarea
-              ref={textareaRef}
-              value={message}
-              onChange={(event) => {
-                setMessage(event.target.value);
-                resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
-              }}
-              onKeyDown={onKeyDown}
-              rows={1}
-              placeholder="Find future builders near you..."
-              aria-label="Find future builders near you"
-              disabled={isLoading}
-              className={`${jetbrainsMono.className} resize-none bg-transparent text-[15px] leading-relaxed text-neutral-800 outline-none placeholder:text-[15px] placeholder:text-neutral-400 disabled:opacity-60 ${
-                isHeader
-                  ? "min-h-[40px] max-h-[40px] min-w-0 flex-1 py-1 pl-0 pr-0"
-                  : `min-w-0 flex-1 px-1 ${
-                      isCompact
-                        ? "max-h-[100px] min-h-[44px]"
-                        : "max-h-[140px] min-h-[48px]"
-                    }`
-              }`}
-            />
-          </div>
-          {isHeader && filtersDisplay === "collapsible" && onFiltersExpandedChange ? (
-            <button
-              type="button"
-              onClick={() => onFiltersExpandedChange(!filtersExpanded)}
-              aria-label="Filters"
-              aria-expanded={filtersExpanded}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-transparent transition-colors md:rounded-none ${
-                filtersExpanded ? "text-neutral-900" : "text-[#00a6f3]"
-              }`}
-            >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-              >
-                <path d="M2 4h12M4 8h8M6 12h4" />
-                <circle cx="5" cy="4" r="1.25" fill="currentColor" stroke="none" />
-                <circle cx="11" cy="8" r="1.25" fill="currentColor" stroke="none" />
-                <circle cx="7" cy="12" r="1.25" fill="currentColor" stroke="none" />
-              </svg>
-            </button>
-          ) : null}
-          {isHeader ? (
-            <button
-              type="submit"
-              disabled={!canSend}
-              aria-label="Send"
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 md:rounded-none"
-              style={{ backgroundColor: HOPAMINE_BLUE }}
-            >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
-                <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" />
-              </svg>
-            </button>
-          ) : (
-            <div className="mt-1 flex justify-end">
-              <button
-                type="submit"
-                disabled={!canSend}
-                aria-label="Send"
-                className={`inline-flex items-center justify-center rounded-none text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 ${
-                  isCompact ? "h-8 w-8" : "h-10 w-10"
-                }`}
-                style={{ backgroundColor: HOPAMINE_BLUE }}
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 16 16"
-                  className={isCompact ? "h-4 w-4" : "h-5 w-5"}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                >
-                  <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" />
-                </svg>
-              </button>
-            </div>
-          )}
-        </form>
-        {filtersDisplay !== "hidden" && showFilterStrip ? (
-          <div
-            className={`bg-[#bbbbbb] ${
-              isHeader
-                ? "mx-0 rounded-b-[24px] px-2 py-2 md:rounded-none"
-                : isCompact
-                  ? "mx-3 px-2 py-2"
-                  : "mx-3 px-2.5 py-2.5"
-            }`}
-          >
-            <ZimaSearchFilters
-              variant="composer"
-              idSuffix={idSuffix}
-              onPromptChange={(prompt) => {
-                setMessage(prompt);
-                requestAnimationFrame(() => {
-                  resizeTextarea(isHeader ? 44 : isCompact ? 100 : 140);
-                });
-              }}
-            />
-            {filtersDisplay === "collapsible" && onFiltersExpandedChange ? (
-              <button
-                type="button"
-                onClick={() => onFiltersExpandedChange(false)}
-                className={`${jetbrainsMono.className} mt-2 w-full py-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-700 hover:text-neutral-900`}
-              >
-                Done
-              </button>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
+            <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" />
+          </svg>
+        </button>
+      </form>
     </div>
   );
 }

@@ -19,7 +19,6 @@ type Props = {
 
 export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
   const { hasSearchResults } = chat;
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
   const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
 
@@ -36,10 +35,6 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
             onEnterChatMode={onFirstSend}
             variant="header"
             idSuffix="-mobile-header"
-            hideDecorativeBars
-            filtersDisplay="collapsible"
-            filtersExpanded={filtersExpanded}
-            onFiltersExpandedChange={setFiltersExpanded}
           />
         </div>
       </header>
@@ -47,7 +42,7 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
       <main className="relative min-h-0 flex-1 overflow-hidden">
         <ZimaSearchMap
           showPins={hasSearchResults}
-          layoutKey={`mobile-results-${filtersExpanded ? "filters" : "map"}`}
+          layoutKey="mobile-results"
           className="absolute inset-0 overflow-hidden"
           selectedResultId={selectedResultId}
           onSelectResult={setSelectedResultId}

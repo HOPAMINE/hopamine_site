@@ -27,6 +27,8 @@ type ProfileAvatarUploadProps = {
   controls?: "button" | "link" | "none";
   shape?: "circle" | "square";
   dithered?: boolean;
+  /** Overrides default “Change photo” / “Upload photo” (link and button controls). */
+  pickerLabel?: string;
 };
 
 export function ProfileAvatarUpload({
@@ -38,6 +40,7 @@ export function ProfileAvatarUpload({
   controls = "button",
   shape = "circle",
   dithered = true,
+  pickerLabel,
 }: ProfileAvatarUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
@@ -116,11 +119,9 @@ export function ProfileAvatarUpload({
     : `${robotoMono.className} mt-1 text-xs text-red-300`;
 
   const borderClass =
-    shape === "square"
+    shape === "square" || isLight
       ? "border border-neutral-300"
-      : isLight
-        ? "border-2 border-white"
-        : "border-2 border-white/90";
+      : "border-2 border-white/90";
   const shapeClass = shape === "square" ? "rounded-none" : "rounded-full";
   const fallbackBgClass =
     shape === "square" && isLight
@@ -130,6 +131,10 @@ export function ProfileAvatarUpload({
   function openPicker() {
     if (!uploading) inputRef.current?.click();
   }
+
+  const pickerActionLabel =
+    pickerLabel ??
+    (displayUrl ? "Change photo" : "Upload photo");
 
   return (
     <div
@@ -196,11 +201,7 @@ export function ProfileAvatarUpload({
             disabled={uploading}
             className={changeButtonClass}
           >
-            {uploading
-              ? "Uploading…"
-              : displayUrl
-                ? "Change photo"
-                : "Upload photo"}
+            {uploading ? "Uploading…" : pickerActionLabel}
           </button>
           <p className={hintClass}>JPG, PNG, WebP, or GIF · max 5MB</p>
           {error ? <p className={errorClass}>{error}</p> : null}
@@ -219,11 +220,7 @@ export function ProfileAvatarUpload({
                 : `${robotoMono.className} text-[10px] font-semibold uppercase tracking-wide text-white/80 transition-colors hover:underline disabled:opacity-40`
             }
           >
-            {uploading
-              ? "Uploading…"
-              : displayUrl
-                ? "Change photo"
-                : "Upload photo"}
+            {uploading ? "Uploading…" : pickerActionLabel}
           </button>
           {error ? <p className={errorClass}>{error}</p> : null}
         </div>

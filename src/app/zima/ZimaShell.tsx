@@ -35,35 +35,38 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
     <div className="relative z-10 flex min-h-dvh flex-col">
       {/* Mobile: search at top */}
       <div className="flex h-dvh flex-col overflow-hidden md:hidden">
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-6 pt-[max(72px,env(safe-area-inset-top))]">
-            <div
-              className={`flex w-full flex-col items-center gap-6 ${ZIMA_LANDING_SEARCH_WIDTH}`}
-            >
-              <h1
-                className={`${newsreader.className} w-full text-balance text-center text-[28px] font-normal leading-[1.12] tracking-[-0.02em] text-[#00a6f3]`}
-              >
-                Where future builders in your city meet.
-              </h1>
-              <ZimaComposer
-                isChatMode={isChatMode}
-                onEnterChatMode={enterChat}
-                chat={chat}
-              />
-            </div>
-          </div>
+        <div
+          className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-6 pt-[max(72px,env(safe-area-inset-top))]"
+        >
           <div
-            className={`mx-auto w-full shrink-0 px-6 pb-3 ${ZIMA_LANDING_SEARCH_WIDTH}`}
+            className={`flex w-full flex-col items-center gap-6 ${ZIMA_LANDING_SEARCH_WIDTH}`}
           >
-            <ZimaMakeathonBanner />
+            <h1
+              className={`${newsreader.className} w-full text-balance text-center text-[28px] font-normal leading-[1.12] tracking-[-0.02em] text-[#00a6f3]`}
+            >
+              Where future builders in your city meet.
+            </h1>
+            <ZimaComposer
+              isChatMode={isChatMode}
+              onEnterChatMode={enterChat}
+              chat={chat}
+            />
           </div>
         </div>
-        <ZimaMobileBottomNav
-          active="explore"
-          homeHref={homeHref}
-          chatsHref={chatsHref}
-          profileHref={profileHref}
-        />
+        <div
+          className={`mx-auto w-full shrink-0 bg-white ${ZIMA_LANDING_SEARCH_WIDTH}`}
+        >
+          <div className="px-6">
+            <ZimaMakeathonBanner />
+          </div>
+          <ZimaMobileBottomNav
+            active="explore"
+            homeHref={homeHref}
+            chatsHref={chatsHref}
+            profileHref={profileHref}
+            placement="inline"
+          />
+        </div>
       </div>
 
       {/* Desktop: centered landing */}

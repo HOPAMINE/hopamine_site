@@ -31,6 +31,19 @@ const menuItemClass = `${jetbrainsMono.className} block w-full px-3 py-2 text-le
 
 const openingBadgeClass = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-none bg-neutral-100 px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-700`;
 
+function displayCityName(location: string | undefined): string {
+  const trimmed = location?.trim();
+  if (!trimmed) return "NYC";
+  if (/new york city/i.test(trimmed) || /\bnyc\b/i.test(trimmed)) {
+    return "New York City";
+  }
+  const comma = trimmed.lastIndexOf(",");
+  if (comma >= 0) {
+    return trimmed.slice(comma + 1).trim() || trimmed;
+  }
+  return trimmed;
+}
+
 function OpeningInNycBadge() {
   return <p className={openingBadgeClass}>Opening in NYC</p>;
 }
@@ -68,7 +81,7 @@ function ZimaChatNavLink() {
         openDock();
       }}
       aria-label="Messages"
-      className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-none bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3] md:inline-flex"
+      className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-full bg-neutral-100 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3] md:inline-flex"
       style={{ color: HOPAMINE_BLUE }}
     >
       <ChatNavIcon />
@@ -90,7 +103,7 @@ function ZimaSignedInUser() {
     user?.firstName?.trim() ||
     user?.username?.trim() ||
     "Account";
-  const location = convexUser?.location?.trim() || "NYC";
+  const location = displayCityName(convexUser?.location);
   const avatarUrl = convexUser?.avatarUrl || user?.imageUrl || "";
   const profileData = convexUser
     ? toZimaProfileData(convexUser)
@@ -114,7 +127,7 @@ function ZimaSignedInUser() {
     <>
       <div className="group relative">
         <div
-          className={`${jetbrainsMono.className} inline-flex h-14 items-center gap-3 rounded-none bg-neutral-100 px-4 text-neutral-900`}
+          className={`${jetbrainsMono.className} inline-flex h-14 items-center gap-3 rounded-full bg-neutral-100 pl-5 pr-2 text-neutral-900`}
         >
           <button
             type="button"
@@ -135,14 +148,14 @@ function ZimaSignedInUser() {
             aria-label="Edit profile"
             className="flex h-11 w-11 shrink-0 items-center justify-center p-1 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]"
           >
-            <span className="relative h-full w-full overflow-hidden rounded-none bg-neutral-200">
+            <span className="relative h-full w-full overflow-hidden rounded-full bg-neutral-200">
               {avatarUrl ? (
                 <Image
                   src={avatarUrl}
                   alt=""
                   fill
                   sizes="40px"
-                  className="rounded-none object-cover"
+                  className="rounded-full object-cover"
                 />
               ) : (
                 <span
@@ -160,7 +173,7 @@ function ZimaSignedInUser() {
           role="menu"
           className="invisible absolute right-0 top-full z-20 min-w-[168px] pt-1 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
         >
-          <div className="overflow-hidden rounded-none border border-neutral-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
             <button
               type="button"
               role="menuitem"

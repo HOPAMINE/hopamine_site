@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { ZimaChatMessage } from "@/lib/zima/types";
 
 type Options = {
@@ -16,7 +16,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearchResults, setHasSearchResults] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const canSend = message.trim().length > 0 && !isLoading;
 
   useEffect(() => {
@@ -28,13 +28,6 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
       setHasSearchResults(false);
     }
   }, [isActive]);
-
-  function resizeTextarea(maxHeight: number) {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
-  }
 
   async function submit(
     event: FormEvent<HTMLFormElement>,
@@ -60,10 +53,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
 
     if (resultsOnly) {
       requestAnimationFrame(() => {
-        const textarea = textareaRef.current;
-        if (!textarea) return;
-        textarea.style.height = "";
-        textarea.focus();
+        inputRef.current?.focus();
       });
       return;
     }
@@ -71,10 +61,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     setIsLoading(true);
 
     requestAnimationFrame(() => {
-      const textarea = textareaRef.current;
-      if (!textarea) return;
-      textarea.style.height = "";
-      textarea.focus();
+      inputRef.current?.focus();
     });
 
     try {
@@ -116,16 +103,6 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     }
   }
 
-  function handleKeyDown(
-    event: KeyboardEvent<HTMLTextAreaElement>,
-    onFirstSend?: () => void,
-  ) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      event.currentTarget.form?.requestSubmit();
-    }
-  }
-
   return {
     message,
     setMessage,
@@ -135,10 +112,8 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     hasSearchResults,
     isLoading,
     error,
-    textareaRef,
+    inputRef,
     canSend,
-    resizeTextarea,
     submit,
-    handleKeyDown,
   };
 }

@@ -50,7 +50,7 @@ export function ZimaSearchResultCards({
                     ? () => onSelectResult(result.id)
                     : undefined
                 }
-                footer={
+                cornerAction={
                   <ZimaSearchMessageButton profileId={profile.id} displayName={profile.name} />
                 }
               />

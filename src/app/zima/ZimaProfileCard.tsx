@@ -44,10 +44,10 @@ type ZimaProfileCardProps = {
 
 export function ZimaProfileCard({ user, onEdit }: ZimaProfileCardProps) {
   return (
-    <div className="border border-neutral-200 bg-neutral-100 p-6">
-      <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
+    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 p-6">
+      <div className="flex items-start gap-4 text-left">
         <div
-          className="relative shrink-0 overflow-hidden rounded-none border border-neutral-300 bg-neutral-200"
+          className="relative shrink-0 overflow-hidden rounded-full border border-neutral-300 bg-neutral-200"
           style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
         >
           {user.avatarUrl ? (
@@ -86,13 +86,12 @@ export function ZimaProfileCard({ user, onEdit }: ZimaProfileCardProps) {
       <div className="mt-6 space-y-4 border-t border-neutral-200 pt-6">
         <ProfileField label="Location" value={user.location} />
         <ProfileField label="Bio" value={user.bio} />
-        <ProfileField label="Discord" value={user.discord} />
       </div>
 
       <button
         type="button"
         onClick={onEdit}
-        className={`${jetbrainsMono.className} mt-6 w-full rounded-none px-4 py-3 text-[13.5px] font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90`}
+        className={`${jetbrainsMono.className} mt-6 w-full rounded-xl px-4 py-3 text-[13.5px] font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90`}
         style={{ backgroundColor: HOPAMINE_BLUE }}
       >
         Edit profile
@@ -107,7 +106,6 @@ export function toZimaProfileData(user: {
   avatarUrl: string;
   bio?: string;
   location?: string;
-  socialLinks?: { discord?: string };
 }): ZimaProfileData {
   return {
     name: user.name,
@@ -115,6 +113,5 @@ export function toZimaProfileData(user: {
     avatarUrl: user.avatarUrl,
     bio: user.bio,
     location: user.location,
-    discord: user.socialLinks?.discord,
   };
 }

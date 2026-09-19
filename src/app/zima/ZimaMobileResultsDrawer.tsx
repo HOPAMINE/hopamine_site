@@ -11,7 +11,7 @@ import {
   type PanInfo,
 } from "framer-motion";
 import { RESULTS } from "@/components/zima/results";
-import { newsreader } from "../../../fonts";
+import { jetbrainsMono } from "../../../fonts";
 import { ZimaSearchResultCards } from "./ZimaSearchResultCards";
 
 type Props = {
@@ -150,7 +150,7 @@ export function ZimaMobileResultsDrawer({
         >
           <div className="h-1 w-10 rounded-full bg-neutral-300" aria-hidden />
           <h2
-            className={`${newsreader.className} w-full text-center text-[22px] font-normal leading-tight tracking-[-0.02em] text-neutral-900`}
+            className={`${jetbrainsMono.className} w-full text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-neutral-900`}
           >
             {foundBuildersLabel(count)}
           </h2>

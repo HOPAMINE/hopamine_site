@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
-import { jetbrainsMono, newsreader } from "../../../../fonts";
+import { jetbrainsMono } from "../../../../fonts";
 import type { ZimaConversation, ZimaThreadMessage } from "@/lib/zima/zimaChats";
 import { ZimaChatDockToast } from "./ZimaChatDockToast";
 
@@ -72,14 +72,6 @@ export function ZimaChatDockThread({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col bg-white">
-      <header className="bg-neutral-200 px-3 py-2.5">
-        <h2
-          className={`${newsreader.className} truncate text-[17px] leading-tight text-neutral-900`}
-        >
-          {conversation.participantName}
-        </h2>
-      </header>
-
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
       <div
         ref={messageListRef}

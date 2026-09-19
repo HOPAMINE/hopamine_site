@@ -5,7 +5,7 @@ const LUMA_EVENT_URL = "https://luma.com/2tvin681";
 
 export function ZimaMakeathonBanner() {
   return (
-    <figure className="m-0 w-full shrink-0 p-0">
+    <figure className="m-0 w-full shrink-0 overflow-hidden rounded-t-2xl p-0">
       <a
         href={LUMA_EVENT_URL}
         target="_blank"

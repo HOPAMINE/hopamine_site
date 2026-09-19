@@ -18,7 +18,11 @@ import {
 import { getZimaAuthHref, getZimaPath } from "@/lib/zima/routes";
 import { suggestNycNeighborhoods } from "@/lib/zima/nycNeighborhoods";
 import { jetbrainsMono, newsreader } from "../../../fonts";
-import { ZimaAuthError } from "./ZimaAuthUI";
+import {
+  ZimaAuthError,
+  zimaRoundedInputClass as inputClass,
+  zimaRoundedTextareaClass as textareaClass,
+} from "./ZimaAuthUI";
 
 const HOPAMINE_BLUE = "#00a6f3";
 const NYC_CITY = "New York City";
@@ -28,8 +32,8 @@ const STEP_NEIGHBORHOOD = 2;
 const STEP_ARCHETYPE = 3;
 const STEP_BIO = 4;
 const STEP_INTERESTS = 5;
-const STEP_DISCORD = 6;
-const ONBOARD_LAST_STEP = STEP_DISCORD;
+const STEP_CONTACT = 6;
+const ONBOARD_LAST_STEP = STEP_CONTACT;
 
 const onboardButtonClass = `${jetbrainsMono.className} text-[15px] font-semibold uppercase tracking-wide`;
 
@@ -72,9 +76,6 @@ const ARCHETYPES = [
   "Community builder",
   OTHER_ARCHETYPE,
 ] as const;
-
-const inputClass = `${jetbrainsMono.className} w-full rounded-xl border border-neutral-300 bg-neutral-50 px-5 py-3 text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#00a6f3] focus:bg-white`;
-const textareaClass = `${inputClass} resize-y`;
 
 function ContinueButton({
   disabled,
@@ -224,8 +225,8 @@ export function ZimaOnboardClient() {
   const [otherArchetype, setOtherArchetype] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
   const [otherInterest, setOtherInterest] = useState("");
-  const [discord, setDiscord] = useState("");
-  const [discordError, setDiscordError] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactEmailError, setContactEmailError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [prefilled, setPrefilled] = useState(false);
@@ -249,8 +250,16 @@ export function ZimaOnboardClient() {
     setName((current) => current || convexUser.name || user?.fullName || "");
     setUsername((current) => current || convexUser.username || "");
     setBio((current) => current || convexUser.bio || "");
+    setContactEmail(
+      (current) =>
+        current ||
+        convexUser.contactEmail ||
+        convexUser.email ||
+        user?.primaryEmailAddress?.emailAddress ||
+        "",
+    );
     setPrefilled(true);
-  }, [convexUser, prefilled, user?.fullName]);
+  }, [convexUser, prefilled, user?.fullName, user?.primaryEmailAddress?.emailAddress]);
 
   const neighborhoodSuggestions = useMemo(
     () => suggestNycNeighborhoods(neighborhood),
@@ -347,12 +356,12 @@ export function ZimaOnboardClient() {
 
   async function finishOnboarding(event: FormEvent) {
     event.preventDefault();
-    const trimmedDiscord = discord.trim().replace(/^@/, "");
-    if (trimmedDiscord && !/^[a-zA-Z0-9_.]{2,32}(#\d{4})?$/.test(trimmedDiscord)) {
-      setDiscordError("Use your Discord username, e.g. jonsmith");
+    const trimmedEmail = contactEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setContactEmailError("Enter a valid email address");
       return;
     }
-    setDiscordError("");
+    setContactEmailError("");
     if (!isAuthenticated || submitting) return;
 
     setSubmitting(true);
@@ -368,7 +377,7 @@ export function ZimaOnboardClient() {
         bio: bio.trim() || undefined,
         skills: selectedArchetypesForSave(),
         interests: selectedInterestsForSave(),
-        discord: trimmedDiscord || undefined,
+        contactEmail: trimmedEmail,
       });
       router.replace(searchHref);
     } catch (error) {
@@ -463,8 +472,8 @@ export function ZimaOnboardClient() {
                 }}
                 className={`${onboardButtonClass} flex h-12 w-full items-center justify-center rounded-xl px-6 transition-colors ${
                   cityChoice === "nyc"
-                    ? "bg-[#00a6f3] text-white"
-                    : "bg-neutral-200 text-neutral-700"
+                    ? "border border-transparent bg-[#00a6f3] text-white"
+                    : "border border-neutral-200 bg-white text-neutral-900"
                 }`}
               >
                 New York City
@@ -480,8 +489,8 @@ export function ZimaOnboardClient() {
                 }}
                 className={`${onboardButtonClass} flex h-12 w-full items-center justify-center rounded-xl px-6 transition-colors ${
                   cityChoice === "other"
-                    ? "bg-[#00a6f3] text-white"
-                    : "bg-neutral-200 text-neutral-700"
+                    ? "border border-transparent bg-[#00a6f3] text-white"
+                    : "border border-neutral-200 bg-white text-neutral-900"
                 }`}
               >
                 Other
@@ -594,8 +603,8 @@ export function ZimaOnboardClient() {
                       option === OTHER_ARCHETYPE ? "col-span-2" : ""
                     } ${
                       selected
-                        ? "bg-[#00a6f3] text-white"
-                        : "bg-neutral-200 text-neutral-700"
+                        ? "border border-transparent bg-[#00a6f3] text-white"
+                        : "border border-neutral-200 bg-white text-neutral-900"
                     }`}
                   >
                     {option}
@@ -661,8 +670,8 @@ export function ZimaOnboardClient() {
                       option === MORE_INTEREST ? "col-span-2" : ""
                     } ${
                       selected
-                        ? "bg-[#00a6f3] text-white"
-                        : "bg-neutral-200 text-neutral-700"
+                        ? "border border-transparent bg-[#00a6f3] text-white"
+                        : "border border-neutral-200 bg-white text-neutral-900"
                     }`}
                   >
                     {option}
@@ -683,8 +692,8 @@ export function ZimaOnboardClient() {
                         onClick={() => toggleInterest(option)}
                         className={`${onboardButtonClass} flex min-h-12 items-center justify-center rounded-xl px-3 py-3 text-center text-[13px] leading-tight transition-colors ${
                           selected
-                            ? "bg-[#00a6f3] text-white"
-                            : "bg-neutral-200 text-neutral-700"
+                            ? "border border-transparent bg-[#00a6f3] text-white"
+                            : "border border-neutral-200 bg-white text-neutral-900"
                         }`}
                       >
                         {option}
@@ -705,30 +714,36 @@ export function ZimaOnboardClient() {
           </OnboardStepForm>
         ) : null}
 
-        {step === STEP_DISCORD ? (
+        {step === STEP_CONTACT ? (
           <OnboardStepForm
-            title="One more thing, then you're in."
+            title="What is the best email to reach you?"
             onSubmit={(event) => void finishOnboarding(event)}
             footer={
               <ContinueButton
-                disabled={submitting || !isAuthenticated}
+                disabled={submitting || !isAuthenticated || !contactEmail.trim()}
                 label={submitting ? "Saving…" : "Enter Zima"}
               />
             }
           >
             <div className="space-y-2">
               <input
-                id="zima-onboard-discord"
-                value={discord}
+                id="zima-onboard-contact-email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={contactEmail}
                 onChange={(event) => {
-                  setDiscord(event.target.value);
-                  setDiscordError("");
+                  setContactEmail(event.target.value);
+                  setContactEmailError("");
                 }}
-                placeholder="Discord username (optional)"
-                aria-label="Discord username"
+                placeholder="you@email.com"
+                required
+                aria-label="Best email to reach you"
                 className={inputClass}
               />
-              {discordError ? <ZimaAuthError message={discordError} /> : null}
+              {contactEmailError ? (
+                <ZimaAuthError message={contactEmailError} />
+              ) : null}
             </div>
             {submitError ? <ZimaAuthError message={submitError} /> : null}
           </OnboardStepForm>

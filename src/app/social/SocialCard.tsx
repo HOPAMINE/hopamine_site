@@ -21,18 +21,20 @@ function TagPills({
   items,
   monoClassName,
   colorOffset = 0,
+  textClass = "text-[10px]",
 }: {
   label: string;
   items: string[];
   monoClassName: string;
   colorOffset?: number;
+  textClass?: string;
 }) {
   if (items.length === 0) return null;
 
   return (
     <div>
       <p
-        className={`${monoClassName} mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
+        className={`${monoClassName} ${textClass} mb-1.5 font-semibold uppercase tracking-wide text-neutral-600`}
       >
         {label}
       </p>
@@ -43,7 +45,7 @@ function TagPills({
           return (
             <span
               key={item}
-              className={`${monoClassName} rounded-none px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide`}
+              className={`${monoClassName} ${textClass} rounded-none px-2.5 py-1 font-semibold uppercase tracking-wide`}
               style={{ backgroundColor: color.bg, color: color.text }}
             >
               {item}
@@ -63,6 +65,8 @@ type SocialCardProps = {
   /** Stacked tile for multi-column search grids (use with `compact`). */
   compactGrid?: boolean;
   /** Rendered inside the card (e.g. Message on Zima search). */
+  /** Overlay in the top-right of the card (e.g. Message). */
+  cornerAction?: ReactNode;
   footer?: ReactNode;
   /** Makes the main card body a button (footer stays separate for links). */
   onPress?: () => void;
@@ -85,7 +89,7 @@ function CardFooter({ footer }: { footer: ReactNode }) {
 function ProfileRightNow({
   text,
   monoClassName,
-  className = "",
+  className = "text-[10px]",
 }: {
   text: string;
   monoClassName: string;
@@ -93,7 +97,7 @@ function ProfileRightNow({
 }) {
   return (
     <p
-      className={`${monoClassName} text-[10px] leading-relaxed text-neutral-800 ${className}`}
+      className={`${monoClassName} leading-relaxed text-neutral-800 ${className}`}
     >
       <span className="font-semibold text-neutral-600">Right now: </span>
       {text}
@@ -130,6 +134,7 @@ export function SocialCard({
   theme = "portal",
   compact = false,
   compactGrid = false,
+  cornerAction,
   footer,
   onPress,
 }: SocialCardProps) {
@@ -137,37 +142,40 @@ export function SocialCard({
 
   if (compact && compactGrid) {
     return (
-      <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl bg-neutral-200">
+      <article className="relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+        {cornerAction ? (
+          <div className="absolute right-3 top-3 z-10">{cornerAction}</div>
+        ) : null}
         <CardBody
           onPress={onPress}
-          className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 px-2.5 py-2.5"
+          className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 px-4 py-4"
         >
           <div className="flex min-w-0 items-start gap-2">
-            <div className="relative size-11 shrink-0 bg-neutral-100">
+            <div className="relative size-11 shrink-0 overflow-hidden rounded-full bg-neutral-100">
               <Image
                 src={profile.avatarUrl}
                 alt=""
                 fill
                 sizes="44px"
-                className="object-cover"
+                className="rounded-full object-cover"
                 style={{ imageRendering: "pixelated" }}
               />
             </div>
-            <div className="min-w-0 flex-1">
+            <div className={`min-w-0 flex-1 ${cornerAction ? "pr-11" : ""}`}>
               <h3
-                className={`${fonts.display.className} text-[1.2rem] leading-snug tracking-[-0.03em] text-neutral-900 sm:text-[1.35rem]`}
+                className={`${fonts.display.className} text-[1.45rem] leading-snug tracking-[-0.03em] text-neutral-900 sm:text-[1.6rem]`}
               >
                 {profile.name}
               </h3>
               <p
-                className={`${fonts.mono.className} mt-0.5 line-clamp-2 text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-700`}
+                className={`${fonts.mono.className} mt-0.5 line-clamp-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-neutral-700`}
               >
                 {profile.taglines.join(", ")}
               </p>
             </div>
           </div>
           <p
-            className={`${fonts.mono.className} line-clamp-6 text-[10px] leading-relaxed text-neutral-700`}
+            className={`${fonts.display.className} line-clamp-6 text-[16px] leading-[1.4] tracking-[-0.02em] text-neutral-700`}
           >
             {profile.bio}
           </p>
@@ -175,6 +183,7 @@ export function SocialCard({
             <ProfileRightNow
               text={profile.rightNow}
               monoClassName={fonts.mono.className}
+              className="text-[12px]"
             />
           ) : null}
         </CardBody>
@@ -185,41 +194,46 @@ export function SocialCard({
 
   if (compact) {
     return (
-      <article className="flex min-w-0 flex-col overflow-hidden rounded-2xl bg-neutral-200">
+      <article className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+        {cornerAction ? (
+          <div className="absolute right-3 top-3 z-10">{cornerAction}</div>
+        ) : null}
         <CardBody
           onPress={onPress}
-          className="flex min-w-0 overflow-hidden"
+          className="flex min-w-0 items-stretch overflow-hidden"
         >
-          <div className="relative size-[88px] shrink-0 bg-neutral-100 sm:size-[104px]">
-            <Image
-              src={profile.avatarUrl}
-              alt=""
-              fill
-              sizes="104px"
-              className="object-cover"
-              style={{ imageRendering: "pixelated" }}
-            />
+          <div className="flex shrink-0 items-center p-4">
+            <div className="relative size-[72px] overflow-hidden rounded-full bg-neutral-100 sm:size-[88px]">
+              <Image
+                src={profile.avatarUrl}
+                alt=""
+                fill
+                sizes="88px"
+                className="rounded-full object-cover"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
           </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-2 px-3 py-3">
+          <div className={`flex min-w-0 flex-1 flex-col gap-2.5 px-4 py-4 ${cornerAction ? "pr-16" : ""}`}>
             <div>
               <h3
-                className={`${fonts.display.className} wrap-break-word text-[1.15rem] leading-snug tracking-[-0.03em] text-neutral-900`}
+                className={`${fonts.display.className} wrap-break-word text-[1.45rem] leading-snug tracking-[-0.03em] text-neutral-900`}
               >
                 {profile.name}
               </h3>
               <p
-                className={`${fonts.mono.className} mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-700`}
+                className={`${fonts.mono.className} mt-0.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-neutral-700`}
               >
                 {profile.taglines.join(", ")}
               </p>
               <p
-                className={`${fonts.mono.className} mt-0.5 text-[10px] font-medium uppercase tracking-wide text-neutral-600`}
+                className={`${fonts.mono.className} mt-0.5 text-[12px] font-medium uppercase tracking-wide text-neutral-600`}
               >
                 {profile.location}
               </p>
             </div>
             <p
-              className={`${fonts.mono.className} line-clamp-4 text-[11px] leading-relaxed text-neutral-700`}
+              className={`${fonts.display.className} line-clamp-4 text-[17px] leading-[1.4] tracking-[-0.02em] text-neutral-700`}
             >
               {profile.bio}
             </p>
@@ -227,6 +241,7 @@ export function SocialCard({
               <ProfileRightNow
                 text={profile.rightNow}
                 monoClassName={fonts.mono.className}
+                className="text-[12px]"
               />
             ) : null}
             <TagPills
@@ -234,6 +249,7 @@ export function SocialCard({
               items={profile.interests.slice(0, 3)}
               monoClassName={fonts.mono.className}
               colorOffset={0}
+              textClass="text-[12px]"
             />
           </div>
         </CardBody>
@@ -242,8 +258,87 @@ export function SocialCard({
     );
   }
 
+  const isZima = theme === "zima";
+
+  if (isZima) {
+    return (
+      <article className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+        {cornerAction ? (
+          <div className="absolute right-3 top-3 z-10">{cornerAction}</div>
+        ) : null}
+        <CardBody
+          onPress={onPress}
+          className="flex flex-grow flex-col gap-4 px-4 py-4"
+        >
+          <div className={`flex min-w-0 items-start gap-4 ${cornerAction ? "pr-14" : ""}`}>
+            <div className="relative size-[72px] shrink-0 overflow-hidden rounded-full bg-neutral-100 sm:size-[88px]">
+              <Image
+                src={profile.avatarUrl}
+                alt=""
+                fill
+                sizes="88px"
+                className="rounded-full object-cover"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3
+                className={`${fonts.display.className} wrap-break-word text-[1.55rem] leading-snug tracking-[-0.03em] text-neutral-900`}
+              >
+                {profile.name}
+              </h3>
+              <p
+                className={`${fonts.mono.className} mt-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-neutral-700`}
+              >
+                {profile.taglines.join(", ")}
+              </p>
+              <p
+                className={`${fonts.mono.className} mt-1 text-[13px] font-medium uppercase tracking-wide text-neutral-600`}
+              >
+                {profile.location}
+              </p>
+            </div>
+          </div>
+
+        <p
+          className={`${fonts.display.className} text-[18px] leading-[1.4] tracking-[-0.02em] text-neutral-700`}
+        >
+          {profile.bio}
+        </p>
+
+        {profile.rightNow ? (
+          <ProfileRightNow
+            text={profile.rightNow}
+            monoClassName={fonts.mono.className}
+            className="text-[13px]"
+          />
+        ) : null}
+
+        <TagPills
+          label="Interests"
+          items={profile.interests}
+          monoClassName={fonts.mono.className}
+          colorOffset={0}
+          textClass="text-[12px]"
+        />
+        <TagPills
+          label="Skills"
+          items={profile.skills}
+          monoClassName={fonts.mono.className}
+          colorOffset={3}
+          textClass="text-[12px]"
+        />
+        </CardBody>
+        {footer ? <CardFooter footer={footer} /> : null}
+      </article>
+    );
+  }
+
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-none border-0 bg-neutral-100">
+    <article className="relative flex min-w-0 flex-col overflow-hidden rounded-none border-0 bg-neutral-100">
+      {cornerAction ? (
+        <div className="absolute right-3 top-3 z-10">{cornerAction}</div>
+      ) : null}
       <div className="relative aspect-square w-full bg-neutral-100">
         <Image
           src={profile.avatarUrl}
@@ -277,7 +372,9 @@ export function SocialCard({
           </p>
         </div>
 
-        <p className={`${fonts.mono.className} text-[12px] leading-relaxed text-neutral-700`}>
+        <p
+          className={`${fonts.display.className} text-[12px] leading-[1.4] tracking-[-0.02em] text-neutral-700`}
+        >
           {profile.bio}
         </p>
 

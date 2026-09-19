@@ -35,6 +35,8 @@ export default defineSchema({
     lastSeenAt: v.optional(v.number()),
     onboardingCompletedAt: v.optional(v.number()),
     zimaOnboardingCompletedAt: v.optional(v.number()),
+    /** Preferred email for reaching the user (may differ from auth email). */
+    contactEmail: v.optional(v.string()),
     /** When true, claimed hackathon project card is hidden on the user's dashboard. */
     hiddenClaimedHackathonProjectOnDashboard: v.optional(v.boolean()),
     socialLinks: v.optional(v.record(v.string(), v.string())),

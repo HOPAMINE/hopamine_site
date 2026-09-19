@@ -69,6 +69,24 @@ export default function ResultMarkers({
     return () => markers.forEach((m) => m.remove());
   }, [map, hosts]);
 
+  useEffect(() => {
+    for (const { result, el } of hosts) {
+      const isSelected = selectedResultId === result.id;
+      el.style.zIndex = isSelected ? "30" : selectedResultId ? "1" : "2";
+    }
+  }, [hosts, selectedResultId]);
+
+  useEffect(() => {
+    if (!map || !selectedResultId) return;
+    const result = results.find((item) => item.id === selectedResultId);
+    if (!result) return;
+    map.easeTo({
+      center: [result.lng, result.lat],
+      duration: 650,
+      essential: true,
+    });
+  }, [map, results, selectedResultId]);
+
   return (
     <>
       {hosts.map(({ result, el }) =>
@@ -78,6 +96,7 @@ export default function ResultMarkers({
               result={result}
               visible={zoomedIn}
               selected={selectedResultId === result.id}
+              dimmed={Boolean(selectedResultId) && selectedResultId !== result.id}
               onSelect={onSelectResult}
             />
           ) : (
@@ -85,6 +104,7 @@ export default function ResultMarkers({
               result={result}
               visible={zoomedIn}
               selected={selectedResultId === result.id}
+              dimmed={Boolean(selectedResultId) && selectedResultId !== result.id}
               onSelect={onSelectResult}
             />
           ),
@@ -100,11 +120,13 @@ function PersonMarker({
   result,
   visible,
   selected,
+  dimmed,
   onSelect,
 }: {
   result: MapResult;
   visible: boolean;
   selected: boolean;
+  dimmed: boolean;
   onSelect?: (id: string) => void;
 }) {
   const isLogo = result.avatarUrl.startsWith("/");
@@ -116,9 +138,11 @@ function PersonMarker({
       title={result.description}
       onClick={() => onSelect?.(result.id)}
       disabled={!interactive}
-      className={`flex flex-col items-center border-0 bg-transparent p-0 transition-opacity duration-300 ${
-        visible ? "opacity-100" : "pointer-events-none opacity-0"
-      } ${interactive ? "cursor-pointer" : ""}`}
+      className={`flex flex-col items-center border-0 bg-transparent p-0 transition-[opacity,transform,filter] duration-300 ${
+        visible ? (dimmed ? "opacity-55" : "opacity-100") : "pointer-events-none opacity-0"
+      } ${interactive ? "cursor-pointer" : ""} ${
+        selected ? "scale-110" : dimmed ? "scale-95" : ""
+      }`}
     >
       <div
         className={`flex w-[76px] flex-col overflow-hidden rounded-2xl border bg-white ${
@@ -133,19 +157,21 @@ function PersonMarker({
           <img
             src={result.avatarUrl}
             alt=""
-            className={`h-full w-full object-cover ${
+            className={`h-full w-full object-cover transition-[filter] duration-300 ${
               isLogo ? "object-contain p-2" : ""
-            }`}
+            } ${dimmed ? "grayscale" : ""}`}
             style={isLogo ? undefined : { imageRendering: "pixelated" }}
           />
         </div>
         <p
-          className={`${jetbrainsMono.className} truncate px-1.5 py-1.5 text-center text-[9px] font-semibold uppercase leading-tight tracking-wide text-neutral-900`}
+          className={`${jetbrainsMono.className} truncate px-1.5 py-1.5 text-center text-[9px] font-semibold uppercase leading-tight tracking-wide ${
+            dimmed ? "text-neutral-400" : "text-neutral-900"
+          }`}
         >
           {result.name}
         </p>
       </div>
-      <MapPinSpike selected={selected} />
+      <MapPinSpike selected={selected} dimmed={dimmed} />
     </button>
   );
 }
@@ -155,11 +181,13 @@ function OrganizationPill({
   result,
   visible,
   selected,
+  dimmed,
   onSelect,
 }: {
   result: MapResult;
   visible: boolean;
   selected: boolean;
+  dimmed: boolean;
   onSelect?: (id: string) => void;
 }) {
   const interactive = visible && Boolean(onSelect);
@@ -170,12 +198,16 @@ function OrganizationPill({
       title={result.description}
       onClick={() => onSelect?.(result.id)}
       disabled={!interactive}
-      className={`${jetbrainsMono.className} flex h-7 max-w-[min(10rem,42vw)] items-center gap-1 rounded-full border-0 pl-3 pr-3.5 text-[11px] font-semibold uppercase leading-none tracking-wide transition-opacity duration-300 sm:h-[28px] sm:max-w-[10vw] sm:gap-1 sm:pl-3 sm:pr-4 sm:text-[13px] ${
-        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      className={`${jetbrainsMono.className} flex h-7 max-w-[min(10rem,42vw)] items-center gap-1 rounded-full border-0 pl-3 pr-3.5 text-[11px] font-semibold uppercase leading-none tracking-wide transition-[opacity,transform,filter,background-color,color] duration-300 sm:h-[28px] sm:max-w-[10vw] sm:gap-1 sm:pl-3 sm:pr-4 sm:text-[13px] ${
+        visible ? (dimmed ? "opacity-55" : "opacity-100") : "pointer-events-none opacity-0"
       } ${interactive ? "cursor-pointer" : ""} ${
-        selected ? "ring-2 ring-[#00a6f3] ring-offset-1" : ""
+        selected ? "scale-110 ring-2 ring-[#00a6f3] ring-offset-1" : dimmed ? "scale-95" : ""
       }`}
-      style={{ ...ORG_PILL_STYLE, boxShadow: MARKER_SHADOW }}
+      style={{
+        backgroundColor: dimmed ? "#d4d4d4" : ORG_PILL_STYLE.backgroundColor,
+        color: dimmed ? "#737373" : ORG_PILL_STYLE.color,
+        boxShadow: MARKER_SHADOW,
+      }}
     >
       <SproutIcon />
       <span className="truncate">{result.name}</span>
@@ -205,12 +237,18 @@ function SproutIcon() {
 }
 
 /** Small triangle; bottom vertex is the map anchor point. */
-function MapPinSpike({ selected }: { selected: boolean }) {
+function MapPinSpike({
+  selected,
+  dimmed,
+}: {
+  selected: boolean;
+  dimmed: boolean;
+}) {
   return (
     <div
       aria-hidden
       className={`h-0 w-0 border-x-[7px] border-t-[9px] border-x-transparent ${
-        selected ? "border-t-[#00a6f3]" : "border-t-white"
+        selected ? "border-t-[#00a6f3]" : dimmed ? "border-t-neutral-300" : "border-t-white"
       }`}
       style={{
         filter: "drop-shadow(0 2px 1px rgba(0, 0, 0, 0.12))",

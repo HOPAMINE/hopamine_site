@@ -48,7 +48,7 @@ export function ZimaChatDockNewMessage({ onPickUser }: Props) {
           ) : null}
           {searchResults?.map((user) => (
             <li key={user._id} className="flex items-center gap-2 px-2 py-1.5">
-              <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-neutral-200">
+              <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-neutral-200">
                 {user.avatarUrl ? (
                   <Image src={user.avatarUrl} alt="" fill sizes="32px" className="object-cover" />
                 ) : null}

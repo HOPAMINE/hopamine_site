@@ -10,7 +10,16 @@ import { jetbrainsMono } from "../../../fonts";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
-const fieldClass = `${jetbrainsMono.className} w-full rounded-none border border-neutral-300 bg-neutral-50 px-4 py-3 text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#00a6f3] focus:bg-white`;
+const fieldClassSquare = `${jetbrainsMono.className} w-full rounded-none border border-neutral-300 bg-neutral-50 px-4 py-3 text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#00a6f3] focus:bg-white`;
+
+/** Matches onboarding text fields (rounded-xl, px-5). */
+export const zimaRoundedInputClass = `${jetbrainsMono.className} w-full rounded-xl border border-neutral-300 bg-neutral-50 px-5 py-3 text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-[#00a6f3] focus:bg-white`;
+
+export const zimaRoundedTextareaClass = `${zimaRoundedInputClass} resize-y`;
+
+function fieldClassForVariant(variant: "square" | "rounded") {
+  return variant === "rounded" ? zimaRoundedInputClass : fieldClassSquare;
+}
 
 export function ZimaAuthCard({ children }: { children: ReactNode }) {
   return (
@@ -40,12 +49,14 @@ type ZimaAuthFieldProps = {
   id: string;
   label: string;
   className?: string;
+  variant?: "square" | "rounded";
 } & InputHTMLAttributes<HTMLInputElement>;
 
 export function ZimaAuthField({
   id,
   label,
   className = "",
+  variant = "square",
   ...props
 }: ZimaAuthFieldProps) {
   return (
@@ -56,7 +67,11 @@ export function ZimaAuthField({
       >
         {label}
       </label>
-      <input id={id} className={`${fieldClass} ${className}`} {...props} />
+      <input
+        id={id}
+        className={`${fieldClassForVariant(variant)} ${className}`}
+        {...props}
+      />
     </div>
   );
 }
@@ -66,6 +81,7 @@ type ZimaAuthTextareaProps = {
   label: string;
   className?: string;
   rows?: number;
+  variant?: "square" | "rounded";
 } & TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export function ZimaAuthTextarea({
@@ -73,8 +89,12 @@ export function ZimaAuthTextarea({
   label,
   className = "",
   rows = 4,
+  variant = "square",
   ...props
 }: ZimaAuthTextareaProps) {
+  const textareaClass =
+    variant === "rounded" ? zimaRoundedTextareaClass : `${fieldClassSquare} resize-y`;
+
   return (
     <div className="space-y-2">
       <label
@@ -86,7 +106,7 @@ export function ZimaAuthTextarea({
       <textarea
         id={id}
         rows={rows}
-        className={`${fieldClass} resize-y ${className}`}
+        className={`${textareaClass} ${className}`}
         {...props}
       />
     </div>

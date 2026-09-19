@@ -8,13 +8,15 @@ export type ZimaMobileTab = "explore" | "chats" | "profile";
 
 /** Spacer matching the fixed tab bar so page content is not covered. */
 export const ZIMA_MOBILE_NAV_SPACER =
-  "h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] shrink-0 md:hidden";
+  "h-[calc(4.5rem+env(safe-area-inset-bottom,0px))] shrink-0 md:hidden";
 
 type Props = {
   active: ZimaMobileTab;
   homeHref: string;
   chatsHref: string;
   profileHref: string;
+  /** In document flow (e.g. stacked under a footer ad). Default is fixed to the viewport. */
+  placement?: "fixed" | "inline";
 };
 
 function TabIcon({ children, active }: { children: ReactNode; active: boolean }) {
@@ -80,7 +82,7 @@ function ProfileIcon() {
 }
 
 function tabShell(isActive: boolean) {
-  return `flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-2 transition-colors ${
+  return `flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 py-3.5 transition-colors ${
     isActive ? "text-neutral-900" : "text-neutral-500 active:text-neutral-800"
   }`;
 }
@@ -127,11 +129,40 @@ function TabItem({
   );
 }
 
+function NavBar({
+  tabs,
+  active,
+  placement,
+}: {
+  tabs: TabConfig[];
+  active: ZimaMobileTab;
+  placement: "fixed" | "inline";
+}) {
+  const positionClass =
+    placement === "fixed"
+      ? "fixed inset-x-0 bottom-0 z-40"
+      : "relative z-40";
+
+  return (
+    <nav
+      className={`${positionClass} border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] md:hidden`}
+      aria-label="Zima"
+    >
+      <div className="flex min-h-[4.5rem] items-stretch">
+        {tabs.map((tab) => (
+          <TabItem key={tab.id} tab={tab} isActive={active === tab.id} />
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 export function ZimaMobileBottomNav({
   active,
   homeHref,
   chatsHref,
   profileHref,
+  placement = "fixed",
 }: Props) {
   const tabs: TabConfig[] = [
     { id: "explore", label: "Explore", href: homeHref, icon: <HomeIcon /> },
@@ -139,19 +170,14 @@ export function ZimaMobileBottomNav({
     { id: "profile", label: "Profile", href: profileHref, icon: <ProfileIcon /> },
   ];
 
+  if (placement === "inline") {
+    return <NavBar tabs={tabs} active={active} placement={placement} />;
+  }
+
   return (
     <>
       <div className={ZIMA_MOBILE_NAV_SPACER} aria-hidden />
-      <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom,0px)] md:hidden"
-        aria-label="Zima"
-      >
-        <div className="flex h-[3.75rem] items-stretch">
-          {tabs.map((tab) => (
-            <TabItem key={tab.id} tab={tab} isActive={active === tab.id} />
-          ))}
-        </div>
-      </nav>
+      <NavBar tabs={tabs} active={active} placement={placement} />
     </>
   );
 }

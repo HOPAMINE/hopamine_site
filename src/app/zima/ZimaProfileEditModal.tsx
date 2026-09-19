@@ -8,9 +8,10 @@ import { jetbrainsMono } from "../../../fonts";
 import {
   ZimaAuthError,
   ZimaAuthField,
-  ZimaAuthSubmitButton,
   ZimaAuthTextarea,
 } from "./ZimaAuthUI";
+
+const HOPAMINE_BLUE = "#00a6f3";
 
 export type ZimaProfileData = {
   name: string;
@@ -18,7 +19,6 @@ export type ZimaProfileData = {
   avatarUrl: string;
   bio?: string;
   location?: string;
-  discord?: string;
 };
 
 type ZimaProfileEditModalProps = {
@@ -35,7 +35,6 @@ export function ZimaProfileEditModal({
   const [username, setUsername] = useState(user.username ?? "");
   const [bio, setBio] = useState(user.bio ?? "");
   const [location, setLocation] = useState(user.location ?? "");
-  const [discord, setDiscord] = useState(user.discord ?? "");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -44,7 +43,6 @@ export function ZimaProfileEditModal({
     setUsername(user.username ?? "");
     setBio(user.bio ?? "");
     setLocation(user.location ?? "");
-    setDiscord(user.discord ?? "");
   }, [user]);
 
   useEffect(() => {
@@ -80,7 +78,6 @@ export function ZimaProfileEditModal({
         username: username.trim() || undefined,
         bio: bio.trim() || undefined,
         location: location.trim() || undefined,
-        discord: discord.trim() || undefined,
       });
       onClose();
     } catch (submitError) {
@@ -101,7 +98,7 @@ export function ZimaProfileEditModal({
       role="presentation"
     >
       <div
-        className="flex w-full max-w-md max-h-[min(90dvh,720px)] flex-col border border-neutral-200 bg-white shadow-none"
+        className="flex w-full max-w-md max-h-[min(90dvh,720px)] flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-none"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -136,8 +133,9 @@ export function ZimaProfileEditModal({
                 name={name}
                 size={96}
                 variant="light"
-                controls="button"
-                shape="square"
+                controls="link"
+                pickerLabel="Change profile"
+                shape="circle"
                 dithered={false}
               />
             </div>
@@ -145,6 +143,7 @@ export function ZimaProfileEditModal({
             <ZimaAuthField
               id="zima-profile-name"
               label="Name"
+              variant="rounded"
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Your name"
@@ -155,6 +154,7 @@ export function ZimaProfileEditModal({
             <ZimaAuthField
               id="zima-profile-username"
               label="Username"
+              variant="rounded"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="hopamine-handle"
@@ -164,6 +164,7 @@ export function ZimaProfileEditModal({
             <ZimaAuthField
               id="zima-profile-location"
               label="Location"
+              variant="rounded"
               value={location}
               onChange={(event) => setLocation(event.target.value)}
               placeholder="City, country"
@@ -173,27 +174,24 @@ export function ZimaProfileEditModal({
             <ZimaAuthTextarea
               id="zima-profile-bio"
               label="Bio"
+              variant="rounded"
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               placeholder="A short intro about you…"
               rows={4}
             />
 
-            <ZimaAuthField
-              id="zima-profile-discord"
-              label="Discord"
-              value={discord}
-              onChange={(event) => setDiscord(event.target.value)}
-              placeholder="yourname"
-              autoComplete="off"
-            />
           </div>
 
           <div className="border-t border-neutral-200 px-5 py-4">
-            <ZimaAuthSubmitButton
+            <button
+              type="submit"
               disabled={saving}
-              label={saving ? "Saving…" : "Save changes"}
-            />
+              className={`${jetbrainsMono.className} flex h-12 w-full items-center justify-center rounded-xl px-6 text-[15px] font-semibold uppercase tracking-wide text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40`}
+              style={{ backgroundColor: HOPAMINE_BLUE }}
+            >
+              {saving ? "Saving…" : "Save changes"}
+            </button>
           </div>
         </form>
       </div>

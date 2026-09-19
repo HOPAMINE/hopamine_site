@@ -34,10 +34,10 @@ const profileAvatar =
   "inline-flex size-10 shrink-0 touch-manipulation items-center justify-center overflow-hidden rounded-full border-2 border-white/90 bg-white/10 text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
 const getStartedMarketing =
-  "inline-flex h-10 shrink-0 touch-manipulation items-center justify-center bg-white px-4 font-mono text-xs font-bold uppercase tracking-wide text-accent-navbar transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-5 sm:text-sm";
+  "inline-flex h-10 shrink-0 touch-manipulation items-center justify-center rounded-full bg-white px-4 font-mono text-xs font-bold uppercase tracking-wide text-accent-navbar transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-5 sm:text-sm";
 
 const getStartedEvents =
-  "inline-flex h-10 shrink-0 touch-manipulation items-center justify-center bg-white px-4 font-mono text-xs font-bold uppercase tracking-wide text-accent-events transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-5 sm:text-sm";
+  "inline-flex h-10 shrink-0 touch-manipulation items-center justify-center rounded-full bg-white px-4 font-mono text-xs font-bold uppercase tracking-wide text-accent-events transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-5 sm:text-sm";
 
 export function ProfileNavLink({
   className = "",
@@ -62,7 +62,7 @@ export function ProfileNavLink({
       >
         <span className="sr-only">Loading account</span>
         <span
-          className={`block h-4 w-20 animate-pulse rounded ${isGreenNav ? "bg-accent-events/20" : "bg-accent-navbar/20"}`}
+          className={`block h-4 w-20 animate-pulse rounded-full ${isGreenNav ? "bg-accent-events/20" : "bg-accent-navbar/20"}`}
         />
       </div>
     );

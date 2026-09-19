@@ -61,7 +61,7 @@ export function ZimaChatsClient() {
                   type="button"
                   className="flex w-full gap-3 bg-neutral-100 p-3 text-left transition-colors hover:bg-neutral-200/80"
                 >
-                  <span className="relative h-14 w-14 shrink-0 overflow-hidden bg-neutral-200">
+                  <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
                     <Image
                       src={conversation.avatarUrl}
                       alt=""
