@@ -23,7 +23,7 @@ export function ZimaSearchProfilePanel({ profile, onBack }: Props) {
       <SocialCard
         profile={profile}
         theme="zima"
-        footer={<ZimaSearchMessageButton profileId={profile.id} />}
+        footer={<ZimaSearchMessageButton profileId={profile.id} displayName={profile.name} />}
       />
     </div>
   );
