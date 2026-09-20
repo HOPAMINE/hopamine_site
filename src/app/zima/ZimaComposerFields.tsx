@@ -2,7 +2,7 @@
 
 import { type FormEvent } from "react";
 import { jetbrainsMono } from "../../../fonts";
-import { ZimaSearchQuickPills } from "./ZimaSearchQuickPills";
+// import { ZimaSearchQuickPills } from "./ZimaSearchQuickPills";
 import type { useZimaChat } from "./useZimaChat";
 
 const HOPAMINE_BLUE = "#00a6f3";
@@ -92,13 +92,13 @@ export function ZimaComposerFields({
           </svg>
         </button>
       </form>
-      {variant === "landing" || variant === "header" ? (
+      {/* {variant === "landing" || variant === "header" ? (
         <ZimaSearchQuickPills
           chat={chat}
           onEnterChatMode={onEnterChatMode}
           variant={variant === "header" ? "header" : "landing"}
         />
-      ) : null}
+      ) : null} */}
     </div>
   );
 }
