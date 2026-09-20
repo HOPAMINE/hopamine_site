@@ -464,7 +464,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     label: "Hijab",
     sprite: {
       top: 3,
-      palette: { a: "#c94f7c", b: "#e07aa0" },
+      palette: { a: "#c94f7c", b: "#e07aa0", k: "#000000" },
       rows: [
         ".........aaaaaaaa.......", // 3
         ".......aaaaaabaaaaa.....", // 4
@@ -475,12 +475,12 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
         ".....ab...........aaa...", // 9
         ".....aa...........aba...", // 10
         ".....aa...........aaa...", // 11
-        ".....aa...........aaa...", // 12
-        ".....ab...........aaa...", // 13
-        ".....aa...........aba...", // 14
+        ".....aak..........aaa...", // 12
+        ".....aak..........aaa...", // 13
+        ".....aak..........aaa...", // 14
         ".....aa...........aaa...", // 15
-        ".....aa...........aaa...", // 16
-        ".....ab...........aaa...", // 17
+        ".....ab...........aaa...", // 16
+        ".....aa...........aba...", // 17
         ".....aa...........aaa...", // 18
         ".....aa...........aaa...", // 19
         ".....aa..........aaaa...", // 20
@@ -513,30 +513,30 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     label: "Hoodie",
     sprite: {
       top: 2,
-      palette: { a: "#6e6e6e", b: "#4d4d4d" },
+      palette: { a: "#6e6e6e", b: "#4d4d4d", k: "#000000" },
       rows: [
         "..........aaaaaaa.......", // 2
         "........aaaaaaaaaaa.....", // 3
-        ".......aaaaaaaaaaaaa....", // 4
-        "......aaaaaaaaaaaaaaa...", // 5
-        "......aaaaaaaaaaaaaaa...", // 6
-        ".....aaaaaaaaaaaaaaaaa..", // 7
-        ".....ab...........baaa..", // 8
-        ".....ab...........baaa..", // 9
-        ".....ab...........baaa..", // 10
-        ".....ab...........baaa..", // 11
-        ".....ab...........baaa..", // 12
-        ".....ab...........baaa..", // 13
-        ".....ab...........baaa..", // 14
-        ".....ab...........baaa..", // 15
-        ".....ab...........baaa..", // 16
-        ".....ab...........baaa..", // 17
-        ".....ab...........baaa..", // 18
-        ".....ab...........baaa..", // 19
-        ".....ab...........baaa..", // 20
-        "....aab.........baaaaa..", // 21
-        "....aab....bbbbbaaaaaaa.", // 22
-        "...aaab....baaaaaaaaaaaa", // 23
+        "......aaaaaaaaaaaaaa....", // 4
+        ".....aaaaaaaaaaaaaaaa...", // 5
+        "....aaaaaaaaaaaaaaaaa...", // 6
+        "....aaabbbbbbbbbbbaaa...", // 7
+        "....aaa...........aaa...", // 8
+        "....aaa...........aaa...", // 9
+        "....aaa...........aaa...", // 10
+        "....aaa...........aaa...", // 11
+        "....aaak..........aaa...", // 12
+        "....aaak..........aaa...", // 13
+        "....aaak..........aaa...", // 14
+        "....aaa...........aaa...", // 15
+        "....aaa...........aaa...", // 16
+        "....aaa...........aaa...", // 17
+        "....aaa...........aaa...", // 18
+        "....aaa...........aaa...", // 19
+        "....aaa..........aaaa...", // 20
+        "...aaaa.........aaaaa...", // 21
+        "...aaaa.....aaaaaaaaa...", // 22
+        "..aaaaa.....aaaaaaaaaa..", // 23
       ],
     },
   },
