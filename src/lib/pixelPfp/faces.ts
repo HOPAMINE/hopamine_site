@@ -1,4 +1,4 @@
-import type { PixelSprite } from "./sprite";
+import type { HeadShapeId, PixelSprite } from "./sprite";
 
 /**
  * Letters in the head template:
@@ -8,8 +8,7 @@ import type { PixelSprite } from "./sprite";
  * `F` freckle (plain skin unless the face opts in).
  */
 export const HEAD_TEMPLATE_TOP = 5;
-
-export type HeadShapeId = "masc" | "femme";
+export const FEMME_HEAD_TEMPLATE_TOP = 7;
 
 export type HeadShapeOption = { id: HeadShapeId; label: string };
 
@@ -17,13 +16,6 @@ export const HEAD_SHAPE_OPTIONS: readonly HeadShapeOption[] = [
   { id: "masc", label: "Masc" },
   { id: "femme", label: "Femme" },
 ];
-
-/**
- * The femme head is the masc head with this column removed: one pixel
- * narrower on the right and a two-pixel mouth, matching the punk reference.
- * Hair and accessories get the same column removed so they keep lining up.
- */
-export const FEMME_HEAD_COLLAPSED_COLUMN = 12;
 
 export const HEAD_TEMPLATE_ROWS: readonly string[] = [
   ".........#######........", // 5
@@ -47,6 +39,29 @@ export const HEAD_TEMPLATE_ROWS: readonly string[] = [
   ".......#SSS#............", // 23
 ];
 
+// Sampled from the punk reference: the femme head starts two rows lower, is
+// one column narrower on the right, has its eyes one row lower and one column
+// left, a single-pixel nose, and a jaw that steps in to a neck one column right.
+export const FEMME_HEAD_TEMPLATE_ROWS: readonly string[] = [
+  "........#######.........", // 7
+  ".......#SSHSSSS#........", // 8
+  ".......#SHSSSSSS#.......", // 9
+  ".......#SVSSSSSS#.......", // 10
+  ".......#VVSSSSSS#.......", // 11
+  "......#SSSBBSSSBB#......", // 12
+  "......#DSSPESSSPE#......", // 13
+  "......##SFSSSSFS#.......", // 14
+  ".......#SSFSSSSF#.......", // 15
+  ".......#SSSS#SSV#.......", // 16
+  ".......#SSSLLLSV#.......", // 17
+  "........#SSMMMSS#.......", // 18
+  "........#SSDDDD#........", // 19
+  "........#S#SSS#.........", // 20
+  "........#SS###..........", // 21
+  "........#SVS#...........", // 22
+  "........#SSS#...........", // 23
+];
+
 export type FaceColors = {
   skin: string;
   skinLight: string;
@@ -67,10 +82,13 @@ export type FaceOption = {
 
 const HEAD_OUTLINE = "#000000";
 
-export function buildFaceSprite(colors: FaceColors): PixelSprite {
+export function buildFaceSprite(
+  colors: FaceColors,
+  headShapeId: HeadShapeId,
+): PixelSprite {
   return {
-    top: HEAD_TEMPLATE_TOP,
-    rows: HEAD_TEMPLATE_ROWS,
+    top: headShapeId === "femme" ? FEMME_HEAD_TEMPLATE_TOP : HEAD_TEMPLATE_TOP,
+    rows: headShapeId === "femme" ? FEMME_HEAD_TEMPLATE_ROWS : HEAD_TEMPLATE_ROWS,
     palette: {
       "#": HEAD_OUTLINE,
       S: colors.skin,

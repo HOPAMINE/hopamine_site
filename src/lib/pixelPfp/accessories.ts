@@ -7,6 +7,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "shades",
     label: "Shades",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 10,
       palette: { a: "#000000", l: "#3d3d3d", h: "#6f6f6f" },
@@ -20,6 +21,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "round-glasses",
     label: "Pink rounds",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 11,
       palette: { a: "#000000", l: "#c455e0" },
@@ -33,6 +35,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "nerd-glasses",
     label: "Nerd glasses",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 11,
       palette: { a: "#000000" },
@@ -46,6 +49,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "3d-glasses",
     label: "3D glasses",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 11,
       palette: { w: "#f0f0f0", r: "#e9473e", b: "#4d8bf5" },
@@ -59,6 +63,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "vr-headset",
     label: "VR headset",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 10,
       palette: { w: "#f0f0f0", d: "#1c1c1c", s: "#3a3a3a", h: "#8ab4ff" },
@@ -73,6 +78,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "welding-goggles",
     label: "Brass goggles",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 7,
       palette: { b: "#b8862b", g: "#7fd1c8" },
@@ -86,6 +92,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "eyepatch",
     label: "Eyepatch",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 11,
       palette: { a: "#000000" },
@@ -99,6 +106,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "monocle",
     label: "Monocle",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 11,
       palette: { g: "#e0b040" },
@@ -114,6 +122,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "cigarette",
     label: "Cigarette",
+    femmeOffset: { x: -1, y: 0 },
     sprite: {
       top: 15,
       palette: { k: "#000000", w: "#f5f5f5", e: "#ff6a1a", s: "#dfeef5" },
@@ -128,6 +137,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "pipe",
     label: "Pipe",
+    femmeOffset: { x: -1, y: 0 },
     sprite: {
       top: 16,
       palette: { p: "#6b3e1a", q: "#8a5630", s: "#dfeef5" },
@@ -144,6 +154,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "lollipop",
     label: "Lollipop",
+    femmeOffset: { x: -1, y: 0 },
     sprite: {
       top: 17,
       palette: { c: "#ff4fa3", d: "#ffd6ea", w: "#f0f0f0" },
@@ -168,6 +179,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "nose-ring",
     label: "Nose ring",
+    femmeOffset: { x: -2, y: 1 },
     sprite: {
       top: 15,
       palette: { g: "#f7cb4e" },
@@ -180,6 +192,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "bindi",
     label: "Bindi",
+    femmeOffset: { x: -1, y: 1 },
     sprite: {
       top: 10,
       palette: { r: "#d1202a" },
@@ -204,6 +217,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "choker",
     label: "Choker",
+    femmeOffset: { x: 1, y: 0 },
     sprite: {
       top: 22,
       palette: { a: "#111111" },
@@ -215,6 +229,17 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "face-mask",
     label: "Face mask",
+    femmeSprite: {
+      top: 15,
+      palette: { m: "#a9d8f0", n: "#8ec3e0" },
+      rows: [
+        "........mmmmmmmm........", // 15
+        "........mnnnnnnm........", // 16
+        "........mmmmmmmm........", // 17
+        ".........mnnnnnm........", // 18
+        ".........mmmmmm.........", // 19
+      ],
+    },
     sprite: {
       top: 15,
       palette: { m: "#a9d8f0", n: "#8ec3e0" },
@@ -294,6 +319,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "party-hat",
     label: "Party hat",
+    femmeOffset: { x: 0, y: 2 },
     sprite: {
       top: 0,
       palette: { a: "#ffd23f", b: "#ff6b6b", p: "#ff4fa3" },
@@ -310,6 +336,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "crown",
     label: "Crown",
+    femmeOffset: { x: 0, y: 2 },
     sprite: {
       top: 2,
       palette: { g: "#f7cb4e", r: "#e0272e" },
@@ -376,6 +403,15 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "flower-crown",
     label: "Flower crown",
+    femmeSprite: {
+      top: 7,
+      palette: { g: "#3f9142", p: "#ff7eb3", y: "#ffd166", w: "#ffffff" },
+      rows: [
+        "......p.y.w.p.y.p.......", // 7
+        "......ggggggggggg.......", // 8
+        "......g.........g.......", // 9
+      ],
+    },
     sprite: {
       top: 6,
       palette: { g: "#3f9142", p: "#ff7eb3", y: "#ffd166", w: "#ffffff" },
@@ -389,6 +425,15 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "leaf-crown",
     label: "Leaf crown",
+    femmeSprite: {
+      top: 7,
+      palette: { g: "#3f9142", h: "#6cc06e" },
+      rows: [
+        "......g.h.g.h.g.h.......", // 7
+        "......ghghghghghg.......", // 8
+        "......g.........g.......", // 9
+      ],
+    },
     sprite: {
       top: 6,
       palette: { g: "#3f9142", h: "#6cc06e" },
@@ -402,6 +447,16 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "solar-visor",
     label: "Solar visor",
+    femmeSprite: {
+      top: 9,
+      palette: { s: "#c0c0c0", p: "#1a3a8a", g: "#3e63c9" },
+      rows: [
+        ".......sssssssssss......", // 9
+        ".......spgpgpgpgps......", // 10
+        ".......sgpgpgpgpgs......", // 11
+        ".......sssssssssss......", // 12
+      ],
+    },
     sprite: {
       top: 8,
       palette: { s: "#c0c0c0", p: "#1a3a8a", g: "#3e63c9" },
@@ -416,6 +471,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "sprout",
     label: "Sprout",
+    femmeOffset: { x: 0, y: 2 },
     sprite: {
       top: 1,
       palette: { g: "#4caf50", s: "#2e7d32" },

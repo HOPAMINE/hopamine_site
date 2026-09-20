@@ -1,20 +1,14 @@
 import { ACCESSORY_OPTIONS } from "./accessories";
 import { BACKGROUND_OPTIONS } from "./backgrounds";
-import {
-  buildFaceSprite,
-  FACE_OPTIONS,
-  FEMME_HEAD_COLLAPSED_COLUMN,
-  HEAD_SHAPE_OPTIONS,
-  type HeadShapeId,
-} from "./faces";
+import { buildFaceSprite, FACE_OPTIONS, HEAD_SHAPE_OPTIONS } from "./faces";
 import { HAIR_OPTIONS } from "./hairs";
 import {
   createEmptyPixelGrid,
-  narrowSpriteAtColumn,
   paintSpriteOntoGrid,
   PIXEL_PFP_GRID_SIZE,
+  resolveOptionSpriteForHead,
+  type HeadShapeId,
   type PixelGrid,
-  type PixelSprite,
 } from "./sprite";
 
 export type PixelPfpSelection = {
@@ -50,22 +44,20 @@ export function renderPixelPfpGrid(selection: PixelPfpSelection): PixelGrid {
   }
 
   const headShape = findOptionOrFirst(HEAD_SHAPE_OPTIONS, selection.headShapeId);
-  const fitToHeadShape = (sprite: PixelSprite) =>
-    headShape.id === "femme"
-      ? narrowSpriteAtColumn(sprite, FEMME_HEAD_COLLAPSED_COLUMN)
-      : sprite;
 
   const face = findOptionOrFirst(FACE_OPTIONS, selection.faceId);
-  paintSpriteOntoGrid(grid, fitToHeadShape(buildFaceSprite(face.colors)));
+  paintSpriteOntoGrid(grid, buildFaceSprite(face.colors, headShape.id));
 
   const hair = findOptionOrFirst(HAIR_OPTIONS, selection.hairId);
-  if (hair.sprite) {
-    paintSpriteOntoGrid(grid, fitToHeadShape(hair.sprite));
+  const hairSprite = resolveOptionSpriteForHead(hair, headShape.id);
+  if (hairSprite) {
+    paintSpriteOntoGrid(grid, hairSprite);
   }
 
   const accessory = findOptionOrFirst(ACCESSORY_OPTIONS, selection.accessoryId);
-  if (accessory.sprite) {
-    paintSpriteOntoGrid(grid, fitToHeadShape(accessory.sprite));
+  const accessorySprite = resolveOptionSpriteForHead(accessory, headShape.id);
+  if (accessorySprite) {
+    paintSpriteOntoGrid(grid, accessorySprite);
   }
 
   return grid;

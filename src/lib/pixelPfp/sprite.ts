@@ -12,10 +12,19 @@ export type PixelSprite = {
   palette: Readonly<Record<string, string>>;
 };
 
+export type HeadShapeId = "masc" | "femme";
+
+/**
+ * `sprite` is drawn on the masc head. On the femme head an option uses, in
+ * order of preference: `femmeSprite` as drawn, `sprite` moved by
+ * `femmeOffset`, or `sprite` passed through `fitSpriteToFemmeHead`.
+ */
 export type PixelPfpOption = {
   id: string;
   label: string;
   sprite: PixelSprite | null;
+  femmeSprite?: PixelSprite;
+  femmeOffset?: { x: number; y: number };
 };
 
 export type PixelGrid = (string | null)[][];
@@ -48,29 +57,79 @@ export function paintSpriteOntoGrid(grid: PixelGrid, sprite: PixelSprite) {
   });
 }
 
-/**
- * Removes one column from every row, shifting everything right of it left by
- * one. A pixel sitting alone on that column (nothing to its right) is kept so
- * thin details like a hat's tip or a sprout stem survive.
- */
-export function narrowSpriteAtColumn(
+export function translateSprite(
   sprite: PixelSprite,
-  column: number,
+  dx: number,
+  dy: number,
 ): PixelSprite {
   return {
     ...sprite,
+    top: sprite.top + dy,
     rows: sprite.rows.map((row) => {
-      const cells = row.split("");
-      const rightOfColumn = cells[column + 1];
-      const keepLonePixel =
-        rightOfColumn === undefined || rightOfColumn === TRANSPARENT_CELL;
-      const narrowed = [
-        ...cells.slice(0, column),
-        keepLonePixel ? cells[column] : rightOfColumn,
-        ...cells.slice(column + 2),
-        TRANSPARENT_CELL,
-      ];
-      return narrowed.join("");
+      const shifted =
+        dx >= 0
+          ? TRANSPARENT_CELL.repeat(dx) + row.slice(0, row.length - dx)
+          : row.slice(-dx) + TRANSPARENT_CELL.repeat(-dx);
+      return shifted;
     }),
   };
+}
+
+function narrowRowAtColumn(row: string, column: number): string {
+  const cells = row.split("");
+  const rightOfColumn = cells[column + 1];
+  const keepLonePixel =
+    rightOfColumn === undefined || rightOfColumn === TRANSPARENT_CELL;
+  return [
+    ...cells.slice(0, column),
+    keepLonePixel ? cells[column] : rightOfColumn,
+    ...cells.slice(column + 2),
+    TRANSPARENT_CELL,
+  ].join("");
+}
+
+/**
+ * The femme head is one column narrower on the right (column 12 of the masc
+ * head is gone) and its jaw steps one column right from row 18 down. This
+ * reshapes a masc-authored hair or accessory to sit on it. A pixel sitting
+ * alone on the removed column is kept so thin details survive.
+ */
+export const FEMME_HEAD_COLLAPSED_COLUMN = 12;
+export const FEMME_JAW_FIRST_ROW = 18;
+const FEMME_JAW_LEFT_OUTLINE_COLUMN = 8;
+
+export function fitSpriteToFemmeHead(sprite: PixelSprite): PixelSprite {
+  return {
+    ...sprite,
+    rows: sprite.rows.map((row, rowIndex) => {
+      const narrowed = narrowRowAtColumn(row, FEMME_HEAD_COLLAPSED_COLUMN);
+      const y = sprite.top + rowIndex;
+      if (y < FEMME_JAW_FIRST_ROW) {
+        return narrowed;
+      }
+      const leftOfJaw = narrowed.slice(0, FEMME_JAW_LEFT_OUTLINE_COLUMN - 1);
+      const rest = narrowed.slice(FEMME_JAW_LEFT_OUTLINE_COLUMN - 1);
+      return (
+        TRANSPARENT_CELL +
+        leftOfJaw +
+        rest.slice(1)
+      ).slice(0, PIXEL_PFP_GRID_SIZE);
+    }),
+  };
+}
+
+export function resolveOptionSpriteForHead(
+  option: PixelPfpOption,
+  headShapeId: HeadShapeId,
+): PixelSprite | null {
+  if (!option.sprite || headShapeId === "masc") {
+    return option.sprite;
+  }
+  if (option.femmeSprite) {
+    return option.femmeSprite;
+  }
+  if (option.femmeOffset) {
+    return translateSprite(option.sprite, option.femmeOffset.x, option.femmeOffset.y);
+  }
+  return fitSpriteToFemmeHead(option.sprite);
 }

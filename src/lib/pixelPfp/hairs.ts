@@ -462,6 +462,33 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "hijab",
     label: "Hijab",
+    femmeSprite: {
+      top: 3,
+      palette: { a: "#c94f7c", b: "#e07aa0", k: "#000000" },
+      rows: [
+        ".........aaaaaaaa.......", // 3
+        ".......aaaaaabaaaaa.....", // 4
+        "......aaabaaaaaaaaaa....", // 5
+        "......aaaaaaaaaaabaa....", // 6
+        ".....aaaaaaaaaaaaaaaa...", // 7
+        ".....aa.........aaa.....", // 8
+        ".....ab..........aaa....", // 9
+        ".....aa..........aba....", // 10
+        ".....aa..........aaa....", // 11
+        ".....aak.........aaa....", // 12
+        ".....aak.........aaa....", // 13
+        ".....aak.........aaa....", // 14
+        ".....aa..........aaa....", // 15
+        ".....ab..........aaa....", // 16
+        ".....aa..........aba....", // 17
+        "......aa.........aaa....", // 18
+        "......aa........aaaa....", // 19
+        "......aa.......aaaaa....", // 20
+        "......aa......aaaaaa....", // 21
+        ".....aaaaaaaaaaaaaaa....", // 22
+        ".....aaaaabaaaaaaaaa....", // 23
+      ],
+    },
     sprite: {
       top: 3,
       palette: { a: "#c94f7c", b: "#e07aa0", k: "#000000" },
@@ -511,6 +538,34 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "hoodie",
     label: "Hoodie",
+    femmeSprite: {
+      top: 2,
+      palette: { a: "#6e6e6e", b: "#4d4d4d", k: "#000000" },
+      rows: [
+        "..........aaaaaaa.......", // 2
+        "........aaaaaaaaaaa.....", // 3
+        "......aaaaaaaaaaaaaa....", // 4
+        ".....aaaaaaaaaaaaaaaa...", // 5
+        "....aaaaaaaaaaaaaaaaa...", // 6
+        "....aaaabbbbbbbbbaaaa...", // 7
+        "....aaa.........aaa.....", // 8
+        "....aaa..........aaa....", // 9
+        "....aaa..........aaa....", // 10
+        "....aaa..........aaa....", // 11
+        "....aaak.........aaa....", // 12
+        "....aaak.........aaa....", // 13
+        "....aaak.........aaa....", // 14
+        "....aaa..........aaa....", // 15
+        "....aaa..........aaa....", // 16
+        "....aaa..........aaa....", // 17
+        ".....aaa.........aaa....", // 18
+        ".....aaa........aaaa....", // 19
+        ".....aaa.......aaaaa....", // 20
+        "....aaaa......aaaaaa....", // 21
+        "....aaaa.....aaaaaaaa...", // 22
+        "...aaaaa.....aaaaaaaaa..", // 23
+      ],
+    },
     sprite: {
       top: 2,
       palette: { a: "#6e6e6e", b: "#4d4d4d", k: "#000000" },
