@@ -1,5 +1,5 @@
-import { PixelAvatarCreator } from "../../../components/pixel/PixelAvatarCreator";
+import { PixelPfpMaker } from "../../../components/pixel/PixelPfpMaker";
 
 export default function PixelPage() {
-  return <PixelAvatarCreator />;
+  return <PixelPfpMaker />;
 }

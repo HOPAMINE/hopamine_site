@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Providers } from "../providers";
 
 export const metadata: Metadata = {
-  title: "Pixel Avatar · Hopamine",
+  title: "Pixel PFP · Hopamine",
   description:
-    "Turn your photo into a CryptoPunks-style pixel portrait for your Hopamine profile.",
+    "Build a 24×24 pixel portrait for your Hopamine profile: pick a face, hair, and accessory.",
 };
 
 export default function PixelLayout({
