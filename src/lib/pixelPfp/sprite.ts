@@ -75,45 +75,46 @@ export function translateSprite(
   };
 }
 
-function narrowRowAtColumn(row: string, column: number): string {
+/**
+ * Deletes one column and shifts everything left of it one step right. A pixel
+ * sitting alone on that column (nothing to its left) is kept so thin details
+ * survive.
+ */
+function collapseColumnTowardRight(row: string, column: number): string {
   const cells = row.split("");
-  const rightOfColumn = cells[column + 1];
+  const leftOfColumn = cells[column - 1];
   const keepLonePixel =
-    rightOfColumn === undefined || rightOfColumn === TRANSPARENT_CELL;
+    leftOfColumn === undefined || leftOfColumn === TRANSPARENT_CELL;
   return [
-    ...cells.slice(0, column),
-    keepLonePixel ? cells[column] : rightOfColumn,
-    ...cells.slice(column + 2),
     TRANSPARENT_CELL,
+    ...cells.slice(0, column - 1),
+    keepLonePixel ? cells[column] : leftOfColumn,
+    ...cells.slice(column + 1),
   ].join("");
 }
 
 /**
- * The femme head is one column narrower on the right (column 12 of the masc
- * head is gone) and its jaw steps one column right from row 18 down. This
- * reshapes a masc-authored hair or accessory to sit on it. A pixel sitting
- * alone on the removed column is kept so thin details survive.
+ * The femme head is one column narrower on the left than the masc head
+ * (its outline is at column 7, not 6) and its jaw steps in one more column
+ * from row 19 down. This reshapes a masc-authored hair or accessory to sit
+ * on it; the right side of the head is the same on both.
  */
-export const FEMME_HEAD_COLLAPSED_COLUMN = 12;
-export const FEMME_JAW_FIRST_ROW = 18;
-const FEMME_JAW_LEFT_OUTLINE_COLUMN = 8;
+export const FEMME_HEAD_LEFT_OUTLINE_COLUMN = 7;
+export const FEMME_JAW_FIRST_ROW = 19;
+export const FEMME_JAW_LEFT_OUTLINE_COLUMN = 8;
 
 export function fitSpriteToFemmeHead(sprite: PixelSprite): PixelSprite {
   return {
     ...sprite,
     rows: sprite.rows.map((row, rowIndex) => {
-      const narrowed = narrowRowAtColumn(row, FEMME_HEAD_COLLAPSED_COLUMN);
+      const narrowed = collapseColumnTowardRight(
+        row,
+        FEMME_HEAD_LEFT_OUTLINE_COLUMN,
+      );
       const y = sprite.top + rowIndex;
-      if (y < FEMME_JAW_FIRST_ROW) {
-        return narrowed;
-      }
-      const leftOfJaw = narrowed.slice(0, FEMME_JAW_LEFT_OUTLINE_COLUMN - 1);
-      const rest = narrowed.slice(FEMME_JAW_LEFT_OUTLINE_COLUMN - 1);
-      return (
-        TRANSPARENT_CELL +
-        leftOfJaw +
-        rest.slice(1)
-      ).slice(0, PIXEL_PFP_GRID_SIZE);
+      return y >= FEMME_JAW_FIRST_ROW
+        ? collapseColumnTowardRight(narrowed, FEMME_JAW_LEFT_OUTLINE_COLUMN)
+        : narrowed;
     }),
   };
 }

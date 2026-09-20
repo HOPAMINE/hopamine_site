@@ -3,7 +3,7 @@ import type { HeadShapeId, PixelSprite } from "./sprite";
 /**
  * Letters in the head template:
  * `#` outline, `S` skin, `H` skin highlight, `D` skin shade, `B` brow,
- * `P` pupil, `E` eye white, `L` lip, `M` mouth,
+ * `P` pupil, `E` eye white, `M` mouth (black on the masc head, as in the reference),
  * `V` vitiligo patch (plain skin unless the face opts in),
  * `F` freckle (plain skin unless the face opts in).
  */
@@ -18,44 +18,46 @@ export const HEAD_SHAPE_OPTIONS: readonly HeadShapeOption[] = [
 ];
 
 export const HEAD_TEMPLATE_ROWS: readonly string[] = [
-  ".........#######........", // 5
-  "........#SSSSSSS#.......", // 6
-  ".......#SSHSSSSSS#......", // 7
-  ".......#SHSSSSSSS#......", // 8
-  ".......#SSSSSSSSS#......", // 9
-  ".......#SVSSSSSSS#......", // 10
-  ".......#VVBBSSSBB#......", // 11
-  "......#SSSPESSSPE#......", // 12
-  "......#DSFSSSSFSS#......", // 13
-  "......##SSFSSDDFS#......", // 14
-  ".......#SSSSS##SS#......", // 15
-  ".......#SSSSSSSVV#......", // 16
-  ".......#SSSSLLLSV#......", // 17
-  ".......#SSSS###SS#......", // 18
-  ".......#SSSSSSSSS#......", // 19
-  ".......#SSSDDDDD#.......", // 20
-  ".......#SSS#####........", // 21
-  ".......#SVS#............", // 22
-  ".......#SSS#............", // 23
+  "........#######.........", // 5
+  ".......#SSSSSSS#........", // 6
+  "......#SSHSSSSSS#.......", // 7
+  "......#SHSSSSSSS#.......", // 8
+  "......#SSSSSSSSS#.......", // 9
+  "......#SVSSSSSSS#.......", // 10
+  "......#VVBBSSSBB#.......", // 11
+  ".....#SSSPESSSPE#.......", // 12
+  ".....#SSFSSSSFSS#.......", // 13
+  ".....##SSFSSSSFS#.......", // 14
+  "......#SSSSS##SS#.......", // 15
+  "......#SSSSSSSVV#.......", // 16
+  "......#SSSSSSSSV#.......", // 17
+  "......#SSSSMMMSS#.......", // 18
+  "......#SSSSSSSSS#.......", // 19
+  "......#SSSSSSSS#........", // 20
+  "......#SSS#####.........", // 21
+  "......#SVS#.............", // 22
+  "......#SSS#.............", // 23
 ];
 
-// Sampled from the punk reference: the femme head starts two rows lower, is
-// one column narrower on the right, has its eyes one row lower and one column
-// left, a single-pixel nose, and a jaw that steps in to a neck one column right.
+// Both templates are the per-pixel majority of the bald punks in Larva Labs'
+// public composite, so they match the reference exactly. The femme head starts
+// two rows lower, is one column narrower on the left, has its eyes one row
+// lower, a single-pixel nose and a jaw that steps in to a neck two columns
+// right of the masc neck.
 export const FEMME_HEAD_TEMPLATE_ROWS: readonly string[] = [
-  "........#######.........", // 7
-  ".......#SSHSSSS#........", // 8
+  ".........######.........", // 7
+  "........#SSSSSS#........", // 8
   ".......#SHSSSSSS#.......", // 9
   ".......#SVSSSSSS#.......", // 10
   ".......#VVSSSSSS#.......", // 11
-  "......#SSSBBSSSBB#......", // 12
-  "......#DSSPESSSPE#......", // 13
-  "......##SFSSSSFS#.......", // 14
-  ".......#SSFSSSSF#.......", // 15
+  "......#SSBBSSSBB#.......", // 12
+  "......#SSPESSSPE#.......", // 13
+  "......##FSSSSFSS#.......", // 14
+  ".......#SFSSSSFS#.......", // 15
   ".......#SSSS#SSV#.......", // 16
-  ".......#SSSLLLSV#.......", // 17
-  "........#SSMMMSS#.......", // 18
-  "........#SSDDDD#........", // 19
+  ".......#SSSSSSSV#.......", // 17
+  ".......#SSSMMMSS#.......", // 18
+  "........#SSSSSS#........", // 19
   "........#S#SSS#.........", // 20
   "........#SS###..........", // 21
   "........#SVS#...........", // 22
@@ -66,7 +68,6 @@ export type FaceColors = {
   skin: string;
   skinLight: string;
   skinDark: string;
-  lip: string;
   mouth: string;
   eye: string;
   eyeWhite: string;
@@ -97,8 +98,7 @@ export function buildFaceSprite(
       B: colors.skinDark,
       P: colors.eye,
       E: colors.eyeWhite,
-      L: colors.lip,
-      M: colors.mouth,
+      M: headShapeId === "masc" ? HEAD_OUTLINE : colors.mouth,
       V: colors.vitiligoPatch ?? colors.skin,
       F: colors.freckle ?? colors.skin,
     },
@@ -113,7 +113,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#4a2a14",
       skinLight: "#5e3a20",
       skinDark: "#38200e",
-      lip: "#5a3320",
       mouth: "#1a0c04",
       eye: "#1b0d05",
       eyeWhite: "#d9cbb8",
@@ -126,7 +125,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#6a4224",
       skinLight: "#835633",
       skinDark: "#52321a",
-      lip: "#7a4d2a",
       mouth: "#2b160a",
       eye: "#2a1508",
       eyeWhite: "#e0d2c2",
@@ -139,7 +137,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#8e6041",
       skinLight: "#a37150",
       skinDark: "#73492f",
-      lip: "#9c6a45",
       mouth: "#3a1e0e",
       eye: "#3a1e0e",
       eyeWhite: "#efe3d6",
@@ -152,7 +149,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#9c6b3c",
       skinLight: "#b57f4c",
       skinDark: "#7e5530",
-      lip: "#a87550",
       mouth: "#3e2410",
       eye: "#6b3e1a",
       eyeWhite: "#f3ebe0",
@@ -165,7 +161,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#ae7d54",
       skinLight: "#c39068",
       skinDark: "#8f6340",
-      lip: "#b9845a",
       mouth: "#4a2a12",
       eye: "#5a3a1a",
       eyeWhite: "#f4ebe0",
@@ -178,7 +173,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#a88c67",
       skinLight: "#b8a080",
       skinDark: "#8c7455",
-      lip: "#b39472",
       mouth: "#52351b",
       eye: "#3d2a14",
       eyeWhite: "#f6f0e6",
@@ -191,7 +185,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#e3bf8f",
       skinLight: "#f0d2a6",
       skinDark: "#c29d6c",
-      lip: "#e6b48f",
       mouth: "#6d4a2b",
       eye: "#2a1a10",
       eyeWhite: "#fbf7f0",
@@ -204,7 +197,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#c2a277",
       skinLight: "#d4b88f",
       skinDark: "#9c815d",
-      lip: "#c9a57e",
       mouth: "#5a3b1d",
       eye: "#2f6b3a",
       eyeWhite: "#f8f3ea",
@@ -217,7 +209,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#d4b387",
       skinLight: "#e5c192",
       skinDark: "#b3946b",
-      lip: "#d9b08a",
       mouth: "#6a4a2a",
       eye: "#3a6fb7",
       eyeWhite: "#fbf7f0",
@@ -230,7 +221,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#ead9c0",
       skinLight: "#f5ead8",
       skinDark: "#cbb59a",
-      lip: "#e3b9a6",
       mouth: "#7a5040",
       eye: "#2f6b3a",
       eyeWhite: "#ffffff",
@@ -243,7 +233,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#f3dfd2",
       skinLight: "#fbeee6",
       skinDark: "#d9bcae",
-      lip: "#eab3a5",
       mouth: "#8a5a50",
       eye: "#7a8fa8",
       eyeWhite: "#ffffff",
@@ -256,7 +245,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#ead2b5",
       skinLight: "#f5e4cd",
       skinDark: "#cbad8b",
-      lip: "#e0b3a0",
       mouth: "#7a5040",
       eye: "#5a3a1a",
       eyeWhite: "#ffffff",
@@ -270,7 +258,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#6a4224",
       skinLight: "#835633",
       skinDark: "#52321a",
-      lip: "#7a4d2a",
       mouth: "#2b160a",
       eye: "#2a1508",
       eyeWhite: "#e0d2c2",
@@ -284,7 +271,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#a8e6e0",
       skinLight: "#c8fbfb",
       skinDark: "#7ac1bb",
-      lip: "#8fd6cf",
       mouth: "#2f6f6a",
       eye: "#0b2d2b",
       eyeWhite: "#ffffff",
@@ -297,7 +283,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#7da269",
       skinLight: "#9bbf86",
       skinDark: "#5f7f4c",
-      lip: "#6c8f5a",
       mouth: "#2f4a25",
       eye: "#ff2a2a",
       eyeWhite: "#f0f0f0",
@@ -310,7 +295,6 @@ export const FACE_OPTIONS: readonly FaceOption[] = [
       skin: "#a9b4c2",
       skinLight: "#c9d2dd",
       skinDark: "#7f8b9a",
-      lip: "#93a0b0",
       mouth: "#3a4452",
       eye: "#00e5ff",
       eyeWhite: "#1c2430",
