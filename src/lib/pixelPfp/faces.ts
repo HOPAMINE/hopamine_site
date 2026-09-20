@@ -9,6 +9,22 @@ import type { PixelSprite } from "./sprite";
  */
 export const HEAD_TEMPLATE_TOP = 5;
 
+export type HeadShapeId = "masc" | "femme";
+
+export type HeadShapeOption = { id: HeadShapeId; label: string };
+
+export const HEAD_SHAPE_OPTIONS: readonly HeadShapeOption[] = [
+  { id: "masc", label: "Masc" },
+  { id: "femme", label: "Femme" },
+];
+
+/**
+ * The femme head is the masc head with this column removed: one pixel
+ * narrower on the right and a two-pixel mouth, matching the punk reference.
+ * Hair and accessories get the same column removed so they keep lining up.
+ */
+export const FEMME_HEAD_COLLAPSED_COLUMN = 12;
+
 export const HEAD_TEMPLATE_ROWS: readonly string[] = [
   ".........#######........", // 5
   "........#SSSSSSS#.......", // 6

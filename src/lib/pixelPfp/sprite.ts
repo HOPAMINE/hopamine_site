@@ -47,3 +47,30 @@ export function paintSpriteOntoGrid(grid: PixelGrid, sprite: PixelSprite) {
     }
   });
 }
+
+/**
+ * Removes one column from every row, shifting everything right of it left by
+ * one. A pixel sitting alone on that column (nothing to its right) is kept so
+ * thin details like a hat's tip or a sprout stem survive.
+ */
+export function narrowSpriteAtColumn(
+  sprite: PixelSprite,
+  column: number,
+): PixelSprite {
+  return {
+    ...sprite,
+    rows: sprite.rows.map((row) => {
+      const cells = row.split("");
+      const rightOfColumn = cells[column + 1];
+      const keepLonePixel =
+        rightOfColumn === undefined || rightOfColumn === TRANSPARENT_CELL;
+      const narrowed = [
+        ...cells.slice(0, column),
+        keepLonePixel ? cells[column] : rightOfColumn,
+        ...cells.slice(column + 2),
+        TRANSPARENT_CELL,
+      ];
+      return narrowed.join("");
+    }),
+  };
+}
