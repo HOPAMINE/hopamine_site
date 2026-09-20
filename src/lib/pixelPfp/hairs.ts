@@ -8,7 +8,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "afro",
     label: "Afro",
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#1b1b1b", b: "#333333" },
       rows: [
         "........aaaaaaaa........", // 1
@@ -31,7 +31,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "afro-puffs",
     label: "Afro puffs",
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#1b1b1b", b: "#333333" },
       rows: [
         ".....aaaa......aaaa.....", // 2
@@ -47,7 +47,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "short-coils",
     label: "Short coils",
     sprite: {
-      top: 4,
+      top: 5,
       palette: { a: "#1b1b1b", b: "#3a3a3a" },
       rows: [
         ".......aaaabaaaa........", // 4
@@ -64,7 +64,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "high-top",
     label: "High-top fade",
     sprite: {
-      top: 0,
+      top: 1,
       palette: { a: "#1b1b1b", b: "#3a3a3a" },
       rows: [
         "........aaaaaaaaa.......", // 0
@@ -83,7 +83,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "box-braids",
     label: "Box braids",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#1c1c1c", b: "#3b2a20", g: "#e0b040" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -110,7 +110,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "cornrows",
     label: "Cornrows",
     sprite: {
-      top: 4,
+      top: 5,
       palette: { a: "#1a1a1a", b: "#4a3423" },
       rows: [
         "........aaaaaaaa........", // 4
@@ -124,7 +124,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "locs",
     label: "Locs",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#2a1a10", b: "#3d2818" },
       rows: [
         ".......aaaaaaaaaa.......", // 3
@@ -152,7 +152,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "bantu-knots",
     label: "Bantu knots",
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#1b1b1b" },
       rows: [
         ".......aa..aa..aa.......", // 2
@@ -172,7 +172,8 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
       rows: [
         "........aaaaaaa.........", // 6
         ".......aaaaaaaaa........", // 7
-        ".......a.......a........", // 8
+        ".......aaaaaaaaa........", // 8
+        ".......a.......a........", // 9
       ],
     },
   },
@@ -180,7 +181,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "mohawk",
     label: "Mohawk",
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#1b1b1b" },
       rows: [
         "...........aa...........", // 1
@@ -196,7 +197,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "spiky-mohawk",
     label: "Spiky mohawk",
     sprite: {
-      top: 0,
+      top: 1,
       palette: { a: "#e0272e" },
       rows: [
         ".........a..a..a........", // 0
@@ -213,7 +214,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "wild-curls",
     label: "Wild curls",
     sprite: {
-      top: 0,
+      top: 1,
       palette: { a: "#e8452f" },
       rows: [
         "......a..a.a..a..a......", // 0
@@ -237,7 +238,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "straight-long",
     label: "Long straight",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#111111" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -267,7 +268,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "bob",
     label: "Bob",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#f2d16b", b: "#d9b24c" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -293,7 +294,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "pigtails",
     label: "Pigtails",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#151515", g: "#e0b040" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -311,7 +312,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "top-knot",
     label: "Top knot",
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#3b2314" },
       rows: [
         "..........aaaa..........", // 1
@@ -327,7 +328,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "side-part",
     label: "Side part",
     sprite: {
-      top: 4,
+      top: 5,
       palette: { a: "#5b3a1e" },
       rows: [
         "........aaaaaaaa........", // 4
@@ -342,7 +343,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "wavy",
     label: "Wavy",
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#8a3b1c" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -370,7 +371,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "curly",
     label: "Curly",
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#4b2e1a", b: "#6b452a" },
       rows: [
         ".........aaaaaaa........", // 2
@@ -393,7 +394,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "silver-crop",
     label: "Silver crop",
     sprite: {
-      top: 4,
+      top: 5,
       palette: { a: "#d9d9d9", b: "#bdbdbd" },
       rows: [
         "........aabaaaba........", // 4
@@ -408,7 +409,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "undercut",
     label: "Undercut",
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#2ab5a5", b: "#3a3a3a" },
       rows: [
         ".........aaaaaaa........", // 2
@@ -424,7 +425,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "ponytail",
     label: "Ponytail",
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#3d2314", g: "#e0b040" },
       rows: [
         "..........aaaa..........", // 2
@@ -446,7 +447,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "space-buns",
     label: "Space buns",
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#b57edc" },
       rows: [
         "......aaa......aaa......", // 1
@@ -471,8 +472,8 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
         ".....aaabaaaaaaaaaa.....", // 5
         ".....aaaaaaaaaaabaa.....", // 6
         "....aaaaaaaaaaaaaaaa....", // 7
-        ".....aaa........aaa.....", // 8
-        "....aab..........aaa....", // 9
+        "....aaaaaaaaaaaaaaaa....", // 8
+        "....aaaaaaaaaaaaaaaa....", // 9
         "....aaa..........aba....", // 10
         "....aaa..........aaa....", // 11
         "....aaak.........aaa....", // 12
@@ -498,7 +499,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
         ".....aaabaaaaaaaaaa.....", // 5
         ".....aaaaaaaaaaabaa.....", // 6
         "....aaaaaaaaaaaaaaaa....", // 7
-        "....aa...........aaa....", // 8
+        "....aaaaaaaaaaaaaaaa....", // 8
         "....ab...........aaa....", // 9
         "....aa...........aba....", // 10
         "....aa...........aaa....", // 11
@@ -521,7 +522,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "headwrap",
     label: "Headwrap",
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#e8b021", b: "#1f7a3c" },
       rows: [
         ".........aaaaaaa........", // 1
@@ -547,9 +548,9 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
         ".....aaaaaaaaaaaaaa.....", // 4
         "....aaaaaaaaaaaaaaaa....", // 5
         "...aaaaaaaaaaaaaaaaa....", // 6
-        "...aaaaabbbbbbbbaaaa....", // 7
-        ".....aaa........aaa.....", // 8
-        "....aaa..........aaa....", // 9
+        "...aaaaaaaaaaaaaaaaa....", // 7
+        "...aaaaaaaaaaaaaaaaa....", // 8
+        "...aaaaabbbbbbbbaaaa....", // 9
         "....aaa..........aaa....", // 10
         "....aaa..........aaa....", // 11
         "....aaak.........aaa....", // 12
@@ -575,8 +576,8 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
         ".....aaaaaaaaaaaaaa.....", // 4
         "....aaaaaaaaaaaaaaaa....", // 5
         "...aaaaaaaaaaaaaaaaa....", // 6
-        "...aaabbbbbbbbbbbaaa....", // 7
-        "...aaa...........aaa....", // 8
+        "...aaaaaaaaaaaaaaaaa....", // 7
+        "...aaabbbbbbbbbbbaaa....", // 8
         "...aaa...........aaa....", // 9
         "...aaa...........aaa....", // 10
         "...aaa...........aaa....", // 11
@@ -599,7 +600,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "durag",
     label: "Durag",
     sprite: {
-      top: 4,
+      top: 5,
       palette: { a: "#6a2fbf", b: "#4b1f8f" },
       rows: [
         "........aaaaaaaa........", // 4
@@ -620,7 +621,7 @@ export const HAIR_OPTIONS: readonly PixelPfpOption[] = [
     id: "turban",
     label: "Turban",
     sprite: {
-      top: 0,
+      top: 1,
       palette: { a: "#f28c28", b: "#c96a12" },
       rows: [
         "..........aaaaa.........", // 0

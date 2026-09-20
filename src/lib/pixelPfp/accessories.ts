@@ -81,7 +81,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
     label: "Brass goggles",
     femmeOffset: { x: 0, y: 1 },
     sprite: {
-      top: 7,
+      top: 8,
       palette: { b: "#b8862b", g: "#7fd1c8" },
       rows: [
         ".......bbbbbbbbb........", // 7
@@ -253,8 +253,9 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "beanie",
     label: "Beanie",
+    femmeDropRows: 1,
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#2e8b57", b: "#1f6b40" },
       rows: [
         ".........aaaaaaa........", // 2
@@ -269,8 +270,9 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "cap",
     label: "Cap",
+    femmeDropRows: 1,
     sprite: {
-      top: 3,
+      top: 4,
       palette: { a: "#1e5bc6", b: "#143f8a", w: "#f0f0f0" },
       rows: [
         "........aaaaaaaa........", // 3
@@ -285,8 +287,9 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "bandana",
     label: "Bandana",
+    femmeDropRows: 1,
     sprite: {
-      top: 5,
+      top: 6,
       palette: { a: "#2246d8", b: "#4c6ff0" },
       rows: [
         "......aaaaaaaaaaa.......", // 5
@@ -301,8 +304,9 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "bucket-hat",
     label: "Bucket hat",
+    femmeDropRows: 1,
     sprite: {
-      top: 2,
+      top: 3,
       palette: { a: "#c2b280", b: "#a89968" },
       rows: [
         ".........aaaaaaa........", // 2
@@ -319,7 +323,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
     label: "Party hat",
     femmeOffset: { x: 0, y: 2 },
     sprite: {
-      top: 0,
+      top: 1,
       palette: { a: "#ffd23f", b: "#ff6b6b", p: "#ff4fa3" },
       rows: [
         "...........p............", // 0
@@ -336,7 +340,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
     label: "Crown",
     femmeOffset: { x: 0, y: 2 },
     sprite: {
-      top: 2,
+      top: 3,
       palette: { g: "#f7cb4e", r: "#e0272e" },
       rows: [
         ".......g...g...g........", // 2
@@ -402,7 +406,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
     id: "flower-crown",
     label: "Flower crown",
     femmeSprite: {
-      top: 7,
+      top: 8,
       palette: { g: "#3f9142", p: "#ff7eb3", y: "#ffd166", w: "#ffffff" },
       rows: [
         ".......p.y.w.p.y........", // 7
@@ -411,7 +415,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
       ],
     },
     sprite: {
-      top: 6,
+      top: 7,
       palette: { g: "#3f9142", p: "#ff7eb3", y: "#ffd166", w: "#ffffff" },
       rows: [
         ".....p.y.w.p.y.w.p......", // 6
@@ -424,7 +428,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
     id: "leaf-crown",
     label: "Leaf crown",
     femmeSprite: {
-      top: 7,
+      top: 8,
       palette: { g: "#3f9142", h: "#6cc06e" },
       rows: [
         ".......g.h.g.h.g........", // 7
@@ -433,7 +437,7 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
       ],
     },
     sprite: {
-      top: 6,
+      top: 7,
       palette: { g: "#3f9142", h: "#6cc06e" },
       rows: [
         ".....g.h.g.h.g.h.g......", // 6
@@ -512,8 +516,9 @@ export const ACCESSORY_OPTIONS: readonly PixelPfpOption[] = [
   {
     id: "mushroom-cap",
     label: "Mushroom cap",
+    femmeDropRows: 1,
     sprite: {
-      top: 1,
+      top: 2,
       palette: { a: "#d62828", w: "#ffffff", c: "#f3e2c7" },
       rows: [
         "..........aaaaa.........", // 1

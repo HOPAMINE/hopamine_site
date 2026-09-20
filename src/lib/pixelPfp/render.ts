@@ -49,7 +49,7 @@ export function renderPixelPfpGrid(selection: PixelPfpSelection): PixelGrid {
   paintSpriteOntoGrid(grid, buildFaceSprite(face.colors, headShape.id));
 
   const hair = findOptionOrFirst(HAIR_OPTIONS, selection.hairId);
-  const hairSprite = resolveOptionSpriteForHead(hair, headShape.id);
+  const hairSprite = resolveOptionSpriteForHead(hair, headShape.id, 1);
   if (hairSprite) {
     paintSpriteOntoGrid(grid, hairSprite);
   }

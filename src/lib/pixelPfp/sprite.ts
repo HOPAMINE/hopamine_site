@@ -17,7 +17,9 @@ export type HeadShapeId = "masc" | "femme";
 /**
  * `sprite` is drawn on the masc head. On the femme head an option uses, in
  * order of preference: `femmeSprite` as drawn, `sprite` moved by
- * `femmeOffset`, or `sprite` passed through `fitSpriteToFemmeHead`.
+ * `femmeOffset`, or `sprite` passed through `fitSpriteToFemmeHead` and moved
+ * down by `femmeDropRows` (hair drops one row by default, since the femme
+ * skull starts lower and reference femme hair ends one row lower too).
  */
 export type PixelPfpOption = {
   id: string;
@@ -25,6 +27,7 @@ export type PixelPfpOption = {
   sprite: PixelSprite | null;
   femmeSprite?: PixelSprite;
   femmeOffset?: { x: number; y: number };
+  femmeDropRows?: number;
 };
 
 export type PixelGrid = (string | null)[][];
@@ -122,6 +125,7 @@ export function fitSpriteToFemmeHead(sprite: PixelSprite): PixelSprite {
 export function resolveOptionSpriteForHead(
   option: PixelPfpOption,
   headShapeId: HeadShapeId,
+  defaultFemmeDropRows = 0,
 ): PixelSprite | null {
   if (!option.sprite || headShapeId === "masc") {
     return option.sprite;
@@ -132,5 +136,6 @@ export function resolveOptionSpriteForHead(
   if (option.femmeOffset) {
     return translateSprite(option.sprite, option.femmeOffset.x, option.femmeOffset.y);
   }
-  return fitSpriteToFemmeHead(option.sprite);
+  const dropRows = option.femmeDropRows ?? defaultFemmeDropRows;
+  return translateSprite(fitSpriteToFemmeHead(option.sprite), 0, dropRows);
 }
