@@ -19,7 +19,10 @@ export function ZimaPageClient() {
   return (
     <div className="relative min-h-dvh bg-white">
       {!isChatMode ? (
-        <ZimaGlobeBackdrop extendUnderTopChrome className="z-0 bg-white" />
+        <ZimaGlobeBackdrop
+          extendUnderTopChrome
+          className="pointer-events-none z-0 bg-white"
+        />
       ) : null}
       {!isChatMode ? (
         <ZimaLogo

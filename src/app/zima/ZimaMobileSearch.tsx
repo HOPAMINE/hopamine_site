@@ -28,7 +28,7 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
     <div className="relative z-10 flex h-dvh flex-col overflow-hidden bg-white">
       <header className="shrink-0 border-b border-neutral-200 bg-white">
         <div
-          className="px-[max(16px,env(safe-area-inset-left))] py-2 pr-[max(16px,env(safe-area-inset-right))] pt-[max(12px,env(safe-area-inset-top))]"
+          className="py-2 pt-[max(12px,env(safe-area-inset-top))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]"
         >
           <ZimaComposerFields
             chat={chat}
@@ -43,13 +43,13 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
         <ZimaSearchMap
           showPins={hasSearchResults}
           layoutKey="mobile-results"
-          className="absolute inset-0 overflow-hidden"
+          className="absolute inset-0 z-0 overflow-hidden"
           selectedResultId={selectedResultId}
           onSelectResult={setSelectedResultId}
         />
 
         {selectedProfile ? (
-          <div className="absolute inset-0 z-20 overflow-y-auto bg-white">
+          <div className="absolute inset-0 z-40 overflow-y-auto bg-white">
             <ZimaSearchProfilePanel
               profile={selectedProfile}
               onBack={() => setSelectedResultId(null)}

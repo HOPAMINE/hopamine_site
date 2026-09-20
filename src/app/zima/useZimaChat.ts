@@ -29,12 +29,7 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     }
   }, [isActive]);
 
-  async function submit(
-    event: FormEvent<HTMLFormElement>,
-    onFirstSend?: () => void,
-  ) {
-    event.preventDefault();
-    const trimmedMessage = message.trim();
+  async function runSearch(trimmedMessage: string, onFirstSend?: () => void) {
     if (!trimmedMessage || isLoading) return;
 
     if (!isActive) {
@@ -103,6 +98,14 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     }
   }
 
+  async function submit(
+    event: FormEvent<HTMLFormElement>,
+    onFirstSend?: () => void,
+  ) {
+    event.preventDefault();
+    await runSearch(message.trim(), onFirstSend);
+  }
+
   return {
     message,
     setMessage,
@@ -115,5 +118,6 @@ export function useZimaChat(isActive: boolean, options: Options = {}) {
     inputRef,
     canSend,
     submit,
+    runSearch,
   };
 }

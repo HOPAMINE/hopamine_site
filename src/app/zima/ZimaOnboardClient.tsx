@@ -30,38 +30,14 @@ const STEP_NAME = 0;
 const STEP_CITY = 1;
 const STEP_NEIGHBORHOOD = 2;
 const STEP_ARCHETYPE = 3;
-const STEP_BIO = 4;
-const STEP_INTERESTS = 5;
+const STEP_WORKING_ON = 4;
+const STEP_BIO = 5;
 const STEP_CONTACT = 6;
 const ONBOARD_LAST_STEP = STEP_CONTACT;
 
 const onboardButtonClass = `${jetbrainsMono.className} text-[15px] font-semibold uppercase tracking-wide`;
 
 const OTHER_ARCHETYPE = "Other";
-const MORE_INTEREST = "More";
-
-const INTERESTS = [
-  "Civic",
-  "Nature",
-  "Technology",
-  "Climate",
-  "Community",
-  "Urban farming",
-  "Mutual aid",
-  "Parks",
-  MORE_INTEREST,
-] as const;
-
-const MORE_INTERESTS = [
-  "Compost",
-  "Zero waste",
-  "Energy",
-  "Housing",
-  "Food systems",
-  "Biodiversity",
-  "Repair",
-  "Education",
-] as const;
 
 const ARCHETYPES = [
   "Builder",
@@ -221,10 +197,9 @@ export function ZimaOnboardClient() {
   const [neighborhood, setNeighborhood] = useState("");
   const [neighborhoodOpen, setNeighborhoodOpen] = useState(false);
   const [bio, setBio] = useState("");
+  const [workingOn, setWorkingOn] = useState("");
   const [archetypes, setArchetypes] = useState<string[]>([]);
   const [otherArchetype, setOtherArchetype] = useState("");
-  const [interests, setInterests] = useState<string[]>([]);
-  const [otherInterest, setOtherInterest] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactEmailError, setContactEmailError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -250,6 +225,7 @@ export function ZimaOnboardClient() {
     setName((current) => current || convexUser.name || user?.fullName || "");
     setUsername((current) => current || convexUser.username || "");
     setBio((current) => current || convexUser.bio || "");
+    setWorkingOn((current) => current || convexUser.nowPlaying || "");
     setContactEmail(
       (current) =>
         current ||
@@ -331,26 +307,9 @@ export function ZimaOnboardClient() {
     goNext();
   }
 
-  function selectedInterestsForSave() {
-    return [
-      ...interests.filter((item) => item !== MORE_INTEREST),
-      ...(interests.includes(MORE_INTEREST) && otherInterest.trim()
-        ? [otherInterest.trim()]
-        : []),
-    ];
-  }
-
-  function toggleInterest(option: string) {
-    setInterests((current) =>
-      current.includes(option)
-        ? current.filter((item) => item !== option)
-        : [...current, option],
-    );
-  }
-
-  function submitInterests(event: FormEvent) {
+  function submitWorkingOn(event: FormEvent) {
     event.preventDefault();
-    if (selectedInterestsForSave().length === 0) return;
+    if (!workingOn.trim()) return;
     goNext();
   }
 
@@ -375,8 +334,8 @@ export function ZimaOnboardClient() {
             ? `${neighborhood.trim()}, ${NYC_CITY}`
             : location.trim(),
         bio: bio.trim() || undefined,
+        nowPlaying: workingOn.trim() || undefined,
         skills: selectedArchetypesForSave(),
-        interests: selectedInterestsForSave(),
         contactEmail: trimmedEmail,
       });
       router.replace(searchHref);
@@ -625,9 +584,30 @@ export function ZimaOnboardClient() {
           </OnboardStepForm>
         ) : null}
 
+        {step === STEP_WORKING_ON ? (
+          <OnboardStepForm
+            title="What are you working on?"
+            onSubmit={submitWorkingOn}
+            footer={
+              <ContinueButton disabled={!workingOn.trim()} label="Continue" />
+            }
+          >
+            <textarea
+              id="zima-onboard-working-on"
+              value={workingOn}
+              onChange={(event) => setWorkingOn(event.target.value)}
+              placeholder="Your current project, startup, or initiative."
+              rows={6}
+              required
+              aria-label="What you are working on"
+              className={`${textareaClass} min-h-[160px]`}
+            />
+          </OnboardStepForm>
+        ) : null}
+
         {step === STEP_BIO ? (
           <OnboardStepForm
-            title="What's your bio?"
+            title="Tell me about yourself?"
             onSubmit={submitBio}
             footer={
               <ContinueButton disabled={!bio.trim()} label="Continue" />
@@ -643,74 +623,6 @@ export function ZimaOnboardClient() {
               aria-label="Bio"
               className={`${textareaClass} min-h-[220px]`}
             />
-          </OnboardStepForm>
-        ) : null}
-
-        {step === STEP_INTERESTS ? (
-          <OnboardStepForm
-            title="What are your interests?"
-            onSubmit={submitInterests}
-            centerTitle
-            footer={
-              <ContinueButton
-                disabled={selectedInterestsForSave().length === 0}
-                label="Continue"
-              />
-            }
-          >
-            <div className="grid grid-cols-2 gap-3">
-              {INTERESTS.map((option) => {
-                const selected = interests.includes(option);
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => toggleInterest(option)}
-                    className={`${onboardButtonClass} flex min-h-12 items-center justify-center rounded-xl px-3 py-3 text-center text-[13px] leading-tight transition-colors ${
-                      option === MORE_INTEREST ? "col-span-2" : ""
-                    } ${
-                      selected
-                        ? "border border-transparent bg-[#00a6f3] text-white"
-                        : "border border-neutral-200 bg-white text-neutral-900"
-                    }`}
-                  >
-                    {option}
-                    {option === MORE_INTEREST ? "…" : ""}
-                  </button>
-                );
-              })}
-            </div>
-            {interests.includes(MORE_INTEREST) ? (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  {MORE_INTERESTS.map((option) => {
-                    const selected = interests.includes(option);
-                    return (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => toggleInterest(option)}
-                        className={`${onboardButtonClass} flex min-h-12 items-center justify-center rounded-xl px-3 py-3 text-center text-[13px] leading-tight transition-colors ${
-                          selected
-                            ? "border border-transparent bg-[#00a6f3] text-white"
-                            : "border border-neutral-200 bg-white text-neutral-900"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-                <input
-                  id="zima-onboard-interest-other"
-                  value={otherInterest}
-                  onChange={(event) => setOtherInterest(event.target.value)}
-                  placeholder="Another interest"
-                  aria-label="Another interest"
-                  className={inputClass}
-                />
-              </>
-            ) : null}
           </OnboardStepForm>
         ) : null}
 

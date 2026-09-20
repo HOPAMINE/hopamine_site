@@ -17,8 +17,9 @@ export const ZIMA_LANDING_SEARCH_WIDTH = "w-full max-w-[44rem]";
 export function ZimaSearchHeader({ chat, onFirstSend }: Props) {
   return (
     <header className="shrink-0 border-b border-neutral-200 bg-white">
-      <div className="flex justify-center px-[max(16px,env(safe-area-inset-left))] pb-3 pt-[max(20px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))]">
-        <div className="flex w-full max-w-[44rem] flex-col gap-2">
+      <div className="grid grid-cols-1 items-start px-[max(16px,env(safe-area-inset-left))] pb-3 pt-[max(20px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))] md:grid-cols-[minmax(9rem,1fr)_minmax(0,44rem)_minmax(18rem,1fr)]">
+        <div className="hidden md:block" />
+        <div className="flex w-full max-w-[44rem] flex-col gap-2 justify-self-center">
           <ZimaComposerFields
             chat={chat}
             onEnterChatMode={onFirstSend}
@@ -26,6 +27,7 @@ export function ZimaSearchHeader({ chat, onFirstSend }: Props) {
             idSuffix="-header"
           />
         </div>
+        <div className="hidden md:block" />
       </div>
     </header>
   );

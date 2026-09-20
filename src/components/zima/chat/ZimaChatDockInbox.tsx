@@ -11,6 +11,8 @@ type Props = {
   loadingConversations?: boolean;
   selectedConversationId: string | null;
   onSelectConversation: (conversationId: string) => void;
+  /** Dock compact rows vs full-width chats page cards. */
+  variant?: "dock" | "page";
 };
 
 export function ZimaChatDockInbox({
@@ -18,18 +20,27 @@ export function ZimaChatDockInbox({
   loadingConversations = false,
   selectedConversationId,
   onSelectConversation,
+  variant = "dock",
 }: Props) {
+  const isPage = variant === "page";
+
   return (
     <ul
       aria-label="Conversations"
-      className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+      className={
+        isPage
+          ? "flex flex-col gap-3"
+          : "flex min-h-0 flex-1 flex-col overflow-y-auto"
+      }
     >
       {loadingConversations ? (
-        <li className={`${jetbrainsMono.className} px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-neutral-400`}>
+        <li
+          className={`${jetbrainsMono.className} ${isPage ? "py-4 text-center text-[14px]" : "px-3 py-3 text-[10px] font-semibold uppercase tracking-wide"} text-neutral-400`}
+        >
           Loading
         </li>
       ) : null}
-      {!loadingConversations && conversations.length === 0 ? (
+      {!loadingConversations && conversations.length === 0 && !isPage ? (
         <li className={`${jetbrainsMono.className} px-3 py-3 text-[10px] font-semibold uppercase tracking-wide text-neutral-400`}>
           No conversations yet. Search a builder below to start one.
         </li>
@@ -43,17 +54,27 @@ export function ZimaChatDockInbox({
               type="button"
               onClick={() => onSelectConversation(conversation.id)}
               aria-current={isSelected ? "true" : undefined}
-              className={`flex w-full gap-2.5 p-2.5 text-left transition-colors ${
-                isSelected ? "bg-[#d6effc]" : "bg-neutral-100 hover:bg-neutral-200/80"
-              }`}
+              className={
+                isPage
+                  ? "flex w-full gap-3 rounded-2xl border border-neutral-200 bg-neutral-100 p-3 text-left transition-colors hover:bg-neutral-200/80"
+                  : `flex w-full gap-2.5 p-2.5 text-left transition-colors ${
+                      isSelected
+                        ? "bg-[#d6effc]"
+                        : "bg-neutral-100 hover:bg-neutral-200/80"
+                    }`
+              }
             >
-              <span className="relative h-12 w-12 shrink-0 rounded-full bg-neutral-200">
+              <span
+                className={`relative shrink-0 overflow-hidden rounded-full bg-neutral-200 ${
+                  isPage ? "h-14 w-14" : "h-12 w-12"
+                }`}
+              >
                 <Image
                   src={conversation.avatarUrl}
                   alt=""
                   fill
-                  sizes="48px"
-                  className="rounded-full object-cover"
+                  sizes={isPage ? "56px" : "48px"}
+                  className="object-cover"
                   style={{ imageRendering: "pixelated" }}
                 />
                 {conversation.isOnline ? (
@@ -66,38 +87,67 @@ export function ZimaChatDockInbox({
               <span className="min-w-0 flex-1">
                 <span className="flex items-start justify-between gap-2">
                   <span
-                    className={`${newsreader.className} truncate text-[15px] leading-snug text-neutral-900`}
+                    className={`${newsreader.className} truncate leading-snug text-neutral-900 ${
+                      isPage ? "text-[1.15rem]" : "text-[15px]"
+                    }`}
                   >
                     {conversation.participantName}
                   </span>
                   <span
-                    className={`${jetbrainsMono.className} shrink-0 text-[9px] font-semibold lowercase tracking-wide text-neutral-500`}
+                    className={`${jetbrainsMono.className} shrink-0 font-semibold uppercase tracking-wide text-neutral-500 ${
+                      isPage
+                        ? "text-[10px]"
+                        : "text-[9px] lowercase tracking-wide"
+                    }`}
                   >
                     {conversation.lastMessageAt}
                   </span>
                 </span>
                 <span
-                  className={`${jetbrainsMono.className} block truncate text-[9px] font-semibold lowercase tracking-wide text-neutral-500`}
+                  className={`${jetbrainsMono.className} mt-0.5 block font-semibold uppercase tracking-wide text-neutral-600 ${
+                    isPage
+                      ? "text-[10px]"
+                      : "truncate text-[9px] lowercase text-neutral-500"
+                  }`}
                 >
                   {conversation.participantTagline}
                 </span>
-                <span className="mt-0.5 flex items-center gap-2">
-                  <span
-                    className={`${jetbrainsMono.className} min-w-0 flex-1 truncate text-[11px] leading-snug text-neutral-700`}
-                  >
-                    {conversation.lastMessage}
-                  </span>
-                  {unreadCount > 0 ? (
-                    <span
-                      className={`${jetbrainsMono.className} flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold text-white`}
-                      style={{ backgroundColor: HOPAMINE_BLUE }}
-                      aria-label={`${unreadCount} unread`}
-                    >
-                      {unreadCount}
-                    </span>
-                  ) : null}
+                <span
+                  className={`${jetbrainsMono.className} mt-1 text-neutral-700 ${
+                    isPage
+                      ? "line-clamp-2 text-[12px] leading-relaxed"
+                      : "mt-0.5 flex min-w-0 flex-1 items-center gap-2 truncate text-[11px] leading-snug"
+                  }`}
+                >
+                  {isPage ? (
+                    conversation.lastMessage
+                  ) : (
+                    <>
+                      <span className="min-w-0 flex-1 truncate">
+                        {conversation.lastMessage}
+                      </span>
+                      {unreadCount > 0 ? (
+                        <span
+                          className={`${jetbrainsMono.className} flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold text-white`}
+                          style={{ backgroundColor: HOPAMINE_BLUE }}
+                          aria-label={`${unreadCount} unread`}
+                        >
+                          {unreadCount}
+                        </span>
+                      ) : null}
+                    </>
+                  )}
                 </span>
               </span>
+              {isPage && unreadCount > 0 ? (
+                <span
+                  className={`${jetbrainsMono.className} flex h-6 min-w-6 shrink-0 items-center justify-center self-center px-1.5 text-[11px] font-semibold text-white`}
+                  style={{ backgroundColor: HOPAMINE_BLUE }}
+                  aria-label={`${unreadCount} unread`}
+                >
+                  {unreadCount}
+                </span>
+              ) : null}
             </button>
           </li>
         );

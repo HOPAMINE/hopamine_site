@@ -12,10 +12,16 @@ const MIN_SEARCH_LENGTH = 2;
 
 type Props = {
   onPickUser: (userId: Id<"users">) => void;
+  /** Page chats: search pinned above the inbox. */
+  placement?: "dock" | "pageTop";
 };
 
 /** Pinned under the inbox. Reuses projects.searchCollaborators so there is one user search on the backend. */
-export function ZimaChatDockNewMessage({ onPickUser }: Props) {
+export function ZimaChatDockNewMessage({
+  onPickUser,
+  placement = "dock",
+}: Props) {
+  const isPageTop = placement === "pageTop";
   const [searchText, setSearchText] = useState("");
   const deferredSearchText = useDeferredValue(searchText.trim());
   // The search query throws for anonymous callers, so wait for Convex auth rather than crash the page during a token refresh.
@@ -33,9 +39,34 @@ export function ZimaChatDockNewMessage({ onPickUser }: Props) {
   }
 
   return (
-    <div className="shrink-0 border-t border-neutral-200 bg-neutral-50">
+    <div
+      className={
+        isPageTop
+          ? "shrink-0 bg-white pb-3"
+          : "shrink-0 border-t border-neutral-200 bg-neutral-50"
+      }
+    >
+      {isPageTop ? (
+        <div className="p-0 pb-2">
+          <input
+            type="search"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            placeholder="Search builders"
+            aria-label="Search builders to message"
+            className={`${jetbrainsMono.className} h-11 w-full rounded-2xl border border-neutral-200 bg-white px-4 text-[13px] text-neutral-800 outline-none placeholder:text-neutral-400 focus-visible:border-[#00a6f3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00a6f3]/25`}
+          />
+        </div>
+      ) : null}
       {searching ? (
-        <ul aria-label="Builders found" className="max-h-44 overflow-y-auto py-1">
+        <ul
+          aria-label="Builders found"
+          className={`max-h-44 overflow-y-auto py-1 ${
+            isPageTop
+              ? "mb-2 rounded-2xl border border-neutral-200 bg-neutral-50"
+              : ""
+          }`}
+        >
           {loadingSearchResults ? (
             <li className={`${jetbrainsMono.className} px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-400`}>
               Searching
@@ -78,16 +109,18 @@ export function ZimaChatDockNewMessage({ onPickUser }: Props) {
           ))}
         </ul>
       ) : null}
-      <div className="p-2">
-        <input
-          type="search"
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-          placeholder="Search builders"
-          aria-label="Search builders to message"
-          className={`${jetbrainsMono.className} h-9 w-full rounded-full bg-neutral-200 px-4 text-[12px] text-neutral-800 outline-none placeholder:text-neutral-400 focus-visible:outline-2 focus-visible:outline-[#00a6f3]`}
-        />
-      </div>
+      {!isPageTop ? (
+        <div className="p-2">
+          <input
+            type="search"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            placeholder="Search builders"
+            aria-label="Search builders to message"
+            className={`${jetbrainsMono.className} h-9 w-full rounded-full bg-neutral-200 px-4 text-[12px] text-neutral-800 outline-none placeholder:text-neutral-400 focus-visible:outline-2 focus-visible:outline-[#00a6f3]`}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

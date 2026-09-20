@@ -36,7 +36,9 @@ export function ZimaSearchResultCards({
             <div
               className={
                 isSelected
-                  ? "overflow-hidden rounded-2xl ring-2 ring-[#00a6f3] ring-offset-2"
+                  ? twoColumn
+                    ? "overflow-hidden rounded-2xl ring-2 ring-[#00a6f3] ring-offset-2"
+                    : "overflow-hidden rounded-2xl ring-2 ring-[#00a6f3] ring-inset"
                   : undefined
               }
             >

@@ -353,8 +353,9 @@ export const completeZimaOnboarding = mutation({
     username: v.optional(v.string()),
     location: v.string(),
     bio: v.optional(v.string()),
+    nowPlaying: v.optional(v.string()),
     skills: v.array(v.string()),
-    interests: v.array(v.string()),
+    interests: v.optional(v.array(v.string())),
     contactEmail: v.string(),
   },
   returns: v.object({
@@ -400,8 +401,11 @@ export const completeZimaOnboarding = mutation({
       username,
       location: args.location.trim(),
       bio: trimText(args.bio) || undefined,
+      nowPlaying: trimText(args.nowPlaying) || undefined,
       skills: normalizeSkills(args.skills),
-      interests: normalizeSkills(args.interests),
+      ...(args.interests !== undefined
+        ? { interests: normalizeSkills(args.interests) }
+        : {}),
       contactEmail,
       zimaOnboardingCompletedAt: now,
       updatedAt: now,

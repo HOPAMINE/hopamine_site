@@ -19,6 +19,8 @@ type Props = {
   /** Send failure or a dock-level notice; whichever the container hands down. */
   sendError?: string | null;
   onDismissSendError?: () => void;
+  /** Full-page mobile chat vs compact dock panel. */
+  variant?: "dock" | "page";
 };
 
 export function ZimaChatDockThread({
@@ -32,7 +34,9 @@ export function ZimaChatDockThread({
   onLoadOlderMessages,
   sendError = null,
   onDismissSendError,
+  variant = "dock",
 }: Props) {
+  const isPage = variant === "page";
   const messageListRef = useRef<HTMLDivElement>(null);
   const canSend = draftMessage.trim().length > 0 && conversation !== null;
 
@@ -130,7 +134,11 @@ export function ZimaChatDockThread({
       </div>
       <form
         onSubmit={submit}
-        className="flex items-center gap-2 bg-neutral-200 px-3 py-2"
+        className={
+          isPage
+            ? "flex shrink-0 items-end gap-2 border-t border-neutral-200 bg-white px-3 py-2 md:items-center md:border-t-0 md:bg-neutral-200 md:pb-2"
+            : "flex items-center gap-2 bg-neutral-200 px-3 py-2"
+        }
       >
         <textarea
           value={draftMessage}

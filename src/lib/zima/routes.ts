@@ -52,3 +52,12 @@ export function isZimaOnboardPath(pathname: string): boolean {
     pathname.startsWith("/zima/onboard")
   );
 }
+
+export function isZimaChatsPath(pathname: string): boolean {
+  return (
+    pathname === "/chats" ||
+    pathname.startsWith("/chats/") ||
+    pathname === "/zima/chats" ||
+    pathname.startsWith("/zima/chats/")
+  );
+}
