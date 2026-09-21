@@ -1,38 +1,53 @@
 "use client";
 
 import { SocialCard } from "@/app/social/SocialCard";
-import { RESULTS } from "@/components/zima/results";
-import { getProfileForMapResult } from "@/lib/zima/mapResultProfile";
+import { toSocialProfile, type ZimaSearchResult } from "@/lib/zima/searchResults";
+import { jetbrainsMono } from "../../../fonts";
 import { ZimaSearchMessageButton } from "./ZimaSearchMessageButton";
 
 type Props = {
+  results: ZimaSearchResult[];
+  loadingResults?: boolean;
+  errorMessage?: string | null;
   selectedResultId?: string | null;
   onSelectResult?: (id: string) => void;
-  /** Desktop left bar: two builders/orgs per row. */
+  /** Desktop left bar: two builders per row. */
   columns?: 1 | 2;
 };
 
 export function ZimaSearchResultCards({
+  results,
+  loadingResults = false,
+  errorMessage = null,
   selectedResultId,
   onSelectResult,
   columns = 1,
 }: Props) {
   const twoColumn = columns === 2;
+  const statusClass = `${jetbrainsMono.className} py-6 text-center text-[13px] text-neutral-500`;
+
+  if (errorMessage) {
+    return <p className={`${statusClass} text-red-600`}>{errorMessage}</p>;
+  }
+  if (loadingResults && results.length === 0) {
+    return <p className={statusClass}>Searching NYC…</p>;
+  }
+  if (results.length === 0) {
+    return (
+      <p className={statusClass}>
+        No builders match yet. Try fewer filters or different words.
+      </p>
+    );
+  }
 
   return (
-    <ul
-      className={
-        twoColumn
-          ? "grid grid-cols-2 gap-3"
-          : "flex flex-col gap-4"
-      }
-    >
-      {RESULTS.map((result) => {
-        const profile = getProfileForMapResult(result);
-        const isSelected = selectedResultId === result.id;
+    <ul className={twoColumn ? "grid grid-cols-2 gap-3" : "flex flex-col gap-4"}>
+      {results.map((result) => {
+        const profile = toSocialProfile(result);
+        const isSelected = selectedResultId === result._id;
 
         return (
-          <li key={result.id} className="min-w-0">
+          <li key={result._id} className="min-w-0">
             <div
               className={
                 isSelected
@@ -47,13 +62,13 @@ export function ZimaSearchResultCards({
                 theme="zima"
                 compact
                 compactGrid={twoColumn}
-                onPress={
-                  onSelectResult
-                    ? () => onSelectResult(result.id)
-                    : undefined
-                }
+                onPress={onSelectResult ? () => onSelectResult(result._id) : undefined}
                 cornerAction={
-                  <ZimaSearchMessageButton profileId={profile.id} displayName={profile.name} />
+                  <ZimaSearchMessageButton
+                    profileId={result._id}
+                    convexUserId={result._id}
+                    displayName={result.name}
+                  />
                 }
               />
             </div>

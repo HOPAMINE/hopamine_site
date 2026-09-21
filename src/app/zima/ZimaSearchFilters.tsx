@@ -1,52 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
-// University filter — hidden for now
-// import {
-//   NYC_UNIVERSITIES,
-//   getUniversityById,
-// } from "@/lib/zima/nycUniversities";
-import { ARCHETYPE_OPTIONS, type ArchetypeId } from "@/lib/archetypes";
-import { buildSearchPromptFromFilters } from "@/lib/zima/searchPrompt";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { ZIMA_ARCHETYPES, ZIMA_INTERESTS } from "../../../shared/zimaVocabulary";
 import { jetbrainsMono } from "../../../fonts";
+import type { ZimaSearchFilterState } from "./useZimaSearch";
 
 const HOPAMINE_BLUE = "#00a6f3";
-
-type ToggleFilterId = "builders";
-
-const INTEREST_OPTIONS = [
-  "Climate",
-  "Community",
-  "Film & media",
-  "Food",
-  "Gaming",
-  "Music",
-  "Fitness",
-  "Art & design",
-  "Startups",
-  "Education",
-] as const;
-
-const ORGANIZATION_OPTIONS = [
-  "Civic",
-  "Community",
-  "Startups",
-  "Accelerators",
-  "Climate",
-  "Open source",
-  "Education",
-  "Nonprofit",
-  "Research",
-  "Arts & culture",
-  "Government",
-  "Venture",
-] as const;
 
 const FILTER_CHECKBOX_PX = 20;
 const FILTER_CHECKMARK_PX = 14;
@@ -63,9 +22,7 @@ function FilterCheckboxBox({ isOn }: { isOn: boolean }) {
         minWidth: FILTER_CHECKBOX_PX,
         minHeight: FILTER_CHECKBOX_PX,
         backgroundColor: isOn ? HOPAMINE_BLUE : FILTER_CHECKBOX_OFF,
-        boxShadow: isOn
-          ? undefined
-          : "inset 0 0 0 1px rgba(0, 0, 0, 0.18)",
+        boxShadow: isOn ? undefined : "inset 0 0 0 1px rgba(0, 0, 0, 0.18)",
       }}
     >
       {isOn ? (
@@ -107,10 +64,9 @@ function FilterCheckbox({
 }) {
   const inputId = useId();
   const rowClass = `${jetbrainsMono.className} inline-flex h-8 shrink-0 cursor-pointer items-center gap-2.5 bg-transparent px-1 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-800 sm:text-[12px] ${className}`;
-  const labelClass =
-    className.includes("w-full")
-      ? "min-w-0 flex-1 truncate"
-      : "max-w-[12rem] truncate sm:max-w-[15rem]";
+  const labelClass = className.includes("w-full")
+    ? "min-w-0 flex-1 truncate"
+    : "max-w-[12rem] truncate sm:max-w-[15rem]";
   if (opensPopover) {
     return (
       <span
@@ -162,41 +118,57 @@ function FilterCheckbox({
   );
 }
 
+function ChipButton({
+  label,
+  selected,
+  onClick,
+}: {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`${jetbrainsMono.className} px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:text-[12px] ${
+        selected
+          ? "text-white"
+          : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
+      }`}
+      style={selected ? { backgroundColor: HOPAMINE_BLUE } : undefined}
+    >
+      {label}
+    </button>
+  );
+}
+
+function toggleInList(list: string[], value: string): string[] {
+  return list.includes(value)
+    ? list.filter((item) => item !== value)
+    : [...list, value];
+}
+
 type Props = {
   className?: string;
   /** Under the search field in the grey composer strip. */
   variant?: "default" | "composer";
-  idSuffix?: string;
-  /** Keeps the search textarea in sync with the active filters. */
-  onPromptChange?: (prompt: string) => void;
+  filters: ZimaSearchFilterState;
+  onFiltersChange: (filters: ZimaSearchFilterState) => void;
 };
 
+/** Chip filters narrow the candidate set in the database before the model sees it. */
 export function ZimaSearchFilters({
   className = "",
   variant = "default",
-  idSuffix = "",
-  onPromptChange,
+  filters,
+  onFiltersChange,
 }: Props) {
-  const [toggles, setToggles] = useState<Set<ToggleFilterId>>(() => new Set());
-  const [archetypes, setArchetypes] = useState<Set<ArchetypeId>>(() => new Set());
-  const [activeOnly, setActiveOnly] = useState(false);
-  const [interests, setInterests] = useState<Set<string>>(() => new Set());
-  const [organizationTypes, setOrganizationTypes] = useState<Set<string>>(
-    () => new Set(),
-  );
-  const cityNyc = true;
-  // const [universityId, setUniversityId] = useState<string | null>(null);
-  // const [universityQuery, setUniversityQuery] = useState("");
   const [interestsOpen, setInterestsOpen] = useState(false);
-  const [organizationsOpen, setOrganizationsOpen] = useState(false);
   const [archetypesOpen, setArchetypesOpen] = useState(false);
-  // const [universityOpen, setUniversityOpen] = useState(false);
-
   const interestsPanelId = useId();
-  const organizationsPanelId = useId();
   const archetypesPanelId = useId();
-  // const universityPanelId = useId();
-  // const universitySearchId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const inComposer = variant === "composer";
 
@@ -205,104 +177,24 @@ export function ZimaSearchFilters({
       const root = rootRef.current;
       if (!root || root.contains(event.target as Node)) return;
       setInterestsOpen(false);
-      setOrganizationsOpen(false);
       setArchetypesOpen(false);
-      // setUniversityOpen(false);
     }
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
-  function closeOtherPopovers(
-    except?: "interests" | "organizations" | "archetypes",
-  ) {
-    if (except !== "interests") setInterestsOpen(false);
-    if (except !== "organizations") setOrganizationsOpen(false);
-    if (except !== "archetypes") setArchetypesOpen(false);
-    // if (except !== "university") setUniversityOpen(false);
-  }
-
-  useEffect(() => {
-    if (!onPromptChange) return;
-    onPromptChange(
-      buildSearchPromptFromFilters({
-        toggles,
-        archetypes,
-        interests,
-        organizationTypes,
-        activeOnly,
-        proximity: null,
-        universityId: null,
-        cityNyc,
-      }),
-    );
-  }, [
-    onPromptChange,
-    toggles,
-    archetypes,
-    interests,
-    organizationTypes,
-    activeOnly,
-    cityNyc,
-  ]);
-
-  function toggleFilter(id: ToggleFilterId) {
-    setToggles((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  function toggleInterest(interest: string) {
-    setInterests((prev) => {
-      const next = new Set(prev);
-      if (next.has(interest)) next.delete(interest);
-      else next.add(interest);
-      return next;
-    });
-  }
-
-  function toggleOrganizationType(option: string) {
-    setOrganizationTypes((prev) => {
-      const next = new Set(prev);
-      if (next.has(option)) next.delete(option);
-      else next.add(option);
-      return next;
-    });
-  }
-
-  function toggleArchetype(id: ArchetypeId) {
-    setArchetypes((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  const interestsOn = interests.size > 0;
-  const organizationsOn = organizationTypes.size > 0;
-  const archetypesOn = archetypes.size > 0;
   const archetypeButtonLabel =
-    archetypes.size === 1
-      ? (ARCHETYPE_OPTIONS.find((option) => option.id === [...archetypes][0])
-          ?.label ?? "Archetypes")
-      : archetypes.size > 1
-        ? `Archetypes (${archetypes.size})`
+    filters.archetypes.length === 1
+      ? filters.archetypes[0]!
+      : filters.archetypes.length > 1
+        ? `Archetypes (${filters.archetypes.length})`
         : "Archetypes";
-  // const selectedUniversity = universityId
-  //   ? getUniversityById(universityId)
-  //   : undefined;
-  // const universityOn = universityId !== null;
-  // const universityButtonLabel = selectedUniversity?.name ?? "University";
-  //
-  // const universityMatches = NYC_UNIVERSITIES.filter((school) => {
-  //   const q = universityQuery.trim().toLowerCase();
-  //   if (!q) return true;
-  //   return school.name.toLowerCase().includes(q);
-  // });
+  const interestButtonLabel =
+    filters.interests.length === 1
+      ? filters.interests[0]!
+      : filters.interests.length > 1
+        ? `Interests (${filters.interests.length})`
+        : "Interests";
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>
@@ -321,73 +213,13 @@ export function ZimaSearchFilters({
 
         <div className="relative">
           <FilterCheckbox
-            label="Organizations"
-            isOn={organizationsOn}
-            opensPopover
-            ariaExpanded={organizationsOpen}
-            ariaControls={organizationsPanelId}
-            onClick={() => {
-              closeOtherPopovers("organizations");
-              setOrganizationsOpen((open) => !open);
-            }}
-          />
-          {organizationsOpen ? (
-            <div
-              id={organizationsPanelId}
-              role="dialog"
-              aria-label="Choose organization types"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(18rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
-              onMouseDown={(event) => event.stopPropagation()}
-            >
-              <p
-                className={`${jetbrainsMono.className} mb-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
-              >
-                Organizations
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {ORGANIZATION_OPTIONS.map((option) => {
-                  const selected = organizationTypes.has(option);
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => toggleOrganizationType(option)}
-                      aria-pressed={selected}
-                      className={`${jetbrainsMono.className} px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:text-[12px] ${
-                        selected
-                          ? "text-white"
-                          : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
-                      }`}
-                      style={
-                        selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
-                      }
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        <FilterCheckbox
-          label="Builders"
-          isOn={toggles.has("builders")}
-          onClick={() => toggleFilter("builders")}
-        />
-
-        {/* University filter — hidden for now (state, import, and popover commented above). */}
-
-        <div className="relative">
-          <FilterCheckbox
             label={archetypeButtonLabel}
-            isOn={archetypesOn}
+            isOn={filters.archetypes.length > 0}
             opensPopover
             ariaExpanded={archetypesOpen}
             ariaControls={archetypesPanelId}
             onClick={() => {
-              closeOtherPopovers("archetypes");
+              setInterestsOpen(false);
               setArchetypesOpen((open) => !open);
             }}
           />
@@ -405,13 +237,18 @@ export function ZimaSearchFilters({
                 Archetypes
               </p>
               <div className="grid max-h-52 grid-cols-2 gap-x-3 gap-y-0.5 overflow-y-auto">
-                {ARCHETYPE_OPTIONS.map((option) => (
+                {ZIMA_ARCHETYPES.map((archetype) => (
                   <FilterCheckbox
-                    key={option.id}
+                    key={archetype}
                     className="w-full"
-                    label={option.label}
-                    isOn={archetypes.has(option.id)}
-                    onClick={() => toggleArchetype(option.id)}
+                    label={archetype}
+                    isOn={filters.archetypes.includes(archetype)}
+                    onClick={() =>
+                      onFiltersChange({
+                        ...filters,
+                        archetypes: toggleInList(filters.archetypes, archetype),
+                      })
+                    }
                   />
                 ))}
               </div>
@@ -421,13 +258,13 @@ export function ZimaSearchFilters({
 
         <div className="relative">
           <FilterCheckbox
-            label="Interests"
-            isOn={interestsOn}
+            label={interestButtonLabel}
+            isOn={filters.interests.length > 0}
             opensPopover
             ariaExpanded={interestsOpen}
             ariaControls={interestsPanelId}
             onClick={() => {
-              closeOtherPopovers("interests");
+              setArchetypesOpen(false);
               setInterestsOpen((open) => !open);
             }}
           />
@@ -436,7 +273,8 @@ export function ZimaSearchFilters({
               id={interestsPanelId}
               role="dialog"
               aria-label="Choose interests"
-              className="absolute left-0 top-full z-50 mt-1 w-[min(18rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              className="absolute left-0 top-full z-50 mt-1 w-[min(20rem,calc(100vw-2rem))] border border-neutral-300 bg-white p-3 shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+              onMouseDown={(event) => event.stopPropagation()}
             >
               <p
                 className={`${jetbrainsMono.className} mb-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-600`}
@@ -444,27 +282,19 @@ export function ZimaSearchFilters({
                 Interests
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {INTEREST_OPTIONS.map((interest) => {
-                  const selected = interests.has(interest);
-                  return (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => toggleInterest(interest)}
-                      aria-pressed={selected}
-                      className={`${jetbrainsMono.className} px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-colors sm:text-[12px] ${
-                        selected
-                          ? "text-white"
-                          : "bg-neutral-200 text-neutral-800 hover:bg-neutral-300/90"
-                      }`}
-                      style={
-                        selected ? { backgroundColor: HOPAMINE_BLUE } : undefined
-                      }
-                    >
-                      {interest}
-                    </button>
-                  );
-                })}
+                {ZIMA_INTERESTS.map((interest) => (
+                  <ChipButton
+                    key={interest}
+                    label={interest}
+                    selected={filters.interests.includes(interest)}
+                    onClick={() =>
+                      onFiltersChange({
+                        ...filters,
+                        interests: toggleInList(filters.interests, interest),
+                      })
+                    }
+                  />
+                ))}
               </div>
             </div>
           ) : null}
@@ -472,8 +302,10 @@ export function ZimaSearchFilters({
 
         <FilterCheckbox
           label="Active"
-          isOn={activeOnly}
-          onClick={() => setActiveOnly((on) => !on)}
+          isOn={filters.activeOnly}
+          onClick={() =>
+            onFiltersChange({ ...filters, activeOnly: !filters.activeOnly })
+          }
         />
       </div>
     </div>

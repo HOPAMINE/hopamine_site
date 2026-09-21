@@ -31,7 +31,10 @@ import type * as presence from "../presence.js";
 import type * as projects from "../projects.js";
 import type * as seedHackathonProjects from "../seedHackathonProjects.js";
 import type * as seedHackathonStaffProject from "../seedHackathonStaffProject.js";
+import type * as seedZimaTestUsers from "../seedZimaTestUsers.js";
 import type * as users from "../users.js";
+import type * as zimaSearch from "../zimaSearch.js";
+import type * as zimaSearchLlm from "../zimaSearchLlm.js";
 
 import type {
   ApiFromModules,
@@ -63,7 +66,10 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   seedHackathonProjects: typeof seedHackathonProjects;
   seedHackathonStaffProject: typeof seedHackathonStaffProject;
+  seedZimaTestUsers: typeof seedZimaTestUsers;
   users: typeof users;
+  zimaSearch: typeof zimaSearch;
+  zimaSearchLlm: typeof zimaSearchLlm;
 }>;
 
 /**

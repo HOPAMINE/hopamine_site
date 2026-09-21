@@ -1,16 +1,17 @@
 "use client";
 
 import { SocialCard } from "@/app/social/SocialCard";
-import type { SocialProfile } from "@/lib/social/nycProfiles";
+import { toSocialProfile, type ZimaSearchResult } from "@/lib/zima/searchResults";
 import { jetbrainsMono } from "../../../fonts";
 import { ZimaSearchMessageButton } from "./ZimaSearchMessageButton";
 
 type Props = {
-  profile: SocialProfile;
+  result: ZimaSearchResult;
   onBack: () => void;
 };
 
-export function ZimaSearchProfilePanel({ profile, onBack }: Props) {
+export function ZimaSearchProfilePanel({ result, onBack }: Props) {
+  const profile = toSocialProfile(result);
   return (
     <div className="flex flex-col gap-4">
       <button
@@ -24,7 +25,11 @@ export function ZimaSearchProfilePanel({ profile, onBack }: Props) {
         profile={profile}
         theme="zima"
         cornerAction={
-          <ZimaSearchMessageButton profileId={profile.id} displayName={profile.name} />
+          <ZimaSearchMessageButton
+            profileId={result._id}
+            convexUserId={result._id}
+            displayName={result.name}
+          />
         }
       />
     </div>

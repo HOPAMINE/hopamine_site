@@ -3,27 +3,26 @@
 import { type FormEvent } from "react";
 import { jetbrainsMono } from "../../../fonts";
 // import { ZimaSearchQuickPills } from "./ZimaSearchQuickPills";
+import { ZimaSearchFilters } from "./ZimaSearchFilters";
 import type { useZimaChat } from "./useZimaChat";
+import type { useZimaSearch } from "./useZimaSearch";
 
 const HOPAMINE_BLUE = "#00a6f3";
 
 type Chat = ReturnType<typeof useZimaChat>;
-
-export type ZimaFiltersDisplay = "inline" | "hidden" | "collapsible";
+type Search = ReturnType<typeof useZimaSearch>;
 
 type Props = {
   chat: Chat;
+  search: Search;
   onEnterChatMode: () => void;
   variant: "landing" | "compact" | "header";
   idSuffix?: string;
-  filtersDisplay?: ZimaFiltersDisplay;
-  filtersExpanded?: boolean;
-  onFiltersExpandedChange?: (expanded: boolean) => void;
-  hideDecorativeBars?: boolean;
 };
 
 export function ZimaComposerFields({
   chat,
+  search,
   onEnterChatMode,
   variant,
 }: Props) {
@@ -99,6 +98,11 @@ export function ZimaComposerFields({
           variant={variant === "header" ? "header" : "landing"}
         />
       ) : null} */}
+      <ZimaSearchFilters
+        className="mt-2"
+        filters={search.filters}
+        onFiltersChange={search.setFilters}
+      />
     </div>
   );
 }

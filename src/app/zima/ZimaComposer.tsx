@@ -2,37 +2,42 @@
 
 import { useState } from "react";
 import { jetbrainsMono } from "../../../fonts";
-import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
+import { findSearchResultById } from "@/lib/zima/searchResults";
 import { ZimaComposerFields } from "./ZimaComposerFields";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaSearchResultCards } from "./ZimaSearchResultCards";
 import { ZIMA_LANDING_SEARCH_WIDTH } from "./ZimaSearchHeader";
 import type { useZimaChat } from "./useZimaChat";
+import type { useZimaSearch } from "./useZimaSearch";
 
 type Chat = ReturnType<typeof useZimaChat>;
+type Search = ReturnType<typeof useZimaSearch>;
 
 type ZimaComposerProps = {
   isChatMode: boolean;
   onEnterChatMode: () => void;
   chat: Chat;
+  search: Search;
 };
 
 export function ZimaComposer({
   isChatMode,
   onEnterChatMode,
   chat,
+  search,
 }: ZimaComposerProps) {
   const { hasSearchResults, messages, isLoading, error } = chat;
   const [selectedResultId, setSelectedResultId] = useState<string | null>(
     null,
   );
-  const selectedProfile = getSelectedSearchProfile(selectedResultId);
+  const selectedResult = findSearchResultById(search.results, selectedResultId);
 
   if (!isChatMode) {
     return (
       <div className={`mx-auto flex w-full flex-col ${ZIMA_LANDING_SEARCH_WIDTH}`}>
         <ZimaComposerFields
           chat={chat}
+          search={search}
           onEnterChatMode={onEnterChatMode}
           variant="landing"
         />
@@ -44,13 +49,18 @@ export function ZimaComposer({
     <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 pb-6">
         {hasSearchResults ? (
-          selectedProfile ? (
+          selectedResult ? (
             <ZimaSearchProfilePanel
-              profile={selectedProfile}
+              result={selectedResult}
               onBack={() => setSelectedResultId(null)}
             />
           ) : (
-            <ZimaSearchResultCards onSelectResult={setSelectedResultId} />
+            <ZimaSearchResultCards
+              results={search.results}
+              loadingResults={search.loadingResults}
+              errorMessage={search.error}
+              onSelectResult={setSelectedResultId}
+            />
           )
         ) : (
           <>
@@ -87,6 +97,7 @@ export function ZimaComposer({
       >
         <ZimaComposerFields
           chat={chat}
+          search={search}
           onEnterChatMode={onEnterChatMode}
           variant="compact"
           idSuffix="-mobile"

@@ -2,42 +2,46 @@
 
 import { useState } from "react";
 import ZimaSearchMap from "@/components/zima/ZimaSearchMap";
-import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
+import { findSearchResultById } from "@/lib/zima/searchResults";
 import { ZimaSearchHeader } from "./ZimaSearchHeader";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaSearchResultCards } from "./ZimaSearchResultCards";
 import type { useZimaChat } from "./useZimaChat";
+import type { useZimaSearch } from "./useZimaSearch";
 
 type Chat = ReturnType<typeof useZimaChat>;
+type Search = ReturnType<typeof useZimaSearch>;
 
 type Props = {
   chat: Chat;
+  search: Search;
   onFirstSend: () => void;
 };
 
-export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
-  const [selectedResultId, setSelectedResultId] = useState<string | null>(
-    null,
-  );
-  const selectedProfile = getSelectedSearchProfile(selectedResultId);
+export function ZimaSearchDesktop({ chat, search, onFirstSend }: Props) {
+  const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
+  const selectedResult = findSearchResultById(search.results, selectedResultId);
 
   return (
     <div className="hidden h-dvh flex-col overflow-hidden bg-white md:flex">
-      <ZimaSearchHeader chat={chat} onFirstSend={onFirstSend} />
+      <ZimaSearchHeader chat={chat} search={search} onFirstSend={onFirstSend} />
 
       <div className="flex min-h-0 flex-1 gap-6 px-6 pb-6 pt-4">
         <aside
           className="flex min-w-0 max-w-[50%] basis-1/2 flex-col gap-5 overflow-y-auto pr-1"
           aria-label="Search results"
         >
-          {selectedProfile ? (
+          {selectedResult ? (
             <ZimaSearchProfilePanel
-              profile={selectedProfile}
+              result={selectedResult}
               onBack={() => setSelectedResultId(null)}
             />
           ) : (
             <ZimaSearchResultCards
               columns={2}
+              results={search.results}
+              loadingResults={search.loadingResults}
+              errorMessage={search.error}
               selectedResultId={selectedResultId}
               onSelectResult={setSelectedResultId}
             />
@@ -50,6 +54,7 @@ export function ZimaSearchDesktop({ chat, onFirstSend }: Props) {
         >
           <ZimaSearchMap
             showPins
+            results={search.results}
             layoutKey="desktop-results"
             className="absolute inset-0"
             selectedResultId={selectedResultId}
