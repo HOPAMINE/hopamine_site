@@ -2,24 +2,31 @@
 
 import { useState } from "react";
 import ZimaSearchMap from "@/components/zima/ZimaSearchMap";
-import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
+import { findSearchResultById } from "@/lib/zima/searchResults";
 import { ZimaComposerFields } from "./ZimaComposerFields";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaMobileResultsDrawer } from "./ZimaMobileResultsDrawer";
 import type { useZimaChat } from "./useZimaChat";
+import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
+import { ZimaMobileResultsDrawer } from "./ZimaMobileResultsDrawer";
+import type { useZimaChat } from "./useZimaChat";
+import type { useZimaSearch } from "./useZimaSearch";
+import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
 
 type Chat = ReturnType<typeof useZimaChat>;
+type Search = ReturnType<typeof useZimaSearch>;
 
 type Props = {
   chat: Chat;
+  search: Search;
   onFirstSend: () => void;
 };
 
-export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
+export function ZimaMobileSearch({ chat, search, onFirstSend }: Props) {
   const { hasSearchResults } = chat;
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
 
-  const selectedProfile = getSelectedSearchProfile(selectedResultId);
+  const selectedResult = findSearchResultById(search.results, selectedResultId);
 
   return (
     <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white">
@@ -29,6 +36,7 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
         >
           <ZimaComposerFields
             chat={chat}
+            search={search}
             onEnterChatMode={onFirstSend}
             variant="header"
             idSuffix="-mobile-header"
@@ -39,21 +47,25 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
       <main className="relative min-h-0 flex-1 overflow-hidden">
         <ZimaSearchMap
           showPins={hasSearchResults}
+          results={search.results}
           layoutKey="mobile-results"
           className="absolute inset-0 z-0 overflow-hidden"
           selectedResultId={selectedResultId}
           onSelectResult={setSelectedResultId}
         />
 
-        {selectedProfile ? (
+        {selectedResult ? (
           <div className="absolute inset-0 z-40 overflow-y-auto bg-white">
             <ZimaSearchProfilePanel
-              profile={selectedProfile}
+              result={selectedResult}
               onBack={() => setSelectedResultId(null)}
             />
           </div>
         ) : hasSearchResults ? (
           <ZimaMobileResultsDrawer
+            results={search.results}
+            loadingResults={search.loadingResults}
+            errorMessage={search.error}
             selectedResultId={selectedResultId}
             onSelectResult={setSelectedResultId}
           />

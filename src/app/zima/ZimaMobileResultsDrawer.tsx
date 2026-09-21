@@ -10,11 +10,14 @@ import {
   type AnimationPlaybackControls,
   type PanInfo,
 } from "framer-motion";
-import { RESULTS } from "@/components/zima/results";
+import type { ZimaSearchResult } from "@/lib/zima/searchResults";
 import { jetbrainsMono } from "../../../fonts";
 import { ZimaSearchResultCards } from "./ZimaSearchResultCards";
 
 type Props = {
+  results: ZimaSearchResult[];
+  loadingResults?: boolean;
+  errorMessage?: string | null;
   selectedResultId?: string | null;
   onSelectResult: (id: string) => void;
 };
@@ -60,7 +63,8 @@ function nearestSnap(offsets: SnapOffsets, offset: number): Snap {
   return best;
 }
 
-function foundBuildersLabel(count: number) {
+function foundBuildersLabel(count: number, loadingResults: boolean) {
+  if (loadingResults && count === 0) return "searching NYC…";
   const noun = count === 1 ? "builder" : "builders";
   return `we found ${count} ${noun}`;
 }
@@ -70,6 +74,9 @@ function foundBuildersLabel(count: number) {
  * bottom drawer listing profiles and organizations.
  */
 export function ZimaMobileResultsDrawer({
+  results,
+  loadingResults = false,
+  errorMessage = null,
   selectedResultId,
   onSelectResult,
 }: Props) {
@@ -79,7 +86,7 @@ export function ZimaMobileResultsDrawer({
   const reduceMotion = useReducedMotion();
   const [snap, setSnap] = useState<Snap>("start");
   const [offsets, setOffsets] = useState<SnapOffsets | null>(null);
-  const count = RESULTS.length;
+  const count = results.length;
 
   useLayoutEffect(() => {
     const el = sheetRef.current;
@@ -152,13 +159,16 @@ export function ZimaMobileResultsDrawer({
           <h2
             className={`${jetbrainsMono.className} w-full text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-neutral-900`}
           >
-            {foundBuildersLabel(count)}
+            {foundBuildersLabel(count, loadingResults)}
           </h2>
         </div>
         <div
           className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           <ZimaSearchResultCards
+            results={results}
+            loadingResults={loadingResults}
+            errorMessage={errorMessage}
             selectedResultId={selectedResultId}
             onSelectResult={onSelectResult}
           />

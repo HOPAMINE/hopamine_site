@@ -7,6 +7,7 @@ import { ZimaMobileSearch } from "./ZimaMobileSearch";
 import { ZimaSearchDesktop } from "./ZimaSearchDesktop";
 import { ZIMA_LANDING_SEARCH_WIDTH } from "./ZimaSearchHeader";
 import { useZimaChat } from "./useZimaChat";
+import { useZimaSearch } from "./useZimaSearch";
 import { useIsMdUp } from "./useIsMdUp";
 
 type ZimaShellProps = {
@@ -16,15 +17,17 @@ type ZimaShellProps = {
 
 export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
   const chat = useZimaChat(isChatMode, { resultsOnly: true });
+  const search = useZimaSearch(chat);
+  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
   const isMdUp = useIsMdUp();
   const enterChat = () => onChatModeChange(true);
 
   if (isChatMode) {
     if (isMdUp) {
-      return <ZimaSearchDesktop chat={chat} onFirstSend={enterChat} />;
+      return <ZimaSearchDesktop chat={chat} search={search} onFirstSend={enterChat} />;
     }
     return (
-      <ZimaMobileSearch chat={chat} onFirstSend={enterChat} />
+      <ZimaMobileSearch chat={chat} search={search} onFirstSend={enterChat} />
     );
   }
 
@@ -47,6 +50,7 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
               isChatMode={isChatMode}
               onEnterChatMode={enterChat}
               chat={chat}
+              search={search}
             />
           </div>
         </div>
@@ -76,6 +80,7 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
               isChatMode={isChatMode}
               onEnterChatMode={enterChat}
               chat={chat}
+              search={search}
             />
           </div>
         </div>

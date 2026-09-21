@@ -23,6 +23,7 @@ import {
   zimaRoundedInputClass as inputClass,
   zimaRoundedTextareaClass as textareaClass,
 } from "./ZimaAuthUI";
+import { ZIMA_ARCHETYPES } from "../../../shared/zimaVocabulary";
 
 const HOPAMINE_BLUE = "#00a6f3";
 const NYC_CITY = "New York City";
@@ -39,19 +40,7 @@ const onboardButtonClass = `${jetbrainsMono.className} text-[15px] font-semibold
 
 const OTHER_ARCHETYPE = "Other";
 
-const ARCHETYPES = [
-  "Builder",
-  "Farmer",
-  "Filmmaker",
-  "Writer",
-  "Designer",
-  "Developer",
-  "Artists",
-  "Policy makers",
-  "Creator",
-  "Community builder",
-  OTHER_ARCHETYPE,
-] as const;
+const ARCHETYPES = [...ZIMA_ARCHETYPES, OTHER_ARCHETYPE] as const;
 
 function ContinueButton({
   disabled,
