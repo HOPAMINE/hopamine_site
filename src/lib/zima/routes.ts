@@ -61,3 +61,27 @@ export function isZimaChatsPath(pathname: string): boolean {
     pathname.startsWith("/zima/chats/")
   );
 }
+
+export function isZimaProfilePath(pathname: string): boolean {
+  return (
+    pathname === "/profile" ||
+    pathname.startsWith("/profile/") ||
+    pathname === "/zima/profile" ||
+    pathname.startsWith("/zima/profile/")
+  );
+}
+
+export function isZimaAuthChromePath(pathname: string): boolean {
+  return (
+    isZimaOnboardPath(pathname) ||
+    pathname === "/sign-in" ||
+    pathname.startsWith("/sign-in/") ||
+    pathname.startsWith("/zima/sign-in") ||
+    pathname === "/sign-up" ||
+    pathname.startsWith("/sign-up/") ||
+    pathname.startsWith("/zima/sign-up") ||
+    pathname === "/settings" ||
+    pathname.startsWith("/settings/") ||
+    pathname.startsWith("/zima/settings")
+  );
+}

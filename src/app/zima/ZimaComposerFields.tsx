@@ -38,8 +38,7 @@ export function ZimaComposerFields({
       ? "bg-neutral-200"
       : "border border-neutral-200 bg-white";
 
-  const showQuickPills = variant === "landing" || variant === "header";
-  const horizontalPad = showQuickPills ? "px-4 md:px-0" : "";
+  const horizontalPad = variant === "landing" ? "px-4 md:px-0" : "";
 
   return (
     <div className={`w-full ${horizontalPad}`}>

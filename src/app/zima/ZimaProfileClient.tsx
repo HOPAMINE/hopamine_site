@@ -5,8 +5,6 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { jetbrainsMono, newsreader } from "../../../fonts";
 import { ZimaLogo } from "./ZimaLogo";
-import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
-import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
 import { ZIMA_FIXED_LOGO_POSITION } from "./zimaLogoPlacement";
 import { ZimaProfileCard, toZimaProfileData } from "./ZimaProfileCard";
 import { ZimaProfileEditModal } from "./ZimaProfileEditModal";
@@ -14,11 +12,10 @@ import { ZimaProfileEditModal } from "./ZimaProfileEditModal";
 export function ZimaProfileClient() {
   const user = useQuery(api.users.getCurrentUser);
   const [editing, setEditing] = useState(false);
-  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
 
   if (user === undefined) {
     return (
-      <div className="relative flex min-h-dvh flex-col bg-white">
+      <div className="relative flex min-h-0 flex-1 flex-col bg-white md:min-h-dvh">
         <div className="flex-1 px-6 pb-4 pt-[max(80px,env(safe-area-inset-top))]">
           <ZimaLogo
             priority
@@ -30,19 +27,13 @@ export function ZimaProfileClient() {
             Loading profile…
           </p>
         </div>
-        <ZimaMobileBottomNav
-          active="profile"
-          homeHref={homeHref}
-          chatsHref={chatsHref}
-          profileHref={profileHref}
-        />
       </div>
     );
   }
 
   if (user === null) {
     return (
-      <div className="relative flex min-h-dvh flex-col bg-white">
+      <div className="relative flex min-h-0 flex-1 flex-col bg-white md:min-h-dvh">
         <div className="flex-1 px-6 pb-4 pt-[max(80px,env(safe-area-inset-top))]">
           <ZimaLogo
             priority
@@ -54,12 +45,6 @@ export function ZimaProfileClient() {
             No profile found yet. It syncs automatically when you sign in.
           </p>
         </div>
-        <ZimaMobileBottomNav
-          active="profile"
-          homeHref={homeHref}
-          chatsHref={chatsHref}
-          profileHref={profileHref}
-        />
       </div>
     );
   }
@@ -67,7 +52,7 @@ export function ZimaProfileClient() {
   const profileData = toZimaProfileData(user);
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-white">
+    <div className="relative flex min-h-0 flex-1 flex-col bg-white md:min-h-dvh">
       <div className="flex-1 px-6 pb-4 pt-[max(80px,env(safe-area-inset-top))] md:pb-24">
         <ZimaLogo
           priority
@@ -94,12 +79,6 @@ export function ZimaProfileClient() {
           />
         ) : null}
       </div>
-      <ZimaMobileBottomNav
-          active="profile"
-          homeHref={homeHref}
-          chatsHref={chatsHref}
-          profileHref={profileHref}
-        />
     </div>
   );
 }

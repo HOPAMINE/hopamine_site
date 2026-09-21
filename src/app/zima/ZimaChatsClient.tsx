@@ -12,12 +12,9 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import type { ZimaConversation } from "@/lib/zima/zimaChats";
 import { getZimaPath } from "@/lib/zima/routes";
 import { ZimaLogo } from "./ZimaLogo";
-import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
-import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
 import { ZIMA_FIXED_LOGO_POSITION } from "./zimaLogoPlacement";
 
 export function ZimaChatsClient() {
-  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
   const { chatAvailable } = useZimaChatDock();
   const session = useZimaChatSession(chatAvailable);
   const [searchHref, setSearchHref] = useState("/zima/search");
@@ -31,7 +28,7 @@ export function ZimaChatsClient() {
   const activeConversation = session.selectedConversation;
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-white md:block">
+    <div className="relative flex min-h-0 flex-1 flex-col bg-white md:block md:min-h-dvh">
       <div
         className={
           threadOpen
@@ -82,13 +79,6 @@ export function ZimaChatsClient() {
           )}
         </div>
       </div>
-
-      <ZimaMobileBottomNav
-        active="chats"
-        homeHref={homeHref}
-        chatsHref={chatsHref}
-        profileHref={profileHref}
-      />
     </div>
   );
 }

@@ -17,7 +17,7 @@ export function ZimaPageClient() {
   }, [isChatMode, setHideMobileTopProfile]);
 
   return (
-    <div className="relative min-h-dvh bg-white">
+    <div className="relative flex h-full min-h-0 flex-1 flex-col bg-white md:min-h-dvh">
       {!isChatMode ? (
         <ZimaGlobeBackdrop
           extendUnderTopChrome

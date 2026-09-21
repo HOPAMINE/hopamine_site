@@ -5,11 +5,9 @@ import { ZimaComposer } from "./ZimaComposer";
 import { ZimaMakeathonBanner } from "./ZimaMakeathonBanner";
 import { ZimaMobileSearch } from "./ZimaMobileSearch";
 import { ZimaSearchDesktop } from "./ZimaSearchDesktop";
-import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
 import { ZIMA_LANDING_SEARCH_WIDTH } from "./ZimaSearchHeader";
 import { useZimaChat } from "./useZimaChat";
 import { useIsMdUp } from "./useIsMdUp";
-import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
 
 type ZimaShellProps = {
   isChatMode: boolean;
@@ -18,7 +16,6 @@ type ZimaShellProps = {
 
 export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
   const chat = useZimaChat(isChatMode, { resultsOnly: true });
-  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
   const isMdUp = useIsMdUp();
   const enterChat = () => onChatModeChange(true);
 
@@ -32,9 +29,9 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
   }
 
   return (
-    <div className="relative z-10 flex min-h-dvh flex-col">
+    <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col md:min-h-dvh">
       {/* Mobile: search at top */}
-      <div className="flex h-dvh flex-col overflow-hidden md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:hidden">
         <div
           className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-6 pt-[max(72px,env(safe-area-inset-top))]"
         >
@@ -59,13 +56,6 @@ export function ZimaShell({ isChatMode, onChatModeChange }: ZimaShellProps) {
           <div className="px-6">
             <ZimaMakeathonBanner />
           </div>
-          <ZimaMobileBottomNav
-            active="explore"
-            homeHref={homeHref}
-            chatsHref={chatsHref}
-            profileHref={profileHref}
-            placement="inline"
-          />
         </div>
       </div>
 

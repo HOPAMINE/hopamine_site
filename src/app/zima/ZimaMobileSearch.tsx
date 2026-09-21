@@ -4,11 +4,9 @@ import { useState } from "react";
 import ZimaSearchMap from "@/components/zima/ZimaSearchMap";
 import { getSelectedSearchProfile } from "@/lib/zima/mapResultProfile";
 import { ZimaComposerFields } from "./ZimaComposerFields";
-import { ZimaMobileBottomNav } from "./ZimaMobileBottomNav";
 import { ZimaSearchProfilePanel } from "./ZimaSearchProfilePanel";
 import { ZimaMobileResultsDrawer } from "./ZimaMobileResultsDrawer";
 import type { useZimaChat } from "./useZimaChat";
-import { useZimaMobileNavHrefs } from "./useZimaMobileNavHrefs";
 
 type Chat = ReturnType<typeof useZimaChat>;
 
@@ -20,12 +18,11 @@ type Props = {
 export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
   const { hasSearchResults } = chat;
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
-  const { homeHref, chatsHref, profileHref } = useZimaMobileNavHrefs();
 
   const selectedProfile = getSelectedSearchProfile(selectedResultId);
 
   return (
-    <div className="relative z-10 flex h-dvh flex-col overflow-hidden bg-white">
+    <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white">
       <header className="shrink-0 border-b border-neutral-200 bg-white">
         <div
           className="py-2 pt-[max(12px,env(safe-area-inset-top))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]"
@@ -62,13 +59,6 @@ export function ZimaMobileSearch({ chat, onFirstSend }: Props) {
           />
         ) : null}
       </main>
-
-      <ZimaMobileBottomNav
-        active="explore"
-        homeHref={homeHref}
-        chatsHref={chatsHref}
-        profileHref={profileHref}
-      />
     </div>
   );
 }

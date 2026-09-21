@@ -23,13 +23,11 @@ import { useZimaSearchChrome } from "./ZimaSearchChromeContext";
 const HOPAMINE_BLUE = "#00a6f3";
 
 const navClass =
-  "fixed right-[max(20px,env(safe-area-inset-right))] top-[max(20px,env(safe-area-inset-top))] z-30 flex items-center gap-2";
+  "fixed right-[max(12px,env(safe-area-inset-right))] top-[max(12px,env(safe-area-inset-top))] z-30 flex items-center gap-1.5 md:right-[max(20px,env(safe-area-inset-right))] md:top-[max(20px,env(safe-area-inset-top))] md:gap-2";
 
-const linkBase = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-xl px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3]`;
+const linkBase = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a6f3] md:rounded-xl md:px-3 md:py-2 md:text-[13.5px]`;
 
 const menuItemClass = `${jetbrainsMono.className} block w-full px-3 py-2 text-left text-[13px] font-semibold uppercase tracking-wide text-neutral-800 transition-colors hover:bg-neutral-50`;
-
-const openingBadgeClass = `${jetbrainsMono.className} inline-flex items-center justify-center rounded-xl bg-neutral-100 px-3 py-2 text-[13.5px] font-semibold uppercase tracking-wide text-neutral-700`;
 
 function displayCityName(location: string | undefined): string {
   const trimmed = location?.trim();
@@ -42,10 +40,6 @@ function displayCityName(location: string | undefined): string {
     return trimmed.slice(comma + 1).trim() || trimmed;
   }
   return trimmed;
-}
-
-function OpeningInNycBadge() {
-  return <p className={openingBadgeClass}>Opening in NYC</p>;
 }
 
 function ChatNavIcon() {
@@ -239,7 +233,6 @@ export function ZimaAuthButtons() {
       aria-label="Account"
       className={`${navClass} ${hideMobileTopProfile ? "max-md:hidden" : ""}`}
     >
-      <OpeningInNycBadge />
       <Link href={signInHref} className={`${linkBase} text-neutral-900`}>
         Login
       </Link>
@@ -248,7 +241,8 @@ export function ZimaAuthButtons() {
         className={`${linkBase} text-white`}
         style={{ backgroundColor: HOPAMINE_BLUE }}
       >
-        Create your account
+        <span className="md:hidden">Sign up</span>
+        <span className="hidden md:inline">Create your account</span>
       </Link>
     </nav>
   );
