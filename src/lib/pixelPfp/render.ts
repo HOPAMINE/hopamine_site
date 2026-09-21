@@ -1,15 +1,18 @@
 import { ACCESSORY_OPTIONS } from "./accessories";
 import { BACKGROUND_OPTIONS } from "./backgrounds";
-import { buildFaceSprite, FACE_OPTIONS } from "./faces";
+import { buildFaceSprite, FACE_OPTIONS, HEAD_SHAPE_OPTIONS } from "./faces";
 import { HAIR_OPTIONS } from "./hairs";
 import {
   createEmptyPixelGrid,
   paintSpriteOntoGrid,
   PIXEL_PFP_GRID_SIZE,
+  resolveOptionSpriteForHead,
+  type HeadShapeId,
   type PixelGrid,
 } from "./sprite";
 
 export type PixelPfpSelection = {
+  headShapeId: HeadShapeId;
   faceId: string;
   hairId: string;
   accessoryId: string;
@@ -17,6 +20,7 @@ export type PixelPfpSelection = {
 };
 
 export const DEFAULT_PIXEL_PFP_SELECTION: PixelPfpSelection = {
+  headShapeId: "masc",
   faceId: "brown",
   hairId: "afro",
   accessoryId: "cigarette",
@@ -39,17 +43,21 @@ export function renderPixelPfpGrid(selection: PixelPfpSelection): PixelGrid {
     row.fill(background.color);
   }
 
+  const headShape = findOptionOrFirst(HEAD_SHAPE_OPTIONS, selection.headShapeId);
+
   const face = findOptionOrFirst(FACE_OPTIONS, selection.faceId);
-  paintSpriteOntoGrid(grid, buildFaceSprite(face.colors));
+  paintSpriteOntoGrid(grid, buildFaceSprite(face.colors, headShape.id));
 
   const hair = findOptionOrFirst(HAIR_OPTIONS, selection.hairId);
-  if (hair.sprite) {
-    paintSpriteOntoGrid(grid, hair.sprite);
+  const hairSprite = resolveOptionSpriteForHead(hair, headShape.id, 1);
+  if (hairSprite) {
+    paintSpriteOntoGrid(grid, hairSprite);
   }
 
   const accessory = findOptionOrFirst(ACCESSORY_OPTIONS, selection.accessoryId);
-  if (accessory.sprite) {
-    paintSpriteOntoGrid(grid, accessory.sprite);
+  const accessorySprite = resolveOptionSpriteForHead(accessory, headShape.id);
+  if (accessorySprite) {
+    paintSpriteOntoGrid(grid, accessorySprite);
   }
 
   return grid;
@@ -100,6 +108,9 @@ export function pickRandomPixelPfpSelection(): PixelPfpSelection {
   const pick = <T extends { id: string }>(options: readonly T[]) =>
     options[Math.floor(Math.random() * options.length)].id;
   return {
+    headShapeId: HEAD_SHAPE_OPTIONS[
+      Math.floor(Math.random() * HEAD_SHAPE_OPTIONS.length)
+    ].id,
     faceId: pick(FACE_OPTIONS),
     hairId: pick(HAIR_OPTIONS),
     accessoryId: pick(ACCESSORY_OPTIONS),

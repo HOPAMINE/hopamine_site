@@ -8,7 +8,7 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { ACCESSORY_OPTIONS } from "@/lib/pixelPfp/accessories";
 import { BACKGROUND_OPTIONS } from "@/lib/pixelPfp/backgrounds";
-import { FACE_OPTIONS } from "@/lib/pixelPfp/faces";
+import { FACE_OPTIONS, HEAD_SHAPE_OPTIONS } from "@/lib/pixelPfp/faces";
 import { HAIR_OPTIONS } from "@/lib/pixelPfp/hairs";
 import {
   DEFAULT_PIXEL_PFP_SELECTION,
@@ -210,8 +210,8 @@ export function PixelPfpMaker() {
         <p
           className={`${jetbrainsMono.className} mt-4 max-w-xl text-sm leading-relaxed text-neutral-600`}
         >
-          Pick a face, hair, and accessory. Every avatar is a 24×24 pixel
-          portrait on the Hopamine blue.
+          Pick a head, face, hair, and accessory. Every avatar is a 24×24
+          pixel portrait on the Hopamine blue.
         </p>
 
         <div className="mt-10 grid w-full grid-cols-1 items-start gap-8 md:grid-cols-[auto_1fr] md:gap-12">
@@ -231,6 +231,17 @@ export function PixelPfpMaker() {
           </figure>
 
           <div className="flex w-full max-w-md flex-col gap-5 justify-self-center md:justify-self-start">
+            <OptionArrows
+              label="Head"
+              options={HEAD_SHAPE_OPTIONS}
+              selectedId={selection.headShapeId}
+              disabled={saving}
+              onChange={(headShapeId) =>
+                patchSelection({
+                  headShapeId: headShapeId === "femme" ? "femme" : "masc",
+                })
+              }
+            />
             <OptionArrows
               label="Face"
               options={FACE_OPTIONS}
