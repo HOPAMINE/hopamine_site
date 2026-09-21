@@ -5,7 +5,6 @@ import type { GlobeHandle } from "./Globe";
 import type { GlobeView } from "./camera";
 import ZimaChrome from "./chrome/ZimaChrome";
 import ResultMarkers from "./ResultMarkers";
-import { RESULTS } from "./results";
 import { SearchProvider, useSearch } from "./search";
 import { ZimaGlobeBackdrop } from "./ZimaGlobeBackdrop";
 
@@ -49,7 +48,7 @@ function Scene() {
   return (
     <>
       <ZimaGlobeBackdrop ref={globeRef} onHoldChange={setMapHeld}>
-        {search.hasSearched && <ResultMarkers results={RESULTS} />}
+        {search.hasSearched && <ResultMarkers results={[]} />}
       </ZimaGlobeBackdrop>
       <ZimaChrome onSend={handleSend} mapHeld={mapHeld} />
     </>

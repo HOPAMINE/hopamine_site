@@ -1,12 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
+import { toMapResult, type ZimaSearchResult } from "@/lib/zima/searchResults";
 import Globe from "./Globe";
 import { NATURAL_MAP_PALETTE } from "./globePalettes";
 import ResultMarkers from "./ResultMarkers";
 import { NYC_REGION_VIEW } from "./nycRegion";
-import { RESULTS } from "./results";
 
 type Props = {
+  results: ZimaSearchResult[];
   /** When false, pins stay hidden (map is still under the dim layer). */
   showPins?: boolean;
   className?: string;
@@ -18,12 +20,15 @@ type Props = {
 
 /** Hopamine map starting on NYC; pan and zoom freely. Fills its wrapper like the home globe. */
 export default function ZimaSearchMap({
+  results,
   showPins = false,
   className = "absolute inset-0 overflow-hidden",
   layoutKey,
   selectedResultId = null,
   onSelectResult,
 }: Props) {
+  const mapResults = useMemo(() => results.map(toMapResult), [results]);
+
   return (
     <Globe
       className={className}
@@ -36,7 +41,7 @@ export default function ZimaSearchMap({
     >
       {showPins ? (
         <ResultMarkers
-          results={RESULTS}
+          results={mapResults}
           selectedResultId={selectedResultId}
           onSelectResult={onSelectResult}
         />
